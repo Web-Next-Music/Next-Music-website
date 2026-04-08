@@ -46,10 +46,11 @@
     font-weight: 700;
     letter-spacing: -0.5px;
     margin-bottom: 8px;
+    font-family: var(--font-heading-large);
 }
 
 .addonDesc {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--muted);
     line-height: 1.6;
     max-width: 560px;
@@ -140,10 +141,11 @@
     font-weight: 700;
     letter-spacing: -0.3px;
     margin-bottom: 6px;
+    font-family: var(--font-heading-large);
 }
 
 .creditsDesc {
-    font-size: 12px;
+    font-size: 14px;
     color: var(--muted);
     line-height: 1.6;
     max-width: 600px;
