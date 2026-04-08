@@ -22,6 +22,11 @@ const links = {
     ],
     links: [
         {
+            label: "AUR",
+            href: "https://aur.archlinux.org/packages/next-music",
+            external: true,
+        },
+        {
             label: "GitHub",
             href: "https://github.com/Web-Next-Music/Next-Music-Client",
             external: true,
