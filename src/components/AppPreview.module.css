@@ -1,0 +1,175 @@
+/* ── Stack ── */
+.stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 300px;
+    flex-shrink: 0;
+}
+
+/* ── Card ── */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    animation: slideIn 0.4s ease both;
+    animation-delay: var(--delay, 0s);
+    transition:
+        border-color 0.2s,
+        transform 0.2s;
+}
+
+.card:hover {
+    border-color: rgba(43, 254, 245, 0.25);
+    transform: translateX(-3px);
+}
+
+.cardLive {
+    border-color: rgba(43, 254, 245, 0.2);
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateX(16px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@media (max-width: 900px) {
+    .stack {
+        width: 100%;
+    }
+}
+
+/* ── Header ── */
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px 8px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface2);
+}
+
+.headerLabel {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.1px;
+}
+
+.dots {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    line-height: 1;
+}
+
+/* ── Status dot ── */
+.dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.dotLive {
+    background: var(--accent);
+    animation: blink 2s ease-in-out infinite;
+}
+
+.dotPaused {
+    background: #ffbd2e;
+}
+
+@keyframes blink {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.35;
+    }
+}
+
+/* ── Body ── */
+.cardBody {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+}
+
+.cover {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+}
+
+.coverPlaceholder {
+    width: 56px;
+    height: 56px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info {
+    flex: 1;
+    min-width: 0;
+}
+
+.title {
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 2px;
+}
+
+.artist {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 8px;
+}
+
+/* ── Progress ── */
+.timeRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10px;
+    font-family: var(--font-base);
+    color: var(--muted);
+}
+
+.progressBar {
+    flex: 1;
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 2px;
+    transition: width 0.8s linear;
+}

@@ -1,0 +1,207 @@
+/* ---- Tab bar ---- */
+.tabBar {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+}
+
+.tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    padding: 10px 18px;
+    font-family: var(--font-heading-large);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+    border-radius: 6px 6px 0 0;
+}
+
+.tab:hover {
+    color: var(--text);
+    background: var(--surface);
+}
+
+.tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+    background: rgba(43, 254, 245, 0.04);
+}
+
+.count {
+    font-size: 11px;
+    font-family: var(--font-base);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1px 7px;
+    color: var(--muted);
+    font-weight: 400;
+}
+
+.tab.active .count {
+    background: rgba(43, 254, 245, 0.1);
+    border-color: rgba(43, 254, 245, 0.2);
+    color: var(--accent);
+}
+
+/* ---- Track list ---- */
+.list {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+
+.trackRow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 9px 14px;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    transition: all 0.15s;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text);
+}
+
+.trackRow:hover {
+    background: var(--surface);
+    border-color: var(--border);
+}
+
+.trackRow:active {
+    transform: scale(0.995);
+}
+
+.num {
+    font-size: 12px;
+    font-family: var(--font-base);
+    color: var(--muted);
+    width: 15px;
+    text-align: right;
+    flex-shrink: 0;
+}
+
+.cover {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1px solid var(--border);
+}
+
+.coverPlaceholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    flex-shrink: 0;
+}
+
+.legacyIcon {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info {
+    flex: 1;
+    min-width: 0;
+}
+
+.title {
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.artist {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ---- Infinite scroll sentinel ---- */
+.sentinel {
+    display: flex;
+    justify-content: center;
+    padding: 24px 0 8px;
+}
+
+.loadingDots {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.loadingDots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.4;
+    animation: pulse 1.2s ease-in-out infinite;
+}
+
+.loadingDots span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+.loadingDots span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 0.2;
+        transform: scale(0.85);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1);
+    }
+}
+
+/* ---- Empty state ---- */
+.empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 640px) {
+    .tab {
+        padding: 8px 12px;
+        font-size: 13px;
+    }
+    .trackRow {
+        gap: 10px;
+        padding: 8px 10px;
+    }
+    .num {
+        display: none;
+    }
+}
