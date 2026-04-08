@@ -44,7 +44,6 @@ export default async function StarsSection() {
                                 loading="lazy"
                             />
                             <div className={styles.name}>{user.login}</div>
-                            <div className={styles.handle}>@{user.login}</div>
                         </a>
                     );
                 })}
