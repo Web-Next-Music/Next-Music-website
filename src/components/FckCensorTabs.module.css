@@ -2,7 +2,7 @@
 .tabBar {
     display: flex;
     gap: 4px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
     border-bottom: 1px solid var(--border);
 }
 
@@ -50,6 +50,72 @@
     background: rgba(43, 254, 245, 0.1);
     border-color: rgba(43, 254, 245, 0.2);
     color: var(--accent);
+}
+
+/* ---- Search bar ---- */
+.searchWrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.searchIcon {
+    position: absolute;
+    left: 11px;
+    color: var(--muted);
+    pointer-events: none;
+    flex-shrink: 0;
+}
+
+.searchInput {
+    width: 100%;
+    padding: 8px 32px 8px 34px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text);
+    font-family: var(--font-base);
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+    outline: none;
+}
+
+.searchInput::placeholder {
+    color: var(--muted);
+}
+
+.searchInput:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px rgba(43, 254, 245, 0.12);
+}
+
+.searchClear {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.1s;
+}
+
+.searchClear:hover {
+    color: var(--text);
+}
+
+/* ---- Highlight ---- */
+.highlight {
+    background: rgba(43, 254, 245, 0.2);
+    color: var(--accent);
+    border-radius: 2px;
+    padding: 0 1px;
 }
 
 /* ---- Track list ---- */
@@ -140,6 +206,62 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+/* ---- Download footer (below track list) ---- */
+.downloadFooter {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+}
+
+/* ---- Download pane (JSON / M3U) ---- */
+.downloadPane {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 32px 20px;
+}
+
+.downloadDesc {
+    margin: 0;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 480px;
+}
+
+.downloadBtn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: rgba(43, 254, 245, 0.08);
+    border: 1px solid rgba(43, 254, 245, 0.25);
+    border-radius: 8px;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 500;
+    font-family: var(--font-base);
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.downloadBtn:hover {
+    background: rgba(43, 254, 245, 0.14);
+    border-color: rgba(43, 254, 245, 0.45);
+}
+
+.downloadBtn:active {
+    transform: scale(0.98);
+}
+
+.downloadUrl {
+    font-size: 12px;
+    font-family: var(--font-mono, monospace);
+    color: var(--muted);
+    word-break: break-all;
 }
 
 /* ---- Infinite scroll sentinel ---- */

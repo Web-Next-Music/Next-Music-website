@@ -1,13 +1,7 @@
 const REPO = "Web-Next-Music/Next-Music-Client";
 const BASE = "https://api.github.com";
 
-/**
- * Proxy mirrors tried in order when GitHub is unreachable.
- * Each entry is a base URL that mirrors the GitHub REST API.
- */
-const FALLBACK_BASES: string[] = [
-    "https://ghapi.huchen.dev", // popular GitHub API proxy
-];
+const FALLBACK_BASES: string[] = ["https://ghapi.huchen.dev"];
 
 function headers(): HeadersInit {
     return {
