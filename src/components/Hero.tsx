@@ -1,7 +1,25 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import AppPreview from "./AppPreview";
 import Image from "next/image";
-import { fetchLatestRelease, findAsset, formatSize } from "@/lib/github";
+import { findAsset, formatSize } from "@/lib/github";
 import styles from "./Hero.module.css";
+
+const REPO = "Web-Next-Music/Next-Music-Client";
+
+interface GithubAsset {
+    name: string;
+    browser_download_url: string;
+    size: number;
+}
+
+interface GithubRelease {
+    tag_name: string;
+    prerelease: boolean;
+    html_url: string;
+    assets: GithubAsset[];
+}
 
 function WindowsIcon() {
     return (
@@ -13,7 +31,6 @@ function WindowsIcon() {
         />
     );
 }
-
 function DebIcon() {
     return (
         <Image
@@ -24,7 +41,6 @@ function DebIcon() {
         />
     );
 }
-
 function AppImageIcon() {
     return (
         <Image
@@ -35,7 +51,6 @@ function AppImageIcon() {
         />
     );
 }
-
 function PkgIcon() {
     return (
         <Image
@@ -47,8 +62,20 @@ function PkgIcon() {
     );
 }
 
-export default async function Hero() {
-    const release = await fetchLatestRelease();
+export default function Hero() {
+    const [release, setRelease] = useState<GithubRelease | null>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
+            headers: { Accept: "application/vnd.github+json" },
+        })
+            .then((res) => res.json())
+            .then((data: GithubRelease) => setRelease(data))
+            .catch(() => setRelease(null))
+            .finally(() => setLoading(false));
+    }, []);
+
     const version = release?.tag_name ?? "unknown";
     const isPrerelease = release?.prerelease ?? false;
     const assets = release?.assets ?? [];
@@ -98,8 +125,14 @@ export default async function Hero() {
         <section className={styles.hero}>
             <div className={styles.heroLeft}>
                 <div className={styles.badge}>
-                    {version} —{" "}
-                    {isPrerelease ? "pre-release" : "latest release"}
+                    {loading ? (
+                        <span className={styles.skeletonBadge} />
+                    ) : (
+                        <>
+                            {version} —{" "}
+                            {isPrerelease ? "pre-release" : "latest release"}
+                        </>
+                    )}
                 </div>
                 <h1 className={styles.title}>
                     Next Music
@@ -117,7 +150,7 @@ export default async function Hero() {
                             href={btn.href}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className={styles.dlBtn}
+                            className={`${styles.dlBtn} ${loading ? styles.dlBtnLoading : ""}`}
                         >
                             <div
                                 className={`${styles.dlIcon} ${styles[btn.iconClass]}`}
