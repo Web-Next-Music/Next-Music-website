@@ -808,6 +808,44 @@
     display: inline-block;
 }
 
+/* ── Shield badges (inline row) ── */
+.mdBadgeRow {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    margin: 0.2em 0;
+}
+.mdBadge {
+    height: 20px;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+    border-radius: 4px;
+}
+
+/* ── Donate / linked image button ── */
+.mdDonateLink {
+    display: inline-block;
+    margin: 0.3em 0;
+    border-radius: 10px;
+    overflow: hidden;
+    transition:
+        opacity 0.15s,
+        transform 0.15s;
+    border-bottom: none !important;
+}
+.mdDonateLink:hover {
+    opacity: 0.85;
+    transform: translateY(-1px);
+}
+.mdDonateImg {
+    display: block;
+    max-width: 300px;
+    height: auto;
+    border-radius: 10px;
+}
+
 /* ── HTML block wrapper ── */
 .mdHtmlBlock {
     margin: 0.2em 0;

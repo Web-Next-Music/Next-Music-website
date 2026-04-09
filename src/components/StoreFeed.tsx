@@ -743,12 +743,17 @@ const CALLOUT_META: Record<
 
 /** Extract src / href / text from a small subset of inline HTML */
 function parseInlineHtml(html: string, baseUrl?: string): React.ReactNode {
+    // Unwrap top-level <p> tags so their contents render normally
+    const unwrapped = html
+        .replace(/^\s*<p[^>]*>([\s\S]*?)<\/p>\s*$/i, "$1")
+        .trim();
+
     // Collect <tr> rows
     const rows: React.ReactNode[] = [];
     let ri = 0;
     const trRe = /<tr[^>]*>([\s\S]*?)<\/tr>/gi;
     let trM: RegExpExecArray | null;
-    while ((trM = trRe.exec(html)) !== null) {
+    while ((trM = trRe.exec(unwrapped)) !== null) {
         const cells: React.ReactNode[] = [];
         const cellRe = /<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi;
         let cM: RegExpExecArray | null;
@@ -772,15 +777,15 @@ function parseInlineHtml(html: string, baseUrl?: string): React.ReactNode {
             </div>
         );
     }
-    // Fallback: strip tags and render plain text
-    return <span>{html.replace(/<[^>]*>/g, " ").trim()}</span>;
+    // Render the (possibly unwrapped) content
+    return <>{renderHtmlContent(unwrapped, baseUrl)}</>;
 }
 
 /** Render the inner HTML of a cell: may contain <img>, <a>, plain text */
 function renderHtmlContent(html: string, baseUrl?: string): React.ReactNode {
     const nodes: React.ReactNode[] = [];
     // Split on tags we care about
-    const re = /<img\s[^>]*>|<a\s[^>]*>[\s\S]*?<\/a>/gi;
+    const re = /<img\s[^>]*\/?>|<a\s[^>]*>[\s\S]*?<\/a>/gi;
     let last = 0;
     let m: RegExpExecArray | null;
     while ((m = re.exec(html)) !== null) {
@@ -798,15 +803,18 @@ function renderHtmlContent(html: string, baseUrl?: string): React.ReactNode {
             const wM = tag.match(/width="([^"]*)"/i);
             const hM = tag.match(/height="([^"]*)"/i);
             if (srcM) {
+                const isBadge = /shields\.io|badge\.fury|badgen\.net/i.test(
+                    srcM[1],
+                );
                 nodes.push(
                     <img
                         key={m.index}
                         src={resolveImgUrl(srcM[1], baseUrl)}
                         alt={altM?.[1] ?? ""}
-                        className={styles.mdHtmlImg}
+                        className={isBadge ? styles.mdBadge : styles.mdHtmlImg}
                         style={{
-                            width: wM ? `${wM[1]}px` : undefined,
-                            height: hM ? `${hM[1]}px` : undefined,
+                            width: wM && !isBadge ? `${wM[1]}px` : undefined,
+                            height: hM && !isBadge ? `${hM[1]}px` : undefined,
                         }}
                     />,
                 );
@@ -814,19 +822,47 @@ function renderHtmlContent(html: string, baseUrl?: string): React.ReactNode {
         } else if (tag.toLowerCase().startsWith("<a")) {
             const hrefM = tag.match(/href="([^"]*)"/i);
             const inner = tag.replace(/<a[^>]*>|<\/a>/gi, "");
-            // Inner might itself have an img
-            const innerNodes = renderHtmlContent(inner, baseUrl);
-            nodes.push(
-                <a
-                    key={m.index}
-                    href={hrefM?.[1] ?? "#"}
-                    className={styles.mdLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    {innerNodes}
-                </a>,
-            );
+            // Check if the inner content is purely an image (donate button pattern)
+            const imgOnlyM = inner.trim().match(/^<img\s[^>]*\/?>$/i);
+            if (imgOnlyM) {
+                const srcM = inner.match(/src="([^"]*)"/i);
+                const altM = inner.match(/alt="([^"]*)"/i);
+                const wM = inner.match(/width="([^"]*)"/i);
+                if (srcM) {
+                    nodes.push(
+                        <a
+                            key={m.index}
+                            href={hrefM?.[1] ?? "#"}
+                            className={styles.mdDonateLink}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <img
+                                src={resolveImgUrl(srcM[1], baseUrl)}
+                                alt={altM?.[1] ?? ""}
+                                className={styles.mdDonateImg}
+                                style={{
+                                    maxWidth: wM ? `${wM[1]}px` : undefined,
+                                }}
+                            />
+                        </a>,
+                    );
+                }
+            } else {
+                // Regular link possibly containing mixed content
+                const innerNodes = renderHtmlContent(inner, baseUrl);
+                nodes.push(
+                    <a
+                        key={m.index}
+                        href={hrefM?.[1] ?? "#"}
+                        className={styles.mdLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        {innerNodes}
+                    </a>,
+                );
+            }
         }
         last = m.index + m[0].length;
     }
@@ -875,10 +911,10 @@ function MarkdownRenderer({
             continue;
         }
 
-        // ── Raw HTML block (e.g. <table>) ────────────────────────────────────
-        if (/^<(table|div|details|summary)/i.test(line.trim())) {
+        // ── Raw HTML block (e.g. <table>, <p>, <div>, icon rows) ───────────────
+        if (/^<(table|div|details|summary|p|a)\b/i.test(line.trim())) {
             const htmlLines: string[] = [];
-            // Collect until blank line or closing tag
+            // Collect until blank line
             while (i < lines.length && lines[i].trim() !== "") {
                 htmlLines.push(lines[i]);
                 i++;
@@ -1055,18 +1091,44 @@ function MarkdownRenderer({
             );
             continue;
 
-            // ── Standalone image ──────────────────────────────────────────────────
-        } else if (/^!\[[^\]]*\]\([^)]*\)$/.test(line.trim())) {
-            const m = line.trim().match(/^!\[([^\]]*)\]\(([^)]*)\)$/)!;
-            nodes.push(
-                <div key={i} className={styles.mdImgWrap}>
-                    <img
-                        src={resolveImgUrl(m[2], baseUrl)}
-                        alt={m[1]}
-                        className={styles.mdImgBlock}
-                    />
-                </div>,
-            );
+            // ── Standalone image(s) on one line ──────────────────────────────────
+        } else if (/^(?:!\[[^\]]*\]\([^)]*\)\s*)+$/.test(line.trim())) {
+            const imgMatches = [
+                ...line.trim().matchAll(/!\[([^\]]*)\]\(([^)]*)\)/g),
+            ];
+            // Shield badges (img.shields.io, badge.fury.io, etc.) render inline
+            const isBadge = (url: string) =>
+                /shields\.io|badge\.fury|badgen\.net|img\.shields/i.test(url);
+            const hasBadges = imgMatches.some((m) => isBadge(m[2]));
+            const hasReal = imgMatches.some((m) => !isBadge(m[2]));
+            if (hasBadges && !hasReal) {
+                // All badges — render inline in a badge row
+                nodes.push(
+                    <div key={i} className={styles.mdBadgeRow}>
+                        {imgMatches.map((m, idx) => (
+                            <img
+                                key={idx}
+                                src={resolveImgUrl(m[2], baseUrl)}
+                                alt={m[1]}
+                                className={styles.mdBadge}
+                            />
+                        ))}
+                    </div>,
+                );
+            } else {
+                // Real screenshots — each on its own centered block
+                imgMatches.forEach((m, idx) => {
+                    nodes.push(
+                        <div key={`${i}_${idx}`} className={styles.mdImgWrap}>
+                            <img
+                                src={resolveImgUrl(m[2], baseUrl)}
+                                alt={m[1]}
+                                className={styles.mdImgBlock}
+                            />
+                        </div>,
+                    );
+                });
+            }
 
             // ── Paragraph ─────────────────────────────────────────────────────────
         } else if (line.trim() !== "") {
