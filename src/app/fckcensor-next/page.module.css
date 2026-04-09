@@ -163,8 +163,57 @@
 }
 
 @media (max-width: 640px) {
+    .main {
+        padding: 32px 20px 60px;
+    }
+
+    .addonHero {
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .addonIcon {
+        margin-top: 0;
+    }
+
+    .addonInfo {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .addonTitle {
+        font-size: 18px;
+    }
+
+    .addonDesc {
+        font-size: 13px;
+    }
+
+    .addonBtn {
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
+    }
+
     .creditsBlock {
-        flex-direction: column;
-        padding: 20px;
+        flex-direction: row;
+        align-items: flex-start;
+        padding: 16px;
+        gap: 12px;
+    }
+
+    .creditsInfo {
+        flex: 1;
+    }
+
+    .creditsName {
+        font-size: 18px;
+    }
+
+    .creditsDesc {
+        font-size: 13px;
     }
 }
