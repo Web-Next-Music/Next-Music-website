@@ -1,14 +1,23 @@
 .header {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 10px 30px;
+    padding: 10px 0;
     border-bottom: 1px solid var(--border);
     position: sticky;
     top: 0;
     background: var(--header);
     backdrop-filter: blur(12px);
     z-index: 10;
+}
+
+.headerWrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    padding: 0 40px;
 }
 
 .logo {
@@ -58,6 +67,10 @@
 @media (max-width: 900px) {
     .header {
         padding: 10px;
+    }
+
+    .headerWrap {
+        padding: 0;
     }
 
     .logoText {
