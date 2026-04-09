@@ -78,9 +78,7 @@
     font-size: 13px;
     color: var(--text);
     font-family: var(--font-base);
-    transition:
-        border-color 0.15s,
-        box-shadow 0.15s;
+    transition: border-color 0.15s;
     outline: none;
 }
 
@@ -90,7 +88,6 @@
 
 .searchInput:focus {
     border-color: var(--accent);
-    box-shadow: 0 0 0 2px rgba(43, 254, 245, 0.12);
 }
 
 .searchClear {

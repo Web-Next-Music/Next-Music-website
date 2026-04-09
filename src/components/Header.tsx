@@ -10,6 +10,7 @@ export default function Header() {
             </div>
             <nav className={styles.nav}>
                 <Link href="/">Home</Link>
+                <Link href="/store">Store</Link>
                 <Link href="/fckcensor-next">FckCensor Next</Link>
             </nav>
         </header>

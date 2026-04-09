@@ -49,12 +49,6 @@ export default function NotFound() {
                             </svg>
                             To the homepage
                         </Link>
-                        <Link
-                            href="/fckcensor-next"
-                            className={styles.btnSecondary}
-                        >
-                            FckCensor Next
-                        </Link>
                     </div>
                 </div>
             </main>
