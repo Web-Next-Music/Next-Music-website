@@ -5,7 +5,6 @@ import Image from "next/image";
 import styles from "./AppPreview.module.css";
 
 // Payload shape sent by the addon's siteRPCServer.js
-// Fields match exactly what broadcastToClients() sends
 interface WsPayload {
     playerIndex?: number;
     trackId: string | null;
@@ -163,31 +162,20 @@ function CoverPlaceholder() {
 
 /* ── Live first card ── */
 function LiveCard() {
-    const [data, setData] = useState<WsPayload | null>(() => {
-        try {
-            const raw = localStorage.getItem("nm-ws-last-payload");
-            if (!raw) return null;
-            const parsed = JSON.parse(raw) as WsPayload;
-            positionRef.current = parsed.positionSec ?? 0;
-            durationRef.current = parsed.durationSec ?? 0;
-            isPlayingRef.current = false;
-            return parsed;
-        } catch {
-            return null;
-        }
-    });
-    const [connected, setConnected] = useState(false);
-
-    const wsRef = useRef<WebSocket | null>(null);
-    const reconnRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+    // Refs must be declared BEFORE useState that references them in the lazy initializer
     const positionRef = useRef(0);
     const durationRef = useRef(0);
     const isPlayingRef = useRef(false);
     const lastTickTimeRef = useRef<number | null>(null);
-    const [, forceUpdate] = useState(0);
-
     const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const wsRef = useRef<WebSocket | null>(null);
+    const reconnRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Always start with null — localStorage must only be read on the client
+    // inside useEffect to avoid SSR/client hydration mismatch.
+    const [data, setData] = useState<WsPayload | null>(null);
+    const [connected, setConnected] = useState(false);
+    const [, forceUpdate] = useState(0);
 
     function startTick() {
         if (tickRef.current) clearInterval(tickRef.current);
@@ -214,10 +202,6 @@ function LiveCard() {
     }
 
     function applyPayload(raw: WsPayload) {
-        try {
-            localStorage.setItem("nm-ws-last-payload", JSON.stringify(raw));
-        } catch {}
-
         positionRef.current = raw.positionSec ?? 0;
         durationRef.current = raw.durationSec ?? 0;
         isPlayingRef.current = raw.playerState === "playing";
