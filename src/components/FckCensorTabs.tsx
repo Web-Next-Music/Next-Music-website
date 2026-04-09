@@ -50,6 +50,7 @@ export interface NowPlaying {
     title: string;
     artist: string;
     cover?: string;
+    yandexUrl?: string;
 }
 
 interface PlayerContextValue {
@@ -64,10 +65,178 @@ interface PlayerContextValue {
 
 export const PlayerContext = createContext<PlayerContextValue | null>(null);
 
+// ─── Rich Presence WebSocket hook ────────────────────────────────────────────
+
+const WS_PORT = 6972;
+const WS_URL = `ws://127.0.0.1:${WS_PORT}`;
+const RPC_TICK_MS = 5000;
+
+function useRichPresenceWS(
+    nowPlaying: NowPlaying | null,
+    isPlaying: boolean,
+    audioRef: React.RefObject<HTMLAudioElement | null>,
+) {
+    const wsRef = useRef<WebSocket | null>(null);
+    const tickRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    // Refs so callbacks always see latest values without re-creating them
+    const nowPlayingRef = useRef(nowPlaying);
+    const isPlayingRef = useRef(isPlaying);
+    useEffect(() => {
+        nowPlayingRef.current = nowPlaying;
+    }, [nowPlaying]);
+    useEffect(() => {
+        isPlayingRef.current = isPlaying;
+    }, [isPlaying]);
+
+    const send = useCallback((data: object) => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+            wsRef.current.send(JSON.stringify(data));
+        }
+    }, []);
+
+    // Reads fresh audio state at call-time — never stale
+    const buildPayload = useCallback(
+        (state: "playing" | "paused" | "stopped") => {
+            const audio = audioRef.current;
+            const np = nowPlayingRef.current;
+            const positionSec = audio?.currentTime ?? 0;
+            const durationSec =
+                audio?.duration && isFinite(audio.duration)
+                    ? audio.duration
+                    : 0;
+            const trackId = np?.url.match(/\/(\d+)\.mp3$/)?.[1] ?? "";
+            return {
+                playerState: state,
+                title: np?.title ?? "",
+                artists: np?.artist ?? "",
+                img: np?.cover ?? "icon",
+                albumUrl: "",
+                artistUrl: "",
+                trackId,
+                positionSec,
+                durationSec,
+            };
+        },
+        [audioRef],
+    );
+
+    const stopTick = useCallback(() => {
+        if (tickRef.current) {
+            clearInterval(tickRef.current);
+            tickRef.current = null;
+        }
+    }, []);
+
+    const startTick = useCallback(() => {
+        stopTick();
+        tickRef.current = setInterval(
+            () => send(buildPayload("playing")),
+            RPC_TICK_MS,
+        );
+    }, [send, buildPayload, stopTick]);
+
+    // New track → reconnect WS, then wait for durationchange before first send
+    useEffect(() => {
+        const audio = audioRef.current;
+        stopTick();
+
+        if (!nowPlaying) {
+            if (wsRef.current?.readyState === WebSocket.OPEN) {
+                wsRef.current.send(
+                    JSON.stringify({
+                        playerState: "stopped",
+                        title: "",
+                        artists: "",
+                    }),
+                );
+            }
+            wsRef.current?.close();
+            wsRef.current = null;
+            return;
+        }
+
+        // Reconnect
+        if (wsRef.current) {
+            wsRef.current.onclose = null;
+            wsRef.current.close();
+            wsRef.current = null;
+        }
+        const ws = new WebSocket(WS_URL);
+        wsRef.current = ws;
+        ws.onerror = () => {
+            /* desktop app may not be running */
+        };
+        ws.onopen = () => console.log("[RPC-WS] Connected");
+        ws.onclose = () => console.log("[RPC-WS] Disconnected");
+
+        // Send first payload only after duration is available — fixes the
+        // broken-timestamps burst that happened when audio wasn't loaded yet.
+        const onReady = () => {
+            const state = isPlayingRef.current ? "playing" : "paused";
+            send(buildPayload(state));
+            if (state === "playing") startTick();
+        };
+
+        if (audio) {
+            if (audio.duration && isFinite(audio.duration)) {
+                // Duration already known (e.g. cached resource)
+                onReady();
+            } else {
+                audio.addEventListener("durationchange", onReady, {
+                    once: true,
+                });
+            }
+        }
+
+        return () => {
+            audio?.removeEventListener("durationchange", onReady);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [nowPlaying?.url]);
+
+    // Play / pause toggle — only send if duration is already known
+    useEffect(() => {
+        if (!nowPlaying) return;
+        const audio = audioRef.current;
+        if (!audio?.duration || !isFinite(audio.duration)) return;
+
+        send(buildPayload(isPlaying ? "playing" : "paused"));
+        if (isPlaying) {
+            startTick();
+        } else {
+            stopTick();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isPlaying]);
+
+    // Cleanup on provider unmount
+    useEffect(() => {
+        return () => {
+            stopTick();
+            if (wsRef.current?.readyState === WebSocket.OPEN) {
+                wsRef.current.send(
+                    JSON.stringify({
+                        playerState: "stopped",
+                        title: "",
+                        artists: "",
+                    }),
+                );
+            }
+            wsRef.current?.close();
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+}
+
+// ─── Player provider ──────────────────────────────────────────────────────────
+
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
     const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef<HTMLAudioElement>(null);
+
+    useRichPresenceWS(nowPlaying, isPlaying, audioRef);
 
     const play = useCallback((track: NowPlaying) => {
         setNowPlaying(track);
@@ -595,6 +764,10 @@ function OfficialList({ tracks, query }: OfficialListProps) {
                                 title: track.title || "—",
                                 artist: track.artist || "",
                                 cover: track.cover,
+                                yandexUrl:
+                                    yandexHref !== track.url
+                                        ? yandexHref
+                                        : undefined,
                             }}
                         />
                     </a>
@@ -753,6 +926,7 @@ function LegacyList({ tracks, query }: LegacyListProps) {
                                 title: meta?.title ?? `Track #${track.id}`,
                                 artist: meta?.artist ?? "",
                                 cover: meta?.cover,
+                                yandexUrl: track.yandexUrl,
                             }}
                         />
                     </a>
