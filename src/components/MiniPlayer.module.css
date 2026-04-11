@@ -178,8 +178,12 @@
 .volumeWrap {
     display: flex;
     align-items: center;
-    gap: 4px;
     flex-shrink: 0;
+}
+
+.volumeWrap:hover,
+.volumeWrap:focus-within {
+    gap: 5px;
 }
 
 .volumeSliderWrap {
