@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -693,7 +693,9 @@ export default function TrackPage() {
         <>
             <Header />
             <main>
-                <TrackPageContent />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <TrackPageContent />
+                </Suspense>
             </main>
             <Footer />
         </>
