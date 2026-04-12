@@ -1022,7 +1022,7 @@ function DownloadTab({ type, url }: DownloadTabProps) {
     return (
         <div className={styles.downloadPane}>
             <p className={styles.downloadDesc}>
-                {isJson ? "Track list as a JSON file." : "M3U playlist."}
+                {isJson ? "Track list as a JSON file" : "M3U playlist"}
             </p>
             <a href={url} download className={styles.downloadBtn}>
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none">

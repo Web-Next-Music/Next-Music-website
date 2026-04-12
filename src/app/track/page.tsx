@@ -322,7 +322,7 @@ function TrackPageContent() {
                 <h2 className={styles.centeredTitle}>Track not found</h2>
                 <p className={styles.centeredDesc}>
                     Track with ID <code>{id}</code> was not found in any
-                    playlist.
+                    playlist
                 </p>
                 <button
                     className={styles.backBtn}
