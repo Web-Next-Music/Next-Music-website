@@ -1,680 +1,636 @@
 @font-face {
-    font-family: "Montserrat";
-    src: url("/fonts/Montserrat.ttf") format("truetype");
+	font-family: "Montserrat";
+	src: url("/fonts/Montserrat.ttf") format("truetype");
 }
 
 .page {
-    max-width: 1020px;
-    margin: 0 auto;
-    padding: 20px 0;
+	max-width: 1020px;
+	margin: 0 auto;
+	padding: 20px 0;
 }
 
 .centered {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    min-height: 60vh;
-    text-align: center;
-    padding: 40px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	min-height: 60vh;
+	text-align: center;
+	padding: 40px;
 }
 
 .notFoundIcon {
-    opacity: 0.5;
+	opacity: 0.5;
 }
 
 .centeredTitle {
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    font-family: var(--font-heading-large);
-    margin: 0;
+	font-size: 22px;
+	font-weight: 700;
+	color: var(--text);
+	font-family: var(--font-heading-large);
+	margin: 0;
 }
 
 .centeredDesc {
-    font-size: 14px;
-    color: var(--muted);
-    margin: 0;
+	font-size: 14px;
+	color: var(--muted);
+	margin: 0;
 }
 
 .centeredDesc code {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 1px 6px;
-    font-size: 13px;
-    color: var(--accent);
+	background: var(--surface2);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	padding: 1px 6px;
+	font-size: 13px;
+	color: var(--accent);
 }
 
-/* ── Loading dots ────────────────────────────────────────────── */
-
 .loadingDots {
-    display: flex;
-    gap: 6px;
-    align-items: center;
+	display: flex;
+	gap: 6px;
+	align-items: center;
 }
 
 .loadingDots span {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: var(--accent);
-    opacity: 0.4;
-    animation: pulse 1.2s ease-in-out infinite;
+	width: 7px;
+	height: 7px;
+	border-radius: 50%;
+	background: var(--accent);
+	opacity: 0.4;
+	animation: pulse 1.2s ease-in-out infinite;
 }
 
 .loadingDots span:nth-child(2) {
-    animation-delay: 0.2s;
+	animation-delay: 0.2s;
 }
 .loadingDots span:nth-child(3) {
-    animation-delay: 0.4s;
+	animation-delay: 0.4s;
 }
 
 @keyframes pulse {
-    0%,
-    100% {
-        opacity: 0.2;
-        transform: scale(0.85);
-    }
-    50% {
-        opacity: 0.8;
-        transform: scale(1.1);
-    }
+	0%,
+	100% {
+		opacity: 0.2;
+		transform: scale(0.85);
+	}
+	50% {
+		opacity: 0.8;
+		transform: scale(1.1);
+	}
 }
 
-/* ── Back button ─────────────────────────────────────────────── */
-
 .backLink {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--muted);
-    cursor: pointer;
-    /* Прибита к верху карточки */
-    align-self: start;
-    margin-top: 0;
-    transition:
-        color 0.15s,
-        border-color 0.15s,
-        background 0.15s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 32px;
+	height: 32px;
+	flex-shrink: 0;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	color: var(--muted);
+	cursor: pointer;
+	align-self: start;
+	margin-top: 0;
+	transition:
+		color 0.15s,
+		border-color 0.15s,
+		background 0.15s;
 }
 
 .backLink:hover {
-    color: var(--text);
-    border-color: var(--accent);
-    background: var(--surface2);
+	color: var(--text);
+	border-color: var(--accent);
+	background: var(--surface2);
 }
 
 .backBtn {
-    margin-top: 8px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 9px 18px;
-    font-size: 13px;
-    color: var(--text);
-    cursor: pointer;
-    transition: all 0.15s;
+	margin-top: 8px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 9px 18px;
+	font-size: 13px;
+	color: var(--text);
+	cursor: pointer;
+	transition: all 0.15s;
 }
 
 .backBtn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+	border-color: var(--accent);
+	color: var(--accent);
 }
-
-/* ── Outer wrapper: [back] [layout] ─────────────────────────── */
 
 .layoutOuter {
-    display: flex;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 0 10px;
+	display: flex;
+	align-items: flex-start;
+	gap: 12px;
+	padding: 0 10px;
 }
 
-/* Когда лирика скрыта — центрируем группу [back + card] */
 .layoutOuterCentered {
-    justify-content: center;
+	justify-content: center;
 }
 
-/* ── Layout (карточка + лирика) ──────────────────────────────── */
-
-/* Две колонки когда лирика открыта */
 .layout {
-    display: grid;
-    grid-template-columns: 300px 1fr;
-    gap: 16px;
-    align-items: start;
-    flex: 1;
-    min-width: 0;
+	display: grid;
+	grid-template-columns: 300px 1fr;
+	gap: 16px;
+	align-items: start;
+	flex: 1;
+	min-width: 0;
 }
 
-/* Одна колонка по центру когда лирика скрыта — flex:1 убираем */
 .layoutCentered {
-    grid-template-columns: 360px;
-    flex: none;
+	grid-template-columns: 360px;
+	flex: none;
 }
-
-/* ── Hero card ───────────────────────────────────────────────── */
 
 .heroCard {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    position: relative;
-    overflow: hidden;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	padding: 20px;
+	display: flex;
+	flex-direction: column;
+	gap: 14px;
+	position: relative;
+	overflow: hidden;
 }
 
 .heroCard::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-        135deg,
-        rgba(43, 254, 245, 0.04) 0%,
-        transparent 55%
-    );
-    pointer-events: none;
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: linear-gradient(
+		135deg,
+		rgba(43, 254, 245, 0.04) 0%,
+		transparent 55%
+	);
+	pointer-events: none;
 }
 
-/* ── Cover wrap + play overlay ───────────────────────────────── */
-
 .coverWrap {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 10px;
-    overflow: hidden;
-    flex-shrink: 0;
+	position: relative;
+	width: 100%;
+	aspect-ratio: 1;
+	border-radius: 10px;
+	overflow: hidden;
+	flex-shrink: 0;
 }
 
 .coverWrap::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0);
-    transition: background 0.2s ease;
-    pointer-events: none;
+	content: "";
+	position: absolute;
+	inset: 0;
+	background: rgba(0, 0, 0, 0);
+	transition: background 0.2s ease;
+	pointer-events: none;
 }
 
 .coverWrap:hover::after {
-    background: rgba(0, 0, 0, 0.45);
+	background: rgba(0, 0, 0, 0.45);
 }
 
 .heroCover {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    display: block;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	display: block;
 }
 
 .heroCoverPlaceholder {
-    width: 100%;
-    height: 100%;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+	width: 100%;
+	height: 100%;
+	background: var(--surface2);
+	border: 1px solid var(--border);
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
-/* Кнопка Play/Pause поверх обложки — только при наведении */
 .coverPlayBtn {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: #fff;
-    opacity: 0;
-    z-index: 2;
-    transition: opacity 0.2s ease;
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: none;
+	border: none;
+	cursor: pointer;
+	color: #fff;
+	opacity: 0;
+	z-index: 2;
+	transition: opacity 0.2s ease;
 }
 
 .coverWrap:hover .coverPlayBtn {
-    opacity: 1;
+	opacity: 1;
 }
 
-/* Убрали .coverPlayBtnVisible — иконка теперь только по hover */
-
 .coverPlayBtn svg {
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
-    transition: transform 0.15s ease;
+	filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+	transition: transform 0.15s ease;
 }
 
 .coverPlayBtn:hover svg {
-    transform: scale(1.12);
+	transform: scale(1.12);
 }
 
-/* Анимированный индикатор "сейчас играет" — всегда виден когда играет */
 .playingBadge {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-    display: flex;
-    gap: 3px;
-    /* align-items: flex-end чтобы полоски росли снизу вверх */
-    align-items: flex-end;
-    z-index: 3;
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	display: flex;
+	gap: 3px;
+	align-items: flex-end;
+	z-index: 3;
 }
 
 .playingBadge span {
-    width: 3px;
-    background: var(--accent);
-    border-radius: 2px;
-    /* transform-origin: bottom — масштаб от низа, не от центра */
-    transform-origin: bottom;
-    animation: waveBar 1s ease-in-out infinite;
+	width: 3px;
+	background: var(--accent);
+	border-radius: 2px;
+	transform-origin: bottom;
+	animation: waveBar 1s ease-in-out infinite;
 }
 
 .playingBadge span:nth-child(1) {
-    height: 8px;
-    animation-delay: 0s;
+	height: 8px;
+	animation-delay: 0s;
 }
 .playingBadge span:nth-child(2) {
-    height: 14px;
-    animation-delay: 0.15s;
+	height: 14px;
+	animation-delay: 0.15s;
 }
 .playingBadge span:nth-child(3) {
-    height: 6px;
-    animation-delay: 0.3s;
+	height: 6px;
+	animation-delay: 0.3s;
 }
 
 @keyframes waveBar {
-    0%,
-    100% {
-        transform: scaleY(0.35);
-    }
-    50% {
-        transform: scaleY(1);
-    }
+	0%,
+	100% {
+		transform: scaleY(0.35);
+	}
+	50% {
+		transform: scaleY(1);
+	}
 }
 
 .heroMeta {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
+	display: flex;
+	flex-direction: column;
+	gap: 5px;
 }
 
 .heroTitle {
-    font-size: 18px;
-    font-weight: 700;
-    letter-spacing: -0.3px;
-    font-family: var(--font-heading-large);
-    color: var(--text);
-    margin: 4px 0 0;
-    line-height: 1.25;
+	font-size: 18px;
+	font-weight: 700;
+	letter-spacing: -0.3px;
+	font-family: var(--font-heading-large);
+	color: var(--text);
+	margin: 4px 0 0;
+	line-height: 1.25;
 }
 
 .heroArtist {
-    font-size: 13px;
-    color: var(--muted);
-    margin: 0;
+	font-size: 13px;
+	color: var(--muted);
+	margin: 0;
 }
 
 .heroId {
-    font-size: 11px;
-    color: var(--muted);
-    opacity: 0.5;
-    margin: 0;
+	font-size: 11px;
+	color: var(--muted);
+	opacity: 0.5;
+	margin: 0;
 }
 
-/* ── Actions ─────────────────────────────────────────────────── */
-
 .heroActions {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
 }
 
 .outlineBtn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 7px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 9px 14px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--text);
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.15s;
-    width: 100%;
-    box-sizing: border-box;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	background: var(--surface2);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 9px 14px;
+	font-size: 13px;
+	font-weight: 500;
+	color: var(--text);
+	text-decoration: none;
+	cursor: pointer;
+	transition: all 0.15s;
+	width: 100%;
+	box-sizing: border-box;
 }
 
 .outlineBtn:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+	border-color: var(--accent);
+	color: var(--accent);
 }
 
 .outlineBtnActive {
-    background: rgba(43, 254, 245, 0.08);
-    border-color: rgba(43, 254, 245, 0.3);
-    color: var(--accent);
+	background: rgba(43, 254, 245, 0.08);
+	border-color: rgba(43, 254, 245, 0.3);
+	color: var(--accent);
 }
 
 .noLyricsTag {
-    font-size: 12px;
-    color: var(--muted);
-    text-align: center;
-    padding: 2px 0;
-    opacity: 0.6;
+	font-size: 12px;
+	color: var(--muted);
+	text-align: center;
+	padding: 2px 0;
+	opacity: 0.6;
 }
 
-/* ── Mini dots ───────────────────────────────────────────────── */
-
 .miniDots {
-    display: inline-flex;
-    gap: 3px;
-    align-items: center;
+	display: inline-flex;
+	gap: 3px;
+	align-items: center;
 }
 
 .miniDots span {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background: var(--accent);
-    opacity: 0.5;
-    animation: pulse 1.2s ease-in-out infinite;
+	width: 4px;
+	height: 4px;
+	border-radius: 50%;
+	background: var(--accent);
+	opacity: 0.5;
+	animation: pulse 1.2s ease-in-out infinite;
 }
 
 .miniDots span:nth-child(2) {
-    animation-delay: 0.2s;
+	animation-delay: 0.2s;
 }
 .miniDots span:nth-child(3) {
-    animation-delay: 0.4s;
+	animation-delay: 0.4s;
 }
 
-/* ── Lyrics panel ────────────────────────────────────────────── */
-
 .lyricsPanel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    overflow: hidden;
-    /* Фиксированная высота — скроллится только .syncedLyrics внутри */
-    height: calc(100vh - 160px);
-    min-height: 400px;
-    max-height: 820px;
-    display: flex;
-    flex-direction: column;
-    animation: panelIn 0.2s ease;
-    position: sticky;
-    top: 80px;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	overflow: hidden;
+	height: calc(100vh - 160px);
+	min-height: 400px;
+	max-height: 820px;
+	display: flex;
+	flex-direction: column;
+	animation: panelIn 0.2s ease;
+	position: sticky;
+	top: 80px;
 }
 
 @keyframes panelIn {
-    from {
-        opacity: 0;
-        transform: translateY(6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .lyricsMeta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 18px;
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 12px 18px;
+	border-bottom: 1px solid var(--border);
+	flex-shrink: 0;
 }
 
 .lyricsLabel {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: 500;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	font-size: 11px;
+	font-weight: 500;
+	color: var(--muted);
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
 }
 
 .lyricsSource {
-    font-size: 11px;
-    color: var(--muted);
-    text-decoration: none;
-    opacity: 0.6;
-    transition:
-        opacity 0.15s,
-        color 0.15s;
+	font-size: 11px;
+	color: var(--muted);
+	text-decoration: none;
+	opacity: 0.6;
+	transition:
+		opacity 0.15s,
+		color 0.15s;
 }
 
 .lyricsSource:hover {
-    opacity: 1;
-    color: var(--accent);
+	opacity: 1;
+	color: var(--accent);
 }
 
-/* ── Skeleton ────────────────────────────────────────────────── */
-
 .lyricsSkeleton {
-    padding: 20px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    flex: 1;
+	padding: 20px 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	flex: 1;
 }
 
 .skeletonLine {
-    height: 17px;
-    background: var(--surface2);
-    border-radius: 6px;
-    animation: shimmer 1.4s ease-in-out infinite;
+	height: 17px;
+	background: var(--surface2);
+	border-radius: 6px;
+	animation: shimmer 1.4s ease-in-out infinite;
 }
 
 @keyframes shimmer {
-    0%,
-    100% {
-        opacity: 0.35;
-    }
-    50% {
-        opacity: 0.7;
-    }
+	0%,
+	100% {
+		opacity: 0.35;
+	}
+	50% {
+		opacity: 0.7;
+	}
 }
 
-/* ── Synced lyrics контейнер — только он скроллится ─────────── */
-
 .syncedLyrics {
-    flex: 1;
-    overflow-y: auto;
-    padding: 16px 18px 0;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
-    /* overscroll-behavior чтобы скролл лирики не двигал страницу на мобиле */
-    overscroll-behavior: contain;
+	flex: 1;
+	overflow-y: auto;
+	padding: 16px 18px 0;
+	scrollbar-width: thin;
+	scrollbar-color: var(--border) transparent;
+	overscroll-behavior: contain;
 }
 
 .syncedLyrics::-webkit-scrollbar {
-    width: 3px;
+	width: 3px;
 }
 .syncedLyrics::-webkit-scrollbar-thumb {
-    background: var(--border);
-    border-radius: 99px;
+	background: var(--border);
+	border-radius: 99px;
 }
 
-/* Нижний паддинг — чтобы последние строки можно было отцентрировать */
 .lyricsBottomPad {
-    height: 50%;
-    flex-shrink: 0;
+	height: 50%;
+	flex-shrink: 0;
 }
-
-/* ── Lyric lines ─────────────────────────────────────────────── */
 
 .lyricLine {
-    font-size: 17px;
-    font-weight: 500;
-    line-height: 1.5;
-    padding: 6px 10px;
-    border-radius: 8px;
-    cursor: pointer;
-    color: var(--muted);
-    opacity: 0.5;
-    transition:
-        color 0.3s ease,
-        font-size 0.25s ease,
-        font-weight 0.25s ease,
-        opacity 0.3s ease,
-        transform 0.25s ease,
-        background 0.15s ease;
-    font-family: "Montserrat", sans-serif;
-    animation: lineIn 0.35s ease both;
+	font-size: 17px;
+	font-weight: 500;
+	line-height: 1.5;
+	padding: 6px 10px;
+	border-radius: 8px;
+	cursor: pointer;
+	color: var(--muted);
+	opacity: 0.5;
+	transition:
+		color 0.3s ease,
+		font-size 0.25s ease,
+		font-weight 0.25s ease,
+		opacity 0.3s ease,
+		transform 0.25s ease,
+		background 0.15s ease;
+	font-family: "Montserrat", sans-serif;
+	animation: lineIn 0.35s ease both;
 }
 
 @keyframes lineIn {
-    from {
-        opacity: 0;
-        transform: translateY(5px);
-    }
-    to {
-        opacity: 0.5;
-        transform: translateY(0);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(5px);
+	}
+	to {
+		opacity: 0.5;
+		transform: translateY(0);
+	}
 }
 
 .lyricLine:hover {
-    background: var(--surface2);
-    opacity: 0.85;
-    color: var(--text);
+	background: var(--surface2);
+	opacity: 0.85;
+	color: var(--text);
 }
 
 .lyricLinePast {
-    opacity: 0.28;
+	opacity: 0.28;
 }
 
 .lyricLineActive {
-    color: var(--text) !important;
-    font-weight: 700 !important;
-    opacity: 1 !important;
-    transform: translateX(4px);
-    background: rgba(43, 254, 245, 0.05);
+	color: var(--text) !important;
+	font-weight: 700 !important;
+	opacity: 1 !important;
+	transform: translateX(4px);
+	background: rgba(43, 254, 245, 0.05);
 }
 
 .lyricLineActive:hover {
-    background: rgba(43, 254, 245, 0.1);
+	background: rgba(43, 254, 245, 0.1);
 }
 
-/* ── Plain lyrics ────────────────────────────────────────────── */
-
 .plainLyrics {
-    flex: 1;
-    overflow-y: auto;
-    padding: 18px 24px;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+	flex: 1;
+	overflow-y: auto;
+	padding: 18px 24px;
+	scrollbar-width: thin;
+	scrollbar-color: var(--border) transparent;
 }
 
 .plainLine {
-    font-size: 16px;
-    line-height: 1.85;
-    color: var(--text);
-    font-family: var(--font-heading-large);
-    margin: 0;
-    animation: lineIn 0.35s ease both;
+	font-size: 16px;
+	line-height: 1.85;
+	color: var(--text);
+	font-family: var(--font-heading-large);
+	margin: 0;
+	animation: lineIn 0.35s ease both;
 }
-
-/* ── No lyrics body ──────────────────────────────────────────── */
 
 .noLyricsBody {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    padding: 40px;
-    color: var(--muted);
-    font-size: 14px;
-    text-align: center;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	padding: 40px;
+	color: var(--muted);
+	font-size: 14px;
+	text-align: center;
 }
 
-/* ── Responsive ──────────────────────────────────────────────── */
-
 @media (max-width: 720px) {
-    .page {
-        padding: 25px 5px 15px;
-    }
+	.page {
+		padding: 25px 5px 15px;
+	}
 
-    /* На мобиле back кнопка уходит над карточкой */
-    .layoutOuter,
-    .layoutOuterCentered {
-        flex-direction: column;
-        align-items: stretch;
-        justify-content: stretch;
-    }
+	.layoutOuter,
+	.layoutOuterCentered {
+		flex-direction: column;
+		align-items: stretch;
+		justify-content: stretch;
+	}
 
-    .backLink {
-        align-self: flex-start;
-        margin-bottom: 15px;
-    }
+	.backLink {
+		align-self: flex-start;
+		margin-bottom: 15px;
+	}
 
-    .layout,
-    .layoutCentered {
-        grid-template-columns: 1fr;
-    }
+	.layout,
+	.layoutCentered {
+		grid-template-columns: 1fr;
+	}
 
-    .heroCard {
-        position: static;
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 12px;
-    }
+	.heroCard {
+		position: static;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 12px;
+	}
 
-    .coverWrap {
-        width: 90px;
-        flex-shrink: 0;
-    }
+	.coverWrap {
+		width: 90px;
+		flex-shrink: 0;
+	}
 
-    .heroMeta {
-        flex: 1;
-        min-width: 0;
-    }
-    .heroTitle {
-        font-size: 16px;
-    }
+	.heroMeta {
+		flex: 1;
+		min-width: 0;
+	}
+	.heroTitle {
+		font-size: 16px;
+	}
 
-    .heroActions {
-        flex-direction: row;
-        flex-wrap: wrap;
-        width: 100%;
-    }
+	.heroActions {
+		flex-direction: row;
+		flex-wrap: wrap;
+		width: 100%;
+	}
 
-    .outlineBtn {
-        width: auto;
-        flex: 1;
-        min-width: 100px;
-    }
+	.outlineBtn {
+		width: auto;
+		flex: 1;
+		min-width: 100px;
+	}
 
-    .lyricsPanel {
-        position: static;
-        height: 55vh;
-        min-height: 300px;
-    }
+	.lyricsPanel {
+		position: static;
+		height: 55vh;
+		min-height: 300px;
+	}
 
-    .lyricLineActive {
-        font-size: 18px !important;
-    }
+	.lyricLineActive {
+		font-size: 18px !important;
+	}
 }

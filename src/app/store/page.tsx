@@ -3,11 +3,11 @@ import StoreFeed from "@/components/StoreFeed";
 import Footer from "@/components/Footer";
 
 export default function Home() {
-    return (
-        <>
-            <Header />
-            <StoreFeed />
-            <Footer />
-        </>
-    );
+	return (
+		<>
+			<Header />
+			<StoreFeed />
+			<Footer />
+		</>
+	);
 }

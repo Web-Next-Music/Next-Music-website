@@ -4,61 +4,59 @@
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
 }
 
-/* ── Dark theme (default) ── */
 :root {
-    --font-heading-large: "Syne", "Science Gothic", sans-serif;
-    --font-base: "Space Mono", monospace;
-    --mini-player-h: 0px;
+	--font-heading-large: "Syne", "Science Gothic", sans-serif;
+	--font-base: "Space Mono", monospace;
+	--mini-player-h: 0px;
 }
 
 [data-theme="dark"] {
-    --bg: #0d0d0f;
-    --header: #0d0d0fd9;
-    --surface: #16161a;
-    --surface2: #1e1e24;
-    --border: #2a2a32;
-    --text: #f0f0f4;
-    --muted: #888894;
-    --accent: #2bfef5;
-    --accent2: #00c9c0;
-    --shadow: rgba(0, 0, 0, 0.4);
+	--bg: #0d0d0f;
+	--header: #0d0d0fd9;
+	--surface: #16161a;
+	--surface2: #1e1e24;
+	--border: #2a2a32;
+	--text: #f0f0f4;
+	--muted: #888894;
+	--accent: #2bfef5;
+	--accent2: #00c9c0;
+	--shadow: rgba(0, 0, 0, 0.4);
 }
 
-/* ── Light theme ── */
 [data-theme="light"] {
-    --bg: #f4f4f8;
-    --header: #f2f2f026;
-    --surface: #ffffff;
-    --surface2: #eaeaf0;
-    --border: #d4d4de;
-    --text: #111116;
-    --muted: #666672;
-    --accent: #00aea8;
-    --accent2: #007d79;
-    --shadow: rgba(0, 0, 0, 0.1);
+	--bg: #f4f4f8;
+	--header: #f2f2f026;
+	--surface: #ffffff;
+	--surface2: #eaeaf0;
+	--border: #d4d4de;
+	--text: #111116;
+	--muted: #666672;
+	--accent: #00aea8;
+	--accent2: #007d79;
+	--shadow: rgba(0, 0, 0, 0.1);
 }
 
 body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: var(--font-base);
-    min-height: 100vh;
-    transition:
-        background 0.25s,
-        color 0.25s;
+	background: var(--bg);
+	color: var(--text);
+	font-family: var(--font-base);
+	min-height: 100vh;
+	transition:
+		background 0.25s,
+		color 0.25s;
 }
 
 main {
-    padding-top: var(--mini-player-h);
-    transition: padding-top 0.2s ease;
+	padding-top: var(--mini-player-h);
+	transition: padding-top 0.2s ease;
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+	color: inherit;
+	text-decoration: none;
 }

@@ -1,266 +1,253 @@
-/* ─── Mini player bar ────────────────────────────────────────── */
-
 .bar {
-    display: flex;
-    align-items: center;
-    height: 48px;
-    background: var(--header);
-    border-bottom: 1px solid var(--border);
-    backdrop-filter: blur(12px);
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
-    z-index: 9;
-    animation: slideDown 0.2s ease;
+	display: flex;
+	align-items: center;
+	height: 48px;
+	background: var(--header);
+	border-bottom: 1px solid var(--border);
+	backdrop-filter: blur(12px);
+	position: fixed;
+	top: 60px;
+	left: 0;
+	right: 0;
+	z-index: 9;
+	animation: slideDown 0.2s ease;
 }
 
 @keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-6px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 #mini-player-slot:empty {
-    display: none;
+	display: none;
 }
 
-/* Inner max-width wrapper */
 .inner {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    width: 100%;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 40px;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	width: 100%;
+	max-width: 1200px;
+	margin: 0 auto;
+	padding: 0 40px;
 }
-
-/* ─── Left: cover + info ─────────────────────────────────────── */
 
 .left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-shrink: 0;
 }
 
 .cover {
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-    object-fit: cover;
-    border: 1px solid var(--border);
-    flex-shrink: 0;
+	width: 30px;
+	height: 30px;
+	border-radius: 5px;
+	object-fit: cover;
+	border: 1px solid var(--border);
+	flex-shrink: 0;
 }
 
 .coverPlaceholder {
-    width: 30px;
-    height: 30px;
-    border-radius: 5px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    flex-shrink: 0;
+	width: 30px;
+	height: 30px;
+	border-radius: 5px;
+	background: var(--surface2);
+	border: 1px solid var(--border);
+	flex-shrink: 0;
 }
 
 .info {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    width: 100%;
-    max-width: 160px;
-    margin-right: 10px;
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	width: 100%;
+	max-width: 160px;
+	margin-right: 10px;
 }
 
 .title {
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--text);
+	font-size: 12px;
+	font-weight: 600;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	color: var(--text);
 }
 
 .artist {
-    font-size: 11px;
-    color: var(--muted);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+	font-size: 11px;
+	color: var(--muted);
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
-
-/* ─── Timeline ───────────────────────────────────────────────── */
 
 .timeSingle {
-    font-size: 11px;
-    color: var(--muted);
-    font-family: var(--font-base);
-    white-space: nowrap;
-    flex-shrink: 0;
-    min-width: 30px;
-    text-align: center;
+	font-size: 11px;
+	color: var(--muted);
+	font-family: var(--font-base);
+	white-space: nowrap;
+	flex-shrink: 0;
+	min-width: 30px;
+	text-align: center;
 }
 
-/* Progress bar — grows to fill all remaining space */
 .progressWrap {
-    flex: 1;
-    height: 20px; /* tall click area */
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    position: relative;
+	flex: 1;
+	height: 20px;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+	position: relative;
 }
 
 .progressWrap::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: var(--surface2);
-    border-radius: 99px;
-    transition: height 0.15s;
+	content: "";
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 3px;
+	background: var(--surface2);
+	border-radius: 99px;
+	transition: height 0.15s;
 }
 
 .progressWrap:hover::before {
-    height: 5px;
+	height: 5px;
 }
 
 .progressFill {
-    position: absolute;
-    left: 0;
-    height: 3px;
-    background: var(--accent);
-    border-radius: 99px;
-    transition:
-        width 0.1s linear,
-        height 0.15s;
-    pointer-events: none;
+	position: absolute;
+	left: 0;
+	height: 3px;
+	background: var(--accent);
+	border-radius: 99px;
+	transition:
+		width 0.1s linear,
+		height 0.15s;
+	pointer-events: none;
 }
 
 .progressWrap:hover .progressFill {
-    height: 5px;
+	height: 5px;
 }
 
-/* ─── Buttons ────────────────────────────────────────────────── */
-
 .btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: 6px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    cursor: pointer;
-    flex-shrink: 0;
-    transition:
-        background 0.15s,
-        border-color 0.15s,
-        color 0.15s;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 28px;
+	height: 28px;
+	border-radius: 6px;
+	border: 1px solid var(--border);
+	background: var(--surface);
+	color: var(--text);
+	cursor: pointer;
+	flex-shrink: 0;
+	transition:
+		background 0.15s,
+		border-color 0.15s,
+		color 0.15s;
 }
 
 .btn:hover {
-    background: var(--surface2);
-    border-color: var(--accent);
-    color: var(--accent);
+	background: var(--surface2);
+	border-color: var(--accent);
+	color: var(--accent);
 }
 
 .btnActive {
-    background: rgba(43, 254, 245, 0.08) !important;
-    border-color: rgba(43, 254, 245, 0.35) !important;
-    color: var(--accent) !important;
+	background: rgba(43, 254, 245, 0.08) !important;
+	border-color: rgba(43, 254, 245, 0.35) !important;
+	color: var(--accent) !important;
 }
 
-/* ─── Volume ─────────────────────────────────────────────────── */
-
 .volumeWrap {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
 }
 
 .volumeWrap:hover,
 .volumeWrap:focus-within {
-    gap: 5px;
+	gap: 5px;
 }
 
 .volumeSliderWrap {
-    width: 0;
-    overflow: hidden;
-    opacity: 0;
-    margin-top: -10px;
-    transition:
-        width 0.2s ease,
-        opacity 0.2s ease;
+	width: 0;
+	overflow: hidden;
+	opacity: 0;
+	margin-top: -10px;
+	transition:
+		width 0.2s ease,
+		opacity 0.2s ease;
 }
 
 .volumeWrap:hover .volumeSliderWrap,
 .volumeWrap:focus-within .volumeSliderWrap {
-    width: 72px;
-    opacity: 1;
+	width: 72px;
+	opacity: 1;
 }
 
 .volumeSlider {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 68px;
-    height: 3px;
-    border-radius: 99px;
-    outline: none;
-    cursor: pointer;
-    background: linear-gradient(
-        to right,
-        var(--accent) 0%,
-        var(--accent) var(--vol, 100%),
-        var(--surface2) var(--vol, 100%),
-        var(--surface2) 100%
-    );
-    transition: height 0.15s;
+	-webkit-appearance: none;
+	appearance: none;
+	width: 68px;
+	height: 3px;
+	border-radius: 99px;
+	outline: none;
+	cursor: pointer;
+	background: linear-gradient(
+		to right,
+		var(--accent) 0%,
+		var(--accent) var(--vol, 100%),
+		var(--surface2) var(--vol, 100%),
+		var(--surface2) 100%
+	);
+	transition: height 0.15s;
 }
 
 .volumeSlider:hover {
-    height: 5px;
+	height: 5px;
 }
 
 .volumeSlider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 0 0 2px var(--header);
-    transition: transform 0.1s;
+	-webkit-appearance: none;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: var(--accent);
+	cursor: pointer;
+	border: none;
+	box-shadow: 0 0 0 2px var(--header);
+	transition: transform 0.1s;
 }
 
 .volumeSlider::-webkit-slider-thumb:hover {
-    transform: scale(1.25);
+	transform: scale(1.25);
 }
 
 .volumeSlider::-moz-range-thumb {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background: var(--accent);
-    cursor: pointer;
-    border: none;
+	width: 12px;
+	height: 12px;
+	border-radius: 50%;
+	background: var(--accent);
+	cursor: pointer;
+	border: none;
 }
 
-/* ─── Responsive ─────────────────────────────────────────────── */
 @media (max-width: 900px) {
-    .inner {
-        padding: 0 10px;
-    }
-    .info {
-        display: none;
-    }
+	.inner {
+		padding: 0 10px;
+	}
+	.info {
+		display: none;
+	}
 }

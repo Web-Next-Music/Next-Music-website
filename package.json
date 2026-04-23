@@ -1,28 +1,31 @@
 {
-    "name": "next-music-website",
-    "private": true,
-    "scripts": {
-        "dev": "next dev",
-        "build": "next build",
-        "start": "npx serve@latest out",
-        "fetch-meta": "npx tsx scripts/fetch-track-meta.ts",
-        "prebuild": "npm run fetch-meta"
-    },
-    "dependencies": {
-        "next": "^16.2.3",
-        "react": "^19.2.5",
-        "react-dom": "^19.2.5"
-    },
-    "devDependencies": {
-        "@tailwindcss/postcss": "^4.2.2",
-        "@types/node": "^25",
-        "@types/react": "^19",
-        "@types/react-dom": "^19",
-        "autoprefixer": "^10.4.27",
-        "eslint": "^10.2.0",
-        "eslint-config-next": "^16.2.3",
-        "postcss": "^8.5.9",
-        "tailwindcss": "^4.2.2",
-        "typescript": "^6"
-    }
+	"name": "next-music-website",
+	"private": true,
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "npx serve@latest out",
+		"fetch-meta": "npx tsx scripts/fetch-track-meta.ts",
+		"prebuild": "npm run fetch-meta",
+		"format": "prettier --write .",
+		"format:check": "prettier --check ."
+	},
+	"dependencies": {
+		"next": "^16.2.3",
+		"react": "^19.2.5",
+		"react-dom": "^19.2.5"
+	},
+	"devDependencies": {
+		"@tailwindcss/postcss": "^4.2.2",
+		"@types/node": "^25",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"autoprefixer": "^10.4.27",
+		"eslint": "^10.2.0",
+		"eslint-config-next": "^16.2.3",
+		"postcss": "^8.5.9",
+		"prettier": "^3.8.3",
+		"tailwindcss": "^4.2.2",
+		"typescript": "^6"
+	}
 }

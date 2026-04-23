@@ -6,698 +6,622 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { usePlayer } from "@/components/FckCensorTabs";
 import {
-    ensureTracksLoaded,
-    subscribeStore,
-    getStoreSnapshot,
-    findTrackById,
-    type CachedTrack,
+	ensureTracksLoaded,
+	subscribeStore,
+	getStoreSnapshot,
+	findTrackById,
+	type CachedTrack,
 } from "@/lib/trackStore";
 import styles from "./page.module.css";
 
-// ─── LRC parser ───────────────────────────────────────────────────────────────
-
 interface LrcLine {
-    time: number;
-    text: string;
+	time: number;
+	text: string;
 }
 
 function parseLrc(raw: string): LrcLine[] {
-    const lines: LrcLine[] = [];
-    const re = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
-    for (const line of raw.split("\n")) {
-        const m = line.match(re);
-        if (!m) continue;
-        const min = parseInt(m[1], 10);
-        const sec = parseInt(m[2], 10);
-        const ms = parseInt(m[3].padEnd(3, "0"), 10);
-        const time = min * 60 + sec + ms / 1000;
-        const text = m[4].trim();
-        if (text) lines.push({ time, text });
-    }
-    return lines;
+	const lines: LrcLine[] = [];
+	const re = /\[(\d{2}):(\d{2})\.(\d{2,3})\](.*)/;
+	for (const line of raw.split("\n")) {
+		const m = line.match(re);
+		if (!m) continue;
+		const min = parseInt(m[1], 10);
+		const sec = parseInt(m[2], 10);
+		const ms = parseInt(m[3].padEnd(3, "0"), 10);
+		const time = min * 60 + sec + ms / 1000;
+		const text = m[4].trim();
+		if (text) lines.push({ time, text });
+	}
+	return lines;
 }
 
-// ─── Lyrics fetcher ───────────────────────────────────────────────────────────
-
 interface LrcResult {
-    synced: LrcLine[] | null;
-    plain: string | null;
-    found: boolean;
+	synced: LrcLine[] | null;
+	plain: string | null;
+	found: boolean;
 }
 
 async function fetchLyrics(title: string, artist: string): Promise<LrcResult> {
-    const empty: LrcResult = { synced: null, plain: null, found: false };
+	const empty: LrcResult = { synced: null, plain: null, found: false };
 
-    const parse = (data: any): LrcResult | null => {
-        if (!data || data.statusCode === 404) return null;
-        const synced = data.syncedLyrics ? parseLrc(data.syncedLyrics) : null;
-        const plain = data.plainLyrics ?? null;
-        if (!synced && !plain) return null;
-        return { synced, plain, found: true };
-    };
+	const parse = (data: any): LrcResult | null => {
+		if (!data || data.statusCode === 404) return null;
+		const synced = data.syncedLyrics ? parseLrc(data.syncedLyrics) : null;
+		const plain = data.plainLyrics ?? null;
+		if (!synced && !plain) return null;
+		return { synced, plain, found: true };
+	};
 
-    try {
-        const q = new URLSearchParams({
-            track_name: title,
-            artist_name: artist,
-        });
-        const fast = await fetch(`https://lrclib.net/api/get?${q}`);
-        if (fast.ok) {
-            const result = parse(await fast.json());
-            if (result) return result;
-        }
+	try {
+		const q = new URLSearchParams({
+			track_name: title,
+			artist_name: artist,
+		});
+		const fast = await fetch(`https://lrclib.net/api/get?${q}`);
+		if (fast.ok) {
+			const result = parse(await fast.json());
+			if (result) return result;
+		}
 
-        const search = await fetch(`https://lrclib.net/api/search?${q}`);
-        if (!search.ok) return empty;
-        const list = await search.json();
-        if (!list?.length) return empty;
-        const best = list.find((d: any) => d.syncedLyrics) ?? list[0];
-        const result = parse(best);
-        return result ?? empty;
-    } catch {
-        return empty;
-    }
+		const search = await fetch(`https://lrclib.net/api/search?${q}`);
+		if (!search.ok) return empty;
+		const list = await search.json();
+		if (!list?.length) return empty;
+		const best = list.find((d: any) => d.syncedLyrics) ?? list[0];
+		const result = parse(best);
+		return result ?? empty;
+	} catch {
+		return empty;
+	}
 }
 
-// ─── Page content ─────────────────────────────────────────────────────────────
-
 function TrackPageContent() {
-    const searchParams = useSearchParams();
-    const router = useRouter();
-    const id = searchParams.get("id") ?? "";
+	const searchParams = useSearchParams();
+	const router = useRouter();
+	const id = searchParams.get("id") ?? "";
 
-    const [storeReady, setStoreReady] = useState(
-        () => getStoreSnapshot().loaded,
-    );
-    const [track, setTrack] = useState<CachedTrack | null>(null);
-    const [notFound, setNotFound] = useState(false);
+	const [storeReady, setStoreReady] = useState(() => getStoreSnapshot().loaded);
+	const [track, setTrack] = useState<CachedTrack | null>(null);
+	const [notFound, setNotFound] = useState(false);
 
-    const [lyrics, setLyrics] = useState<LrcResult | null>(null);
-    const [lyricsLoading, setLyricsLoading] = useState(false);
-    const [showLyrics, setShowLyrics] = useState(true);
+	const [lyrics, setLyrics] = useState<LrcResult | null>(null);
+	const [lyricsLoading, setLyricsLoading] = useState(false);
+	const [showLyrics, setShowLyrics] = useState(true);
 
-    const player = usePlayer();
-    const [activeLine, setActiveLine] = useState(-1);
+	const player = usePlayer();
+	const [activeLine, setActiveLine] = useState(-1);
 
-    const lyricsContainerRef = useRef<HTMLDivElement>(null);
-    const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
-    const userScrolling = useRef(false);
-    const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+	const lyricsContainerRef = useRef<HTMLDivElement>(null);
+	const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
+	const userScrolling = useRef(false);
+	const scrollTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    // ── Слушаем toggleLyrics от мини-плеера ───────────────────────────────────
-    useEffect(() => {
-        const handler = () => setShowLyrics((v) => !v);
-        window.addEventListener("toggleLyrics", handler);
-        return () => window.removeEventListener("toggleLyrics", handler);
-    }, []);
+	useEffect(() => {
+		const handler = () => setShowLyrics((v) => !v);
+		window.addEventListener("toggleLyrics", handler);
+		return () => window.removeEventListener("toggleLyrics", handler);
+	}, []);
 
-    // ── 1. Ensure store loaded ─────────────────────────────────────────────────
-    useEffect(() => {
-        if (getStoreSnapshot().loaded) {
-            setStoreReady(true);
-            return;
-        }
-        const unsub = subscribeStore(() => {
-            if (getStoreSnapshot().loaded) {
-                setStoreReady(true);
-                unsub();
-            }
-        });
-        ensureTracksLoaded();
-        return unsub;
-    }, []);
+	useEffect(() => {
+		if (getStoreSnapshot().loaded) {
+			setStoreReady(true);
+			return;
+		}
+		const unsub = subscribeStore(() => {
+			if (getStoreSnapshot().loaded) {
+				setStoreReady(true);
+				unsub();
+			}
+		});
+		ensureTracksLoaded();
+		return unsub;
+	}, []);
 
-    // ── 2. Find track ──────────────────────────────────────────────────────────
-    useEffect(() => {
-        if (!storeReady) return;
-        if (!id) {
-            setNotFound(true);
-            return;
-        }
-        const found = findTrackById(id);
-        found ? setTrack(found) : setNotFound(true);
-    }, [storeReady, id]);
+	useEffect(() => {
+		if (!storeReady) return;
+		if (!id) {
+			setNotFound(true);
+			return;
+		}
+		const found = findTrackById(id);
+		found ? setTrack(found) : setNotFound(true);
+	}, [storeReady, id]);
 
-    // ── 3. Fetch lyrics ────────────────────────────────────────────────────────
-    useEffect(() => {
-        if (!track?.title) return;
-        setLyrics(null);
-        setLyricsLoading(true);
-        setShowLyrics(true);
-        setActiveLine(-1);
-        if (lyricsContainerRef.current) {
-            lyricsContainerRef.current.scrollTop = 0;
-        }
-        fetchLyrics(track.title, track.artist).then((res) => {
-            setLyrics(res);
-            setLyricsLoading(false);
-            if (!res.found) setShowLyrics(false);
-        });
-    }, [track?.title, track?.artist]);
+	useEffect(() => {
+		if (!track?.title) return;
+		setLyrics(null);
+		setLyricsLoading(true);
+		setShowLyrics(true);
+		setActiveLine(-1);
+		if (lyricsContainerRef.current) {
+			lyricsContainerRef.current.scrollTop = 0;
+		}
+		fetchLyrics(track.title, track.artist).then((res) => {
+			setLyrics(res);
+			setLyricsLoading(false);
+			if (!res.found) setShowLyrics(false);
+		});
+	}, [track?.title, track?.artist]);
 
-    // ── 4. rAF поллинг — синхронизация лирики только если этот трек играет ────
-    const isThisLoaded = player?.nowPlaying?.id === id;
+	const isThisLoaded = player?.nowPlaying?.id === id;
 
-    useEffect(() => {
-        if (!lyrics?.synced) return;
-        // Не синхронизируем, если в плеере другой трек
-        if (!isThisLoaded) {
-            setActiveLine(-1);
-            return;
-        }
+	useEffect(() => {
+		if (!lyrics?.synced) return;
+		if (!isThisLoaded) {
+			setActiveLine(-1);
+			return;
+		}
 
-        const lines = lyrics.synced;
-        let rafId: number;
-        let lastIdx = -1;
+		const lines = lyrics.synced;
+		let rafId: number;
+		let lastIdx = -1;
 
-        const tick = () => {
-            const audio = player?.audioRef.current;
-            const t = audio?.currentTime ?? 0;
+		const tick = () => {
+			const audio = player?.audioRef.current;
+			const t = audio?.currentTime ?? 0;
 
-            let idx = -1;
-            for (let i = 0; i < lines.length; i++) {
-                if (lines[i].time <= t) idx = i;
-            }
+			let idx = -1;
+			for (let i = 0; i < lines.length; i++) {
+				if (lines[i].time <= t) idx = i;
+			}
 
-            if (idx !== lastIdx) {
-                lastIdx = idx;
-                setActiveLine(idx);
-            }
+			if (idx !== lastIdx) {
+				lastIdx = idx;
+				setActiveLine(idx);
+			}
 
-            rafId = requestAnimationFrame(tick);
-        };
+			rafId = requestAnimationFrame(tick);
+		};
 
-        rafId = requestAnimationFrame(tick);
-        return () => cancelAnimationFrame(rafId);
-    }, [lyrics?.synced, isThisLoaded, player?.audioRef]);
+		rafId = requestAnimationFrame(tick);
+		return () => cancelAnimationFrame(rafId);
+	}, [lyrics?.synced, isThisLoaded, player?.audioRef]);
 
-    // ── Сбрасываем активную строку когда трек в плеере меняется ──────────────
-    useEffect(() => {
-        if (!isThisLoaded) {
-            setActiveLine(-1);
-        }
-    }, [isThisLoaded]);
+	useEffect(() => {
+		if (!isThisLoaded) {
+			setActiveLine(-1);
+		}
+	}, [isThisLoaded]);
 
-    // ── Скролл контейнера к активной строке ──────────────────────────────────
-    useEffect(() => {
-        if (activeLine < 0 || userScrolling.current) return;
-        const container = lyricsContainerRef.current;
-        const el = lineRefs.current[activeLine];
-        if (!container || !el) return;
+	useEffect(() => {
+		if (activeLine < 0 || userScrolling.current) return;
+		const container = lyricsContainerRef.current;
+		const el = lineRefs.current[activeLine];
+		if (!container || !el) return;
 
-        const containerRect = container.getBoundingClientRect();
-        const elRect = el.getBoundingClientRect();
-        const elOffsetInContainer =
-            elRect.top - containerRect.top + container.scrollTop;
+		const containerRect = container.getBoundingClientRect();
+		const elRect = el.getBoundingClientRect();
+		const elOffsetInContainer =
+			elRect.top - containerRect.top + container.scrollTop;
 
-        if (activeLine === 0) {
-            container.scrollTo({ top: 0, behavior: "smooth" });
-        } else {
-            const targetScrollTop =
-                elOffsetInContainer -
-                container.clientHeight / 2 +
-                el.clientHeight / 2;
-            container.scrollTo({ top: targetScrollTop, behavior: "smooth" });
-        }
-    }, [activeLine]);
+		if (activeLine === 0) {
+			container.scrollTo({ top: 0, behavior: "smooth" });
+		} else {
+			const targetScrollTop =
+				elOffsetInContainer - container.clientHeight / 2 + el.clientHeight / 2;
+			container.scrollTo({ top: targetScrollTop, behavior: "smooth" });
+		}
+	}, [activeLine]);
 
-    const handleLyricsScroll = useCallback(() => {
-        userScrolling.current = true;
-        if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
-        scrollTimeout.current = setTimeout(() => {
-            userScrolling.current = false;
-        }, 3000);
-    }, []);
+	const handleLyricsScroll = useCallback(() => {
+		userScrolling.current = true;
+		if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
+		scrollTimeout.current = setTimeout(() => {
+			userScrolling.current = false;
+		}, 3000);
+	}, []);
 
-    const handlePlay = useCallback(() => {
-        if (!track || !player) return;
-        player.play({
-            id: track.id,
-            url: track.url,
-            title: track.title,
-            artist: track.artist,
-            cover: track.cover,
-            yandexUrl: track.yandexUrl,
-        });
-    }, [track, player]);
+	const handlePlay = useCallback(() => {
+		if (!track || !player) return;
+		player.play({
+			id: track.id,
+			url: track.url,
+			title: track.title,
+			artist: track.artist,
+			cover: track.cover,
+			yandexUrl: track.yandexUrl,
+		});
+	}, [track, player]);
 
-    // ── Синхронизируем состояние лирики с мини-плеером ───────────────────────
-    useEffect(() => {
-        window.dispatchEvent(
-            new CustomEvent("lyricsState", { detail: { open: showLyrics } }),
-        );
-    }, [showLyrics]);
+	useEffect(() => {
+		window.dispatchEvent(
+			new CustomEvent("lyricsState", { detail: { open: showLyrics } }),
+		);
+	}, [showLyrics]);
 
-    const isThisPlaying = isThisLoaded && player?.isPlaying;
+	const isThisPlaying = isThisLoaded && player?.isPlaying;
 
-    // ── Render states ──────────────────────────────────────────────────────────
+	if (!id) {
+		return (
+			<div className={styles.centered}>
+				<div className={styles.notFoundIcon}>
+					<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="var(--muted)"
+							strokeWidth="1.5"
+						/>
+						<path
+							d="M12 8v4M12 16h.01"
+							stroke="var(--muted)"
+							strokeWidth="1.5"
+							strokeLinecap="round"
+						/>
+					</svg>
+				</div>
+				<h2 className={styles.centeredTitle}>No track ID specified</h2>
+				<p className={styles.centeredDesc}>
+					Open this page as <code>/track?id=12345</code>
+				</p>
+				<button className={styles.backBtn} onClick={() => router.back()}>
+					← Back
+				</button>
+			</div>
+		);
+	}
 
-    if (!id) {
-        return (
-            <div className={styles.centered}>
-                <div className={styles.notFoundIcon}>
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="var(--muted)"
-                            strokeWidth="1.5"
-                        />
-                        <path
-                            d="M12 8v4M12 16h.01"
-                            stroke="var(--muted)"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                        />
-                    </svg>
-                </div>
-                <h2 className={styles.centeredTitle}>No track ID specified</h2>
-                <p className={styles.centeredDesc}>
-                    Open this page as <code>/track?id=12345</code>
-                </p>
-                <button
-                    className={styles.backBtn}
-                    onClick={() => router.back()}
-                >
-                    ← Back
-                </button>
-            </div>
-        );
-    }
+	if (!storeReady) {
+		return (
+			<div className={styles.centered}>
+				<div className={styles.loadingDots}>
+					<span />
+					<span />
+					<span />
+				</div>
+				<p className={styles.centeredDesc}>Loading track list…</p>
+			</div>
+		);
+	}
 
-    if (!storeReady) {
-        return (
-            <div className={styles.centered}>
-                <div className={styles.loadingDots}>
-                    <span />
-                    <span />
-                    <span />
-                </div>
-                <p className={styles.centeredDesc}>Loading track list…</p>
-            </div>
-        );
-    }
+	if (notFound) {
+		return (
+			<div className={styles.centered}>
+				<div className={styles.notFoundIcon}>
+					<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+						<circle
+							cx="12"
+							cy="12"
+							r="10"
+							stroke="var(--muted)"
+							strokeWidth="1.5"
+						/>
+						<path
+							d="M12 8v4M12 16h.01"
+							stroke="var(--muted)"
+							strokeWidth="1.5"
+							strokeLinecap="round"
+						/>
+					</svg>
+				</div>
+				<h2 className={styles.centeredTitle}>Track not found</h2>
+				<p className={styles.centeredDesc}>
+					Track with ID <code>{id}</code> was not found in any playlist
+				</p>
+				<button className={styles.backBtn} onClick={() => router.back()}>
+					← Back
+				</button>
+			</div>
+		);
+	}
 
-    if (notFound) {
-        return (
-            <div className={styles.centered}>
-                <div className={styles.notFoundIcon}>
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-                        <circle
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="var(--muted)"
-                            strokeWidth="1.5"
-                        />
-                        <path
-                            d="M12 8v4M12 16h.01"
-                            stroke="var(--muted)"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                        />
-                    </svg>
-                </div>
-                <h2 className={styles.centeredTitle}>Track not found</h2>
-                <p className={styles.centeredDesc}>
-                    Track with ID <code>{id}</code> was not found in any
-                    playlist
-                </p>
-                <button
-                    className={styles.backBtn}
-                    onClick={() => router.back()}
-                >
-                    ← Back
-                </button>
-            </div>
-        );
-    }
+	if (!track) {
+		return (
+			<div className={styles.centered}>
+				<div className={styles.loadingDots}>
+					<span />
+					<span />
+					<span />
+				</div>
+			</div>
+		);
+	}
 
-    if (!track) {
-        return (
-            <div className={styles.centered}>
-                <div className={styles.loadingDots}>
-                    <span />
-                    <span />
-                    <span />
-                </div>
-            </div>
-        );
-    }
+	const hasLyrics = lyrics?.found;
+	const isSynced = !!lyrics?.synced;
 
-    const hasLyrics = lyrics?.found;
-    const isSynced = !!lyrics?.synced;
+	return (
+		<div className={styles.page}>
+			<div
+				className={`${styles.layoutOuter} ${!showLyrics ? styles.layoutOuterCentered : ""}`}
+			>
+				<button className={styles.backLink} onClick={() => router.back()}>
+					<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+						<path
+							d="M19 12H5M12 5l-7 7 7 7"
+							stroke="currentColor"
+							strokeWidth="1.8"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						/>
+					</svg>
+				</button>
+				<div
+					className={`${styles.layout} ${!showLyrics ? styles.layoutCentered : ""}`}
+				>
+					<div className={styles.heroCard}>
+						<div className={styles.coverWrap}>
+							{track.cover ? (
+								<img
+									src={track.cover}
+									alt={track.title}
+									className={styles.heroCover}
+								/>
+							) : (
+								<div className={styles.heroCoverPlaceholder}>
+									<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+										<path
+											d="M9 18V5l12-2v13"
+											stroke="var(--muted)"
+											strokeWidth="1.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										/>
+										<circle
+											cx="6"
+											cy="18"
+											r="3"
+											stroke="var(--muted)"
+											strokeWidth="1.5"
+										/>
+										<circle
+											cx="18"
+											cy="16"
+											r="3"
+											stroke="var(--muted)"
+											strokeWidth="1.5"
+										/>
+									</svg>
+								</div>
+							)}
 
-    return (
-        <div className={styles.page}>
-            <div
-                className={`${styles.layoutOuter} ${!showLyrics ? styles.layoutOuterCentered : ""}`}
-            >
-                <button
-                    className={styles.backLink}
-                    onClick={() => router.back()}
-                >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                        <path
-                            d="M19 12H5M12 5l-7 7 7 7"
-                            stroke="currentColor"
-                            strokeWidth="1.8"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                        />
-                    </svg>
-                </button>
-                <div
-                    className={`${styles.layout} ${!showLyrics ? styles.layoutCentered : ""}`}
-                >
-                    {/* ── Hero card ── */}
-                    <div className={styles.heroCard}>
-                        <div className={styles.coverWrap}>
-                            {track.cover ? (
-                                <img
-                                    src={track.cover}
-                                    alt={track.title}
-                                    className={styles.heroCover}
-                                />
-                            ) : (
-                                <div className={styles.heroCoverPlaceholder}>
-                                    <svg
-                                        width="48"
-                                        height="48"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                    >
-                                        <path
-                                            d="M9 18V5l12-2v13"
-                                            stroke="var(--muted)"
-                                            strokeWidth="1.5"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                        <circle
-                                            cx="6"
-                                            cy="18"
-                                            r="3"
-                                            stroke="var(--muted)"
-                                            strokeWidth="1.5"
-                                        />
-                                        <circle
-                                            cx="18"
-                                            cy="16"
-                                            r="3"
-                                            stroke="var(--muted)"
-                                            strokeWidth="1.5"
-                                        />
-                                    </svg>
-                                </div>
-                            )}
+							<button
+								className={styles.coverPlayBtn}
+								onClick={
+									isThisPlaying
+										? player?.pause
+										: isThisLoaded
+											? player?.resume
+											: handlePlay
+								}
+								aria-label={isThisPlaying ? "Pause" : "Play"}
+							>
+								{isThisPlaying ? (
+									<svg
+										width="28"
+										height="28"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+									>
+										<rect x="6" y="4" width="4" height="16" rx="1.5" />
+										<rect x="14" y="4" width="4" height="16" rx="1.5" />
+									</svg>
+								) : (
+									<svg
+										width="28"
+										height="28"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+									>
+										<path d="M6 3.5l14 8.5-14 8.5V3.5z" />
+									</svg>
+								)}
+							</button>
 
-                            <button
-                                className={styles.coverPlayBtn}
-                                onClick={
-                                    isThisPlaying
-                                        ? player?.pause
-                                        : isThisLoaded
-                                          ? player?.resume
-                                          : handlePlay
-                                }
-                                aria-label={isThisPlaying ? "Pause" : "Play"}
-                            >
-                                {isThisPlaying ? (
-                                    <svg
-                                        width="28"
-                                        height="28"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                    >
-                                        <rect
-                                            x="6"
-                                            y="4"
-                                            width="4"
-                                            height="16"
-                                            rx="1.5"
-                                        />
-                                        <rect
-                                            x="14"
-                                            y="4"
-                                            width="4"
-                                            height="16"
-                                            rx="1.5"
-                                        />
-                                    </svg>
-                                ) : (
-                                    <svg
-                                        width="28"
-                                        height="28"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                    >
-                                        <path d="M6 3.5l14 8.5-14 8.5V3.5z" />
-                                    </svg>
-                                )}
-                            </button>
+							{isThisPlaying && (
+								<div className={styles.playingBadge}>
+									<span />
+									<span />
+									<span />
+								</div>
+							)}
+						</div>
 
-                            {isThisPlaying && (
-                                <div className={styles.playingBadge}>
-                                    <span />
-                                    <span />
-                                    <span />
-                                </div>
-                            )}
-                        </div>
+						<div className={styles.heroMeta}>
+							<h1 className={styles.heroTitle}>{track.title}</h1>
+							<p className={styles.heroArtist}>
+								{track.artist || "Unknown artist"}
+							</p>
+							<p className={styles.heroId}>ID: {track.id}</p>
+						</div>
 
-                        <div className={styles.heroMeta}>
-                            <h1 className={styles.heroTitle}>{track.title}</h1>
-                            <p className={styles.heroArtist}>
-                                {track.artist || "Unknown artist"}
-                            </p>
-                            <p className={styles.heroId}>ID: {track.id}</p>
-                        </div>
+						<div className={styles.heroActions}>
+							{track.yandexUrl && (
+								<a
+									href={track.yandexUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									className={styles.outlineBtn}
+								>
+									<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+										<path
+											d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"
+											stroke="currentColor"
+											strokeWidth="1.8"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										/>
+										<polyline
+											points="15 3 21 3 21 9"
+											stroke="currentColor"
+											strokeWidth="1.8"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										/>
+										<line
+											x1="10"
+											y1="14"
+											x2="21"
+											y2="3"
+											stroke="currentColor"
+											strokeWidth="1.8"
+											strokeLinecap="round"
+										/>
+									</svg>
+									Yandex Music
+								</a>
+							)}
 
-                        <div className={styles.heroActions}>
-                            {track.yandexUrl && (
-                                <a
-                                    href={track.yandexUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className={styles.outlineBtn}
-                                >
-                                    <svg
-                                        width="14"
-                                        height="14"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                    >
-                                        <path
-                                            d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"
-                                            stroke="currentColor"
-                                            strokeWidth="1.8"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                        <polyline
-                                            points="15 3 21 3 21 9"
-                                            stroke="currentColor"
-                                            strokeWidth="1.8"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                        <line
-                                            x1="10"
-                                            y1="14"
-                                            x2="21"
-                                            y2="3"
-                                            stroke="currentColor"
-                                            strokeWidth="1.8"
-                                            strokeLinecap="round"
-                                        />
-                                    </svg>
-                                    Yandex Music
-                                </a>
-                            )}
+							{lyricsLoading}
 
-                            {lyricsLoading}
+							{lyrics !== null && !hasLyrics && !lyricsLoading}
+						</div>
+					</div>
 
-                            {lyrics !== null && !hasLyrics && !lyricsLoading}
-                        </div>
-                    </div>
+					{showLyrics && (
+						<div className={styles.lyricsPanel}>
+							<div className={styles.lyricsMeta}>
+								<span className={styles.lyricsLabel}>
+									{lyricsLoading ? (
+										<>
+											<span className={styles.miniDots}>
+												<span />
+												<span />
+												<span />
+											</span>
+											Searching…
+										</>
+									) : isSynced ? (
+										<>
+											<svg
+												width="11"
+												height="11"
+												viewBox="0 0 24 24"
+												fill="none"
+											>
+												<circle
+													cx="12"
+													cy="12"
+													r="10"
+													stroke="var(--accent)"
+													strokeWidth="2"
+												/>
+												<polyline
+													points="12 6 12 12 16 14"
+													stroke="var(--accent)"
+													strokeWidth="2"
+													strokeLinecap="round"
+												/>
+											</svg>
+											Synchronized
+										</>
+									) : hasLyrics ? (
+										"Plain lyrics"
+									) : (
+										"No lyrics found"
+									)}
+								</span>
+								{hasLyrics && !lyricsLoading && (
+									<a
+										href="https://lrclib.net/"
+										target="_blank"
+										rel="noopener noreferrer"
+										className={styles.lyricsSource}
+									>
+										via lrclib.net
+									</a>
+								)}
+							</div>
 
-                    {/* ── Lyrics panel ── */}
-                    {showLyrics && (
-                        <div className={styles.lyricsPanel}>
-                            <div className={styles.lyricsMeta}>
-                                <span className={styles.lyricsLabel}>
-                                    {lyricsLoading ? (
-                                        <>
-                                            <span className={styles.miniDots}>
-                                                <span />
-                                                <span />
-                                                <span />
-                                            </span>
-                                            Searching…
-                                        </>
-                                    ) : isSynced ? (
-                                        <>
-                                            <svg
-                                                width="11"
-                                                height="11"
-                                                viewBox="0 0 24 24"
-                                                fill="none"
-                                            >
-                                                <circle
-                                                    cx="12"
-                                                    cy="12"
-                                                    r="10"
-                                                    stroke="var(--accent)"
-                                                    strokeWidth="2"
-                                                />
-                                                <polyline
-                                                    points="12 6 12 12 16 14"
-                                                    stroke="var(--accent)"
-                                                    strokeWidth="2"
-                                                    strokeLinecap="round"
-                                                />
-                                            </svg>
-                                            Synchronized
-                                        </>
-                                    ) : hasLyrics ? (
-                                        "Plain lyrics"
-                                    ) : (
-                                        "No lyrics found"
-                                    )}
-                                </span>
-                                {hasLyrics && !lyricsLoading && (
-                                    <a
-                                        href="https://lrclib.net/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className={styles.lyricsSource}
-                                    >
-                                        via lrclib.net
-                                    </a>
-                                )}
-                            </div>
+							{lyricsLoading && (
+								<div className={styles.lyricsSkeleton}>
+									{[80, 55, 90, 45, 70, 60, 85, 50, 75, 40].map((w, i) => (
+										<div
+											key={i}
+											className={styles.skeletonLine}
+											style={{
+												width: `${w}%`,
+												animationDelay: `${i * 0.05}s`,
+											}}
+										/>
+									))}
+								</div>
+							)}
 
-                            {lyricsLoading && (
-                                <div className={styles.lyricsSkeleton}>
-                                    {[
-                                        80, 55, 90, 45, 70, 60, 85, 50, 75, 40,
-                                    ].map((w, i) => (
-                                        <div
-                                            key={i}
-                                            className={styles.skeletonLine}
-                                            style={{
-                                                width: `${w}%`,
-                                                animationDelay: `${i * 0.05}s`,
-                                            }}
-                                        />
-                                    ))}
-                                </div>
-                            )}
+							{!lyricsLoading && isSynced && (
+								<div
+									className={styles.syncedLyrics}
+									ref={lyricsContainerRef}
+									onScroll={handleLyricsScroll}
+								>
+									{lyrics!.synced!.map((line, i) => (
+										<div
+											key={i}
+											ref={(el) => {
+												lineRefs.current[i] = el;
+											}}
+											className={[
+												styles.lyricLine,
+												i === activeLine ? styles.lyricLineActive : "",
+												i < activeLine ? styles.lyricLinePast : "",
+											].join(" ")}
+											onClick={() => {
+												const audio = player?.audioRef.current;
+												if (!isThisLoaded) {
+													handlePlay();
+													const trySeek = () => {
+														const a = player?.audioRef.current;
+														if (a && a.readyState >= 1) {
+															a.currentTime = line.time;
+														} else {
+															setTimeout(trySeek, 50);
+														}
+													};
+													setTimeout(trySeek, 50);
+													return;
+												}
+												if (!audio) return;
+												audio.currentTime = line.time;
+												if (!player?.isPlaying) player?.resume();
+											}}
+										>
+											{line.text}
+										</div>
+									))}
+									<div className={styles.lyricsBottomPad} />
+								</div>
+							)}
 
-                            {!lyricsLoading && isSynced && (
-                                <div
-                                    className={styles.syncedLyrics}
-                                    ref={lyricsContainerRef}
-                                    onScroll={handleLyricsScroll}
-                                >
-                                    {lyrics!.synced!.map((line, i) => (
-                                        <div
-                                            key={i}
-                                            ref={(el) => {
-                                                lineRefs.current[i] = el;
-                                            }}
-                                            className={[
-                                                styles.lyricLine,
-                                                i === activeLine
-                                                    ? styles.lyricLineActive
-                                                    : "",
-                                                i < activeLine
-                                                    ? styles.lyricLinePast
-                                                    : "",
-                                            ].join(" ")}
-                                            onClick={() => {
-                                                const audio =
-                                                    player?.audioRef.current;
-                                                if (!isThisLoaded) {
-                                                    handlePlay();
-                                                    const trySeek = () => {
-                                                        const a =
-                                                            player?.audioRef
-                                                                .current;
-                                                        if (
-                                                            a &&
-                                                            a.readyState >= 1
-                                                        ) {
-                                                            a.currentTime =
-                                                                line.time;
-                                                        } else {
-                                                            setTimeout(
-                                                                trySeek,
-                                                                50,
-                                                            );
-                                                        }
-                                                    };
-                                                    setTimeout(trySeek, 50);
-                                                    return;
-                                                }
-                                                if (!audio) return;
-                                                audio.currentTime = line.time;
-                                                if (!player?.isPlaying)
-                                                    player?.resume();
-                                            }}
-                                        >
-                                            {line.text}
-                                        </div>
-                                    ))}
-                                    <div className={styles.lyricsBottomPad} />
-                                </div>
-                            )}
+							{!lyricsLoading && !isSynced && hasLyrics && (
+								<div className={styles.plainLyrics}>
+									{lyrics!.plain!.split("\n").map((line, i) => (
+										<p
+											key={i}
+											className={styles.plainLine}
+											style={{
+												animationDelay: `${Math.min(i * 0.02, 0.5)}s`,
+											}}
+										>
+											{line || <br />}
+										</p>
+									))}
+								</div>
+							)}
 
-                            {!lyricsLoading && !isSynced && hasLyrics && (
-                                <div className={styles.plainLyrics}>
-                                    {lyrics!
-                                        .plain!.split("\n")
-                                        .map((line, i) => (
-                                            <p
-                                                key={i}
-                                                className={styles.plainLine}
-                                                style={{
-                                                    animationDelay: `${Math.min(i * 0.02, 0.5)}s`,
-                                                }}
-                                            >
-                                                {line || <br />}
-                                            </p>
-                                        ))}
-                                </div>
-                            )}
-
-                            {!lyricsLoading &&
-                                lyrics !== null &&
-                                !hasLyrics && (
-                                    <div className={styles.noLyricsBody}>
-                                        <p>No lyrics found for this track.</p>
-                                    </div>
-                                )}
-                        </div>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
+							{!lyricsLoading && lyrics !== null && !hasLyrics && (
+								<div className={styles.noLyricsBody}>
+									<p>No lyrics found for this track.</p>
+								</div>
+							)}
+						</div>
+					)}
+				</div>
+			</div>
+		</div>
+	);
 }
 
 export default function TrackPage() {
-    return (
-        <>
-            <Header />
-            <main>
-                <Suspense fallback={<div>Loading...</div>}>
-                    <TrackPageContent />
-                </Suspense>
-            </main>
-            <Footer />
-        </>
-    );
+	return (
+		<>
+			<Header />
+			<main>
+				<Suspense fallback={<div>Loading...</div>}>
+					<TrackPageContent />
+				</Suspense>
+			</main>
+			<Footer />
+		</>
+	);
 }
