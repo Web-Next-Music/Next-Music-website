@@ -10,7 +10,7 @@ import {
 	useCallback,
 	useSyncExternalStore,
 } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useRouter } from "next/navigation";
 import {
 	M3U_URL,
 	LEGACY_URL,
@@ -279,38 +279,13 @@ export function usePlayer() {
 export function MiniPlayerInner() {
 	const player = usePlayer();
 	const router = useRouter();
-	const pathname = usePathname();
 	if (!player) return null;
 	const { nowPlaying, isPlaying, pause, resume, close, audioRef } = player;
 	const [progress, setProgress] = useState(0);
 	const [duration, setDuration] = useState(0);
 	const [volume, setVolume] = useState(1);
 	const [muted, setMuted] = useState(false);
-	const [lyricsOpen, setLyricsOpen] = useState(true);
 	const progressRef = useRef<HTMLDivElement>(null);
-
-	const isOnTrackPage = pathname === "/track";
-
-	useEffect(() => {
-		const handler = (e: Event) => {
-			setLyricsOpen((e as CustomEvent<{ open: boolean }>).detail.open);
-		};
-		window.addEventListener("lyricsState", handler);
-		return () => window.removeEventListener("lyricsState", handler);
-	}, []);
-
-	useEffect(() => {
-		if (!isOnTrackPage) setLyricsOpen(true);
-	}, [isOnTrackPage]);
-
-	const handleLyricsClick = () => {
-		if (!nowPlaying?.id) return;
-		if (isOnTrackPage) {
-			window.dispatchEvent(new CustomEvent("toggleLyrics"));
-		} else {
-			router.push(`/track?id=${nowPlaying.id}`);
-		}
-	};
 
 	const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const val = parseFloat(e.target.value);
@@ -384,7 +359,12 @@ export function MiniPlayerInner() {
 	return (
 		<div className={playerStyles.bar}>
 			<div className={playerStyles.inner}>
-				<div className={playerStyles.left}>
+				<div
+					className={playerStyles.left}
+					onClick={
+						trackId ? () => router.push(`/track?id=${trackId}`) : undefined
+					}
+				>
 					{nowPlaying.cover ? (
 						<img src={nowPlaying.cover} alt="" className={playerStyles.cover} />
 					) : (
@@ -408,24 +388,6 @@ export function MiniPlayerInner() {
 					/>
 				</div>
 				<span className={playerStyles.timeSingle}>{fmt(duration)}</span>
-
-				{trackId && (
-					<button
-						className={`${playerStyles.btn} ${isOnTrackPage && lyricsOpen ? playerStyles.btnActive : ""}`}
-						onClick={handleLyricsClick}
-						aria-label={isOnTrackPage ? "Toggle lyrics" : "View lyrics"}
-						title={isOnTrackPage ? "Toggle lyrics" : "Lyrics / Track page"}
-					>
-						<svg width="15" height="15" viewBox="0 0 24 24" fill="none">
-							<path
-								d="M4 6h16M4 10h10M4 14h12M4 18h8"
-								stroke="currentColor"
-								strokeWidth="1.8"
-								strokeLinecap="round"
-							/>
-						</svg>
-					</button>
-				)}
 
 				<button
 					className={playerStyles.btn}

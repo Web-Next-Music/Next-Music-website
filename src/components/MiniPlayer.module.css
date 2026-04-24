@@ -43,6 +43,13 @@
 	align-items: center;
 	gap: 10px;
 	flex-shrink: 0;
+	cursor: pointer;
+	opacity: 1;
+	transition: opacity 0.15s;
+}
+
+.left:hover {
+	opacity: 0.7;
 }
 
 .cover {
@@ -53,6 +60,7 @@
 	border: 1px solid var(--border);
 	flex-shrink: 0;
 }
+
 
 .coverPlaceholder {
 	width: 30px;
