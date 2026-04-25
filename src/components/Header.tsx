@@ -14,6 +14,7 @@ export default function Header() {
 						<Link href="/">Home</Link>
 						<Link href="/store">Store</Link>
 						<Link href="/fckcensor-next">FckCensor Next</Link>
+							<Link href="/experiments">Experiments</Link>
 					</nav>
 				</div>
 			</header>

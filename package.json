@@ -6,7 +6,8 @@
 		"build": "next build",
 		"start": "npx serve@latest out",
 		"fetch-meta": "npx tsx scripts/fetch-track-meta.ts",
-		"prebuild": "npm run fetch-meta",
+		"fetch-experiments": "npx tsx scripts/fetch-experiments.ts",
+		"prebuild": "npm run fetch-meta && npm run fetch-experiments",
 		"format": "prettier --write .",
 		"format:check": "prettier --check ."
 	},
