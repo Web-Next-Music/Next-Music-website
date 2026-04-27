@@ -19,6 +19,11 @@ const links = {
 			href: "https://github.com/Web-Next-Music/Next-Music-Client/wiki",
 			external: true,
 		},
+		{
+			label: "Experiments",
+			href: "/experiments",
+			external: false,
+		},
 	],
 	links: [
 		{
