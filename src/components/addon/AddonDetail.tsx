@@ -1174,7 +1174,7 @@ export default function AddonDetail() {
 						className={`${styles.btn} ${styles.btnPrimary}`}
 						onClick={handleBack}
 					>
-						← Back to Store
+						Back to Store
 					</button>
 				</div>
 			</div>
@@ -1194,7 +1194,7 @@ export default function AddonDetail() {
 						className={`${styles.btn} ${styles.btnPrimary}`}
 						onClick={handleBack}
 					>
-						← Back to Store
+						Back to Store
 					</button>
 				</div>
 			</div>

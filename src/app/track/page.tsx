@@ -79,6 +79,10 @@ function TrackPageContent() {
 	const searchParams = useSearchParams();
 	const router = useRouter();
 	const id = searchParams.get("id") ?? "";
+	const paramTitle = searchParams.get("title");
+	const paramArtist = searchParams.get("artist");
+	const paramCover = searchParams.get("cover");
+	const directUrl = searchParams.get("url");
 
 	const [storeReady, setStoreReady] = useState(() => getStoreSnapshot().loaded);
 	const [track, setTrack] = useState<CachedTrack | null>(null);
@@ -90,6 +94,10 @@ function TrackPageContent() {
 
 	const player = usePlayer();
 	const [activeLine, setActiveLine] = useState(-1);
+
+	const [ugcState, setUgcState] = useState<
+		"idle" | "loading" | "playing" | "error"
+	>("idle");
 
 	const lyricsContainerRef = useRef<HTMLDivElement>(null);
 	const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -126,6 +134,71 @@ function TrackPageContent() {
 		const found = findTrackById(id);
 		found ? setTrack(found) : setNotFound(true);
 	}, [storeReady, id]);
+
+	const playedRef = useRef(false);
+
+	useEffect(() => {
+		if (!directUrl || !player || playedRef.current) return;
+		playedRef.current = true;
+
+		try {
+			const host = new URL(directUrl).hostname;
+			if (!host.endsWith("yandex.net")) {
+				setUgcState("error");
+				return;
+			}
+		} catch {
+			setUgcState("error");
+			return;
+		}
+
+		setUgcState("loading");
+
+		(async () => {
+			let title = "Unknown";
+			let artist = "";
+			let cover = "";
+
+			try {
+				const { parseBlob } = await import("music-metadata-browser");
+				const res = await fetch(directUrl!, {
+					headers: { Range: "bytes=0-131072" },
+				});
+				if (!res.ok) throw new Error("fetch failed");
+				const blob = await res.blob();
+				const meta = await parseBlob(blob);
+
+				title = paramTitle ?? meta.common.title ?? "Unknown";
+				artist = paramArtist ?? meta.common.artist ?? "";
+
+				const pic = meta.common.picture?.[0];
+				if (pic && !paramCover) {
+					const imgBlob = new Blob([new Uint8Array(pic.data)], {
+						type: pic.format,
+					});
+					cover = URL.createObjectURL(imgBlob);
+				} else if (paramCover) {
+					cover = paramCover;
+				}
+			} catch (e) {
+				console.warn("Failed to read ID3 tags:", e);
+				setUgcState("error");
+				return;
+			}
+
+			player.play({
+				id: undefined,
+				url: directUrl,
+				directUrl,
+				title,
+				artist,
+				cover,
+				yandexUrl: "",
+			});
+
+			setUgcState("playing");
+		})();
+	}, [player]);
 
 	useEffect(() => {
 		if (!track?.title) return;
@@ -231,6 +304,49 @@ function TrackPageContent() {
 
 	const isThisPlaying = isThisLoaded && player?.isPlaying;
 
+	if (directUrl && !id) {
+		return (
+			<div className={styles.centered}>
+				{ugcState === "error" ? (
+					<>
+						<div className={styles.notFoundIcon}>
+							<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+								<circle
+									cx="12"
+									cy="12"
+									r="10"
+									stroke="var(--muted)"
+									strokeWidth="1.5"
+								/>
+								<path
+									d="M12 8v4M12 16h.01"
+									stroke="var(--muted)"
+									strokeWidth="1.5"
+									strokeLinecap="round"
+								/>
+							</svg>
+						</div>
+						<h2 className={styles.centeredTitle}>Failed to load UGC track</h2>
+						<p className={styles.centeredDesc}>
+							The URL is invalid or the file is unavailable
+						</p>
+						<button className={styles.backBtn} onClick={() => router.back()}>
+							Back
+						</button>
+					</>
+				) : (
+					<>
+						<p className={styles.centeredDesc}>
+							{ugcState === "playing"
+								? "Playing UGC track…"
+								: "Loading UGC track…"}
+						</p>
+					</>
+				)}
+			</div>
+		);
+	}
+
 	if (!id) {
 		return (
 			<div className={styles.centered}>
@@ -253,10 +369,10 @@ function TrackPageContent() {
 				</div>
 				<h2 className={styles.centeredTitle}>No track ID specified</h2>
 				<p className={styles.centeredDesc}>
-					Open this page as <code>/track?id=12345</code>
+					Open this page as <code>/track?id=12345678</code>
 				</p>
 				<button className={styles.backBtn} onClick={() => router.back()}>
-					← Back
+					Back
 				</button>
 			</div>
 		);
@@ -300,7 +416,7 @@ function TrackPageContent() {
 					Track with ID <code>{id}</code> was not found in any playlist
 				</p>
 				<button className={styles.backBtn} onClick={() => router.back()}>
-					← Back
+					Back
 				</button>
 			</div>
 		);
