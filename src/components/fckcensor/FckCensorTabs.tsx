@@ -386,9 +386,13 @@ export function MiniPlayerInner() {
 					className={playerStyles.left}
 					onClick={() => {
 						if (nowPlaying.directUrl) {
-							router.push(
-								`/track?url=${encodeURIComponent(nowPlaying.directUrl)}`,
-							);
+							const params = new URLSearchParams({
+								url: nowPlaying.directUrl,
+							});
+							if (nowPlaying.cover) params.set("cover", nowPlaying.cover);
+							if (nowPlaying.artist) params.set("artist", nowPlaying.artist);
+							if (nowPlaying.title) params.set("title", nowPlaying.title);
+							router.push(`/track?${params.toString()}`);
 						} else if (trackId) {
 							router.push(`/track?id=${trackId}`);
 						}

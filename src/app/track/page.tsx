@@ -266,12 +266,13 @@ function TrackPageContent() {
 		player.play({
 			id: displayTrack.id,
 			url: displayTrack.url,
+			directUrl: directUrl ? displayTrack.url : undefined,
 			title: displayTrack.title,
 			artist: displayTrack.artist,
 			cover: displayTrack.cover,
 			yandexUrl: displayTrack.yandexUrl,
 		});
-	}, [displayTrack, player]);
+	}, [displayTrack, player, directUrl]);
 
 	useEffect(() => {
 		window.dispatchEvent(
