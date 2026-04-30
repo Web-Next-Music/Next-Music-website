@@ -1583,7 +1583,7 @@ export default function NextMusicStore() {
 							window.history.replaceState(null, "", "/store");
 						}}
 					>
-						← Back to Store
+						Back to Store
 					</button>
 				</div>
 			) : selectedExt ? (

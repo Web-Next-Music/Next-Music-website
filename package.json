@@ -12,6 +12,7 @@
 		"format:check": "prettier --check ."
 	},
 	"dependencies": {
+		"music-metadata-browser": "^2.5.11",
 		"next": "^16.2.3",
 		"react": "^19.2.5",
 		"react-dom": "^19.2.5"

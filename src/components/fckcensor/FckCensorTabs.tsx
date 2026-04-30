@@ -251,7 +251,8 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 	useRichPresenceWS(nowPlaying, isPlaying, audioRef);
 
 	const play = useCallback((track: NowPlaying) => {
-		const id = track.id ?? track.url.match(/\/(\d+)\.mp3$/)?.[1] ?? undefined;
+		const id =
+			track.id && !track.directUrl ? track.id : (track.url ?? undefined);
 		setNowPlaying({ ...track, id });
 		setIsPlaying(true);
 	}, []);
@@ -413,15 +414,22 @@ export function MiniPlayerInner() {
 
 	const pct = duration ? (progress / duration) * 100 : 0;
 	const trackId = nowPlaying.id;
+	const isDirectUrl = !!nowPlaying.directUrl;
 
 	return (
 		<div className={playerStyles.bar}>
 			<div className={playerStyles.inner}>
 				<div
 					className={playerStyles.left}
-					onClick={
-						trackId ? () => router.push(`/track?id=${trackId}`) : undefined
-					}
+					onClick={() => {
+						if (nowPlaying.directUrl) {
+							router.push(
+								`/track?url=${encodeURIComponent(nowPlaying.directUrl)}`,
+							);
+						} else if (trackId) {
+							router.push(`/track?id=${trackId}`);
+						}
+					}}
 				>
 					{nowPlaying.cover ? (
 						<img src={nowPlaying.cover} alt="" className={playerStyles.cover} />
