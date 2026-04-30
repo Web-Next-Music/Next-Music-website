@@ -86,6 +86,22 @@ function TrackPageContent() {
 
 	const [storeReady, setStoreReady] = useState(() => getStoreSnapshot().loaded);
 	const [track, setTrack] = useState<CachedTrack | null>(null);
+
+	// Create virtual track for direct URL mode
+	const urlTrack =
+		directUrl && !id
+			? {
+					id: "",
+					url: directUrl,
+					title: paramTitle ?? "Unknown",
+					artist: paramArtist ?? "",
+					cover: paramCover ?? "",
+					yandexUrl: "",
+				}
+			: null;
+
+	// Use store track or virtual URL track
+	const displayTrack = track ?? urlTrack;
 	const [notFound, setNotFound] = useState(false);
 
 	const [lyrics, setLyrics] = useState<LrcResult | null>(null);
@@ -127,13 +143,17 @@ function TrackPageContent() {
 
 	useEffect(() => {
 		if (!storeReady) return;
-		if (!id) {
+		// Only check for notFound when using id (not for url mode)
+		if (!id && !directUrl) {
 			setNotFound(true);
 			return;
 		}
-		const found = findTrackById(id);
-		found ? setTrack(found) : setNotFound(true);
-	}, [storeReady, id]);
+		if (id) {
+			const found = findTrackById(id);
+			found ? setTrack(found) : setNotFound(true);
+		}
+		// For url mode, displayTrack will be used from the virtual track
+	}, [storeReady, id, directUrl]);
 
 	const playedRef = useRef(false);
 
@@ -153,20 +173,10 @@ function TrackPageContent() {
 		}
 
 		setUgcState("playing");
-
-		player.play({
-			id: undefined,
-			url: directUrl,
-			directUrl,
-			title: paramTitle ?? "Unknown",
-			artist: paramArtist ?? "",
-			cover: paramCover ?? "",
-			yandexUrl: "",
-		});
 	}, [player, directUrl, paramTitle, paramArtist, paramCover]);
 
 	useEffect(() => {
-		if (!track?.title) return;
+		if (!displayTrack?.title) return;
 		setLyrics(null);
 		setLyricsLoading(true);
 		setShowLyrics(true);
@@ -174,14 +184,16 @@ function TrackPageContent() {
 		if (lyricsContainerRef.current) {
 			lyricsContainerRef.current.scrollTop = 0;
 		}
-		fetchLyrics(track.title, track.artist).then((res) => {
+		fetchLyrics(displayTrack?.title, displayTrack?.artist).then((res) => {
 			setLyrics(res);
 			setLyricsLoading(false);
 			if (!res.found) setShowLyrics(false);
 		});
-	}, [track?.title, track?.artist]);
+	}, [displayTrack?.title, displayTrack?.artist]);
 
-	const isThisLoaded = player?.nowPlaying?.id === id;
+	const isThisLoaded = id
+		? player?.nowPlaying?.id === id
+		: player?.nowPlaying?.url === directUrl;
 
 	useEffect(() => {
 		if (!lyrics?.synced) return;
@@ -250,16 +262,16 @@ function TrackPageContent() {
 	}, []);
 
 	const handlePlay = useCallback(() => {
-		if (!track || !player) return;
+		if (!displayTrack || !player) return;
 		player.play({
-			id: track.id,
-			url: track.url,
-			title: track.title,
-			artist: track.artist,
-			cover: track.cover,
-			yandexUrl: track.yandexUrl,
+			id: displayTrack.id,
+			url: displayTrack.url,
+			title: displayTrack.title,
+			artist: displayTrack.artist,
+			cover: displayTrack.cover,
+			yandexUrl: displayTrack.yandexUrl,
 		});
-	}, [track, player]);
+	}, [displayTrack, player]);
 
 	useEffect(() => {
 		window.dispatchEvent(
@@ -269,79 +281,7 @@ function TrackPageContent() {
 
 	const isThisPlaying = isThisLoaded && player?.isPlaying;
 
-	if (directUrl && !id) {
-		return (
-			<div className={styles.centered}>
-				{ugcState === "error" ? (
-					<>
-						<div className={styles.notFoundIcon}>
-							<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-								<circle
-									cx="12"
-									cy="12"
-									r="10"
-									stroke="var(--muted)"
-									strokeWidth="1.5"
-								/>
-								<path
-									d="M12 8v4M12 16h.01"
-									stroke="var(--muted)"
-									strokeWidth="1.5"
-									strokeLinecap="round"
-								/>
-							</svg>
-						</div>
-						<h2 className={styles.centeredTitle}>Failed to load UGC track</h2>
-						<p className={styles.centeredDesc}>
-							The URL is invalid or the file is unavailable
-						</p>
-						<button className={styles.backBtn} onClick={() => router.back()}>
-							Back
-						</button>
-					</>
-				) : (
-					<>
-						<p className={styles.centeredDesc}>
-							{ugcState === "playing"
-								? "Playing UGC track…"
-								: "Loading UGC track…"}
-						</p>
-					</>
-				)}
-			</div>
-		);
-	}
-
-	if (!id) {
-		return (
-			<div className={styles.centered}>
-				<div className={styles.notFoundIcon}>
-					<svg width="48" height="48" viewBox="0 0 24 24" fill="none">
-						<circle
-							cx="12"
-							cy="12"
-							r="10"
-							stroke="var(--muted)"
-							strokeWidth="1.5"
-						/>
-						<path
-							d="M12 8v4M12 16h.01"
-							stroke="var(--muted)"
-							strokeWidth="1.5"
-							strokeLinecap="round"
-						/>
-					</svg>
-				</div>
-				<h2 className={styles.centeredTitle}>No track ID specified</h2>
-				<p className={styles.centeredDesc}>
-					Open this page as <code>/track?id=12345678</code>
-				</p>
-				<button className={styles.backBtn} onClick={() => router.back()}>
-					Back
-				</button>
-			</div>
-		);
-	}
+	// No fallback needed - displayTrack handles all cases
 
 	if (!storeReady) {
 		return (
@@ -378,7 +318,7 @@ function TrackPageContent() {
 				</div>
 				<h2 className={styles.centeredTitle}>Track not found</h2>
 				<p className={styles.centeredDesc}>
-					Track with ID <code>{id}</code> was not found in any playlist
+					{id ? `Track with ID ${id} was not found` : "Track not found"}
 				</p>
 				<button className={styles.backBtn} onClick={() => router.back()}>
 					Back
@@ -387,7 +327,7 @@ function TrackPageContent() {
 		);
 	}
 
-	if (!track) {
+	if (!displayTrack) {
 		return (
 			<div className={styles.centered}>
 				<div className={styles.loadingDots}>
@@ -423,10 +363,10 @@ function TrackPageContent() {
 				>
 					<div className={styles.heroCard}>
 						<div className={styles.coverWrap}>
-							{track.cover ? (
+							{displayTrack?.cover ? (
 								<img
-									src={track.cover}
-									alt={track.title}
+									src={displayTrack?.cover}
+									alt={displayTrack?.title}
 									className={styles.heroCover}
 								/>
 							) : (
@@ -500,17 +440,19 @@ function TrackPageContent() {
 						</div>
 
 						<div className={styles.heroMeta}>
-							<h1 className={styles.heroTitle}>{track.title}</h1>
+							<h1 className={styles.heroTitle}>{displayTrack?.title}</h1>
 							<p className={styles.heroArtist}>
-								{track.artist || "Unknown artist"}
+								{displayTrack?.artist || "Unknown artist"}
 							</p>
-							<p className={styles.heroId}>ID: {track.id}</p>
+							{displayTrack?.id && (
+								<p className={styles.heroId}>ID: {displayTrack?.id}</p>
+							)}
 						</div>
 
 						<div className={styles.heroActions}>
-							{track.yandexUrl && (
+							{displayTrack?.yandexUrl && (
 								<a
-									href={track.yandexUrl}
+									href={displayTrack?.yandexUrl}
 									target="_blank"
 									rel="noopener noreferrer"
 									className={styles.outlineBtn}
