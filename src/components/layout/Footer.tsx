@@ -32,7 +32,11 @@ function MoonIcon() {
 	);
 }
 
-export default function Footer({ isHiddenMode }: { isHiddenMode: boolean }) {
+export default function Footer({
+	isHiddenMode = false,
+}: {
+	isHiddenMode?: boolean;
+}) {
 	const { theme, toggle } = useTheme();
 	const isDark = theme === "dark";
 

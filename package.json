@@ -9,7 +9,8 @@
 		"fetch-experiments": "npx tsx scripts/fetch-experiments.ts",
 		"prebuild": "npm run fetch-meta && npm run fetch-experiments",
 		"format": "prettier --write .",
-		"format:check": "prettier --check ."
+		"format:check": "prettier --check .",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"browser-id3-writer": "^6.3.1",

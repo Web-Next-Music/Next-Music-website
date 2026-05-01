@@ -5,7 +5,11 @@ import Link from "next/link";
 import styles from "./Header.module.css";
 import { useRouter } from "next/navigation";
 
-export default function Header({ isHiddenMode }: { isHiddenMode: boolean }) {
+export default function Header({
+	isHiddenMode = false,
+}: {
+	isHiddenMode?: boolean;
+}) {
 	const NAV_LINKS = [
 		...(isHiddenMode
 			? [
