@@ -13,6 +13,7 @@ import {
 	type CachedTrack,
 } from "@/lib/trackStore";
 import styles from "./page.module.css";
+import { ID3Writer } from "browser-id3-writer";
 
 interface LrcLine {
 	time: number;
@@ -75,14 +76,55 @@ async function fetchLyrics(title: string, artist: string): Promise<LrcResult> {
 	}
 }
 
-function TrackPageContent() {
+async function handleDownload(
+	audioUrl: string,
+	artist: string,
+	title: string,
+	cover?: string,
+) {
+	const audioRes = await fetch(audioUrl);
+	const arrayBuffer = await audioRes.arrayBuffer();
+
+	const writer = new ID3Writer(arrayBuffer);
+
+	if (cover) {
+		const coverRes = await fetch(cover);
+		const coverBuffer = await coverRes.arrayBuffer();
+
+		writer.setFrame("APIC", {
+			type: 3,
+			data: coverBuffer,
+			description: "Cover",
+		});
+	}
+
+	writer.setFrame("TIT2", title);
+	writer.setFrame("TPE1", [artist]);
+
+	writer.addTag();
+
+	const blob = writer.getBlob();
+
+	const objectUrl = URL.createObjectURL(blob);
+
+	const a = document.createElement("a");
+	a.href = objectUrl;
+	a.download = `${artist} - ${title}.mp3`;
+	a.click();
+
+	URL.revokeObjectURL(objectUrl);
+}
+
+function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 	const searchParams = useSearchParams();
-	const router = useRouter();
+
 	const id = searchParams.get("id") ?? "";
-	const paramTitle = searchParams.get("title");
-	const paramArtist = searchParams.get("artist");
+	const directUrl = searchParams.get("url")!;
 	const paramCover = searchParams.get("cover");
-	const directUrl = searchParams.get("url");
+	const paramArtist = searchParams.get("artist") ?? "Unknown Artist";
+	const paramTitle = searchParams.get("title") ?? "Unknown Title";
+
+	const router = useRouter();
 
 	const [storeReady, setStoreReady] = useState(() => getStoreSnapshot().loaded);
 	const [track, setTrack] = useState<CachedTrack | null>(null);
@@ -348,7 +390,13 @@ function TrackPageContent() {
 			<div
 				className={`${styles.layoutOuter} ${!showLyrics ? styles.layoutOuterCentered : ""}`}
 			>
-				<button className={styles.backLink} onClick={() => router.back()}>
+				<button
+					className={styles.backLink}
+					onClick={() => router.back()}
+					style={{
+						display: isHiddenMode ? "none" : "auto",
+					}}
+				>
 					<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
 						<path
 							d="M19 12H5M12 5l-7 7 7 7"
@@ -451,6 +499,41 @@ function TrackPageContent() {
 						</div>
 
 						<div className={styles.heroActions}>
+							{isHiddenMode && (
+								<button
+									onClick={() =>
+										handleDownload(
+											directUrl,
+											paramArtist,
+											paramTitle,
+											paramCover,
+										)
+									}
+									className={styles.outlineBtn}
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										aria-hidden="true"
+										role="img"
+										width="15"
+										height="15"
+										viewBox="0 0 24 24"
+									>
+										<g
+											fill="none"
+											stroke="currentColor"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+										>
+											<path d="M12 15V3m9 12v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+											<path d="m7 10l5 5l5-5" />
+										</g>
+									</svg>
+									Download
+								</button>
+							)}
+
 							{displayTrack?.yandexUrl && (
 								<a
 									href={displayTrack?.yandexUrl}
@@ -637,15 +720,19 @@ function TrackPageContent() {
 }
 
 export default function TrackPage() {
+	const searchParams = useSearchParams();
+	const paramToken = searchParams.get("token") ?? "";
+	const isHiddenMode = paramToken === process.env.NEXT_PUBLIC_HIDDEN_MODE_TOKEN;
+
 	return (
 		<>
-			<Header />
+			<Header isHiddenMode={isHiddenMode} />
 			<main>
 				<Suspense fallback={<div>Loading...</div>}>
-					<TrackPageContent />
+					<TrackPageContent isHiddenMode={isHiddenMode} />
 				</Suspense>
 			</main>
-			<Footer />
+			<Footer isHiddenMode={isHiddenMode} />
 		</>
 	);
 }

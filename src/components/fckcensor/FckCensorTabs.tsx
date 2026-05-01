@@ -28,6 +28,7 @@ import {
 	getServerSnapshot,
 	findTrackById,
 } from "@/lib/trackStore";
+import { useSearchParams } from "next/navigation";
 import styles from "./FckCensorTabs.module.css";
 import playerStyles from "./MiniPlayer.module.css";
 import Link from "next/link";
@@ -232,6 +233,10 @@ function useRichPresenceWS(
 }
 
 export function PlayerProvider({ children }: { children: React.ReactNode }) {
+	const searchParams = useSearchParams();
+	const paramToken = searchParams.get("token") ?? "";
+	const isHiddenMode = paramToken === process.env.NEXT_PUBLIC_HIDDEN_MODE_TOKEN;
+
 	const [nowPlaying, setNowPlaying] = useState<NowPlaying | null>(null);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const audioRef = useRef<HTMLAudioElement>(null);
@@ -303,7 +308,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 		>
 			<audio ref={audioRef} onEnded={() => setIsPlaying(false)} />
 			{children}
-			<MiniPlayerInner />
+			<MiniPlayerInner isHiddenMode={isHiddenMode} />
 		</PlayerContext.Provider>
 	);
 }
@@ -312,7 +317,7 @@ export function usePlayer() {
 	return useContext(PlayerContext);
 }
 
-export function MiniPlayerInner() {
+export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
 	const player = usePlayer();
 	const router = useRouter();
 	if (!player) return null;
@@ -398,6 +403,9 @@ export function MiniPlayerInner() {
 			<div className={playerStyles.inner}>
 				<div
 					className={playerStyles.left}
+					style={{
+						pointerEvents: isHiddenMode ? "none" : "auto",
+					}}
 					onClick={() => {
 						if (nowPlaying.directUrl) {
 							const params = new URLSearchParams({
@@ -981,36 +989,6 @@ function LegacyList({ tracks, query }: LegacyListProps) {
 					})}
 				</div>
 			</div>
-		</div>
-	);
-}
-
-function DownloadTab({ type, url }: DownloadTabProps) {
-	const isJson = type === "json";
-	return (
-		<div className={styles.downloadPane}>
-			<p className={styles.downloadDesc}>
-				{isJson ? "Track list as a JSON file" : "M3U playlist"}
-			</p>
-			<a href={url} download className={styles.downloadBtn}>
-				<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-					<path
-						d="M12 3v13M7 11l5 5 5-5"
-						stroke="currentColor"
-						strokeWidth="1.5"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-					/>
-					<path
-						d="M4 20h16"
-						stroke="currentColor"
-						strokeWidth="1.5"
-						strokeLinecap="round"
-					/>
-				</svg>
-				Download .{type}
-			</a>
-			<div className={styles.downloadUrl}>{url}</div>
 		</div>
 	);
 }

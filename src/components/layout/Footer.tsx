@@ -4,47 +4,6 @@ import { useTheme } from "@/lib/theme";
 import styles from "./Footer.module.css";
 import Link from "next/link";
 
-const links = {
-	product: [
-		{ label: "Download", href: "/#download", external: false },
-		{
-			label: "Changelog",
-			href: "https://github.com/Web-Next-Music/Next-Music-Client/releases/latest",
-			external: true,
-		},
-	],
-	resources: [
-		{
-			label: "Wiki",
-			href: "https://github.com/Web-Next-Music/Next-Music-Client/wiki",
-			external: true,
-		},
-		{
-			label: "Experiments",
-			href: "/experiments",
-			external: false,
-		},
-	],
-	links: [
-		{
-			label: "AUR",
-			href: "https://aur.archlinux.org/packages/next-music",
-			external: true,
-		},
-		{
-			label: "GitHub",
-			href: "https://github.com/Web-Next-Music/Next-Music-Client",
-			external: true,
-		},
-		{
-			label: "Discord",
-			href: "https://discord.gg/ky6bcdy7KA",
-			external: true,
-		},
-		{ label: "Boosty", href: "https://boosty.to/diramix", external: true },
-	],
-};
-
 function SunIcon() {
 	return (
 		<svg width="15" height="15" viewBox="0 0 24 24" fill="none">
@@ -73,17 +32,108 @@ function MoonIcon() {
 	);
 }
 
-export default function Footer() {
+export default function Footer({ isHiddenMode }: { isHiddenMode: boolean }) {
 	const { theme, toggle } = useTheme();
 	const isDark = theme === "dark";
+
+	const links = isHiddenMode
+		? {
+				product: [
+					{
+						label: "Murder Drones Theme",
+						href: "https://github.com/Diramix/Murder-Drones-Theme",
+						external: true,
+					},
+					{
+						label: "Vocaloid Miku!",
+						href: "https://github.com/diramix/Vocaloid-Miku",
+						external: true,
+					},
+				],
+				resources: [
+					{
+						label: "Boosty",
+						href: "https://boosty.to/diramix",
+						external: true,
+					},
+					{
+						label: "Github",
+						href: "https://github.com/Diramix",
+						external: true,
+					},
+				],
+				links: [
+					{
+						label: "Snowy-Fluffy",
+						href: "https://snowyfl.com",
+						external: true,
+					},
+					{
+						label: "Discord",
+						href: "https://discord.gg/ky6bcdy7KA",
+						external: true,
+					},
+				],
+			}
+		: {
+				product: [
+					{ label: "Download", href: "/#download", external: false },
+					{
+						label: "Changelog",
+						href: "https://github.com/Web-Next-Music/Next-Music-Client/releases/latest",
+						external: true,
+					},
+				],
+				resources: [
+					{
+						label: "Wiki",
+						href: "https://github.com/Web-Next-Music/Next-Music-Client/wiki",
+						external: true,
+					},
+					{
+						label: "Experiments",
+						href: "/experiments",
+						external: false,
+					},
+				],
+				links: [
+					{
+						label: "AUR",
+						href: "https://aur.archlinux.org/packages/next-music",
+						external: true,
+					},
+					{
+						label: "GitHub",
+						href: "https://github.com/Web-Next-Music/Next-Music-Client",
+						external: true,
+					},
+					{
+						label: "Discord",
+						href: "https://discord.gg/ky6bcdy7KA",
+						external: true,
+					},
+					{
+						label: "Boosty",
+						href: "https://boosty.to/diramix",
+						external: true,
+					},
+				],
+			};
 
 	return (
 		<>
 			<footer className={styles.footer}>
 				<div className={styles.col}>
-					<div className={styles.brand}>Next Music</div>
-					<p className={styles.copy}>Web client for Yandex Music</p>
+					<div className={styles.brand}>
+						{isHiddenMode ? "UGC Share" : "Next Music"}
+					</div>
+					<p className={styles.copy}>
+						{isHiddenMode
+							? "Add-on for sharing UGC tracks from Yandex Music"
+							: "Web client for Yandex Music"}
+					</p>
 				</div>
+
 				<div className={styles.col}>
 					<h4>PRODUCT</h4>
 					{links.product.map((l) => (
@@ -92,6 +142,7 @@ export default function Footer() {
 						</Link>
 					))}
 				</div>
+
 				<div className={styles.col}>
 					<h4>RESOURCES</h4>
 					{links.resources.map((l) => (
@@ -100,6 +151,7 @@ export default function Footer() {
 						</Link>
 					))}
 				</div>
+
 				<div className={styles.col}>
 					<h4>LINKS</h4>
 					{links.links.map((l) => (
@@ -120,7 +172,9 @@ export default function Footer() {
 					title={isDark ? "Switch to light theme" : "Switch to dark theme"}
 				>
 					<span
-						className={`${styles.toggleTrack} ${isDark ? styles.dark : styles.light}`}
+						className={`${styles.toggleTrack} ${
+							isDark ? styles.dark : styles.light
+						}`}
 					>
 						<span className={styles.toggleThumb}>
 							{isDark ? <MoonIcon /> : <SunIcon />}

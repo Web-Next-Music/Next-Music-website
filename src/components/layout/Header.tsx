@@ -5,14 +5,22 @@ import Link from "next/link";
 import styles from "./Header.module.css";
 import { useRouter } from "next/navigation";
 
-const NAV_LINKS = [
-	{ href: "/", label: "Home" },
-	{ href: "/store", label: "Store" },
-	{ href: "/fckcensor-next", label: "FckCensor Next" },
-	{ href: "/experiments", label: "Experiments" },
-];
+export default function Header({ isHiddenMode }: { isHiddenMode: boolean }) {
+	const NAV_LINKS = [
+		...(isHiddenMode
+			? [
+					{ href: "https://discord.gg/ky6bcdy7KA", label: "Discord" },
+					{ href: "https://boosty.to/diramix", label: "Boosty" },
+					{ href: "https://github.com/Diramix", label: "Github" },
+				]
+			: [
+					{ href: "/", label: "Home" },
+					{ href: "/store", label: "Store" },
+					{ href: "/fckcensor-next", label: "FckCensor Next" },
+					{ href: "/experiments", label: "Experiments" },
+				]),
+	];
 
-export default function Header() {
 	const [open, setOpen] = useState(false);
 	const burgerRef = useRef<HTMLDivElement>(null);
 	const router = useRouter();
@@ -41,19 +49,28 @@ export default function Header() {
 		<>
 			<header className={styles.header}>
 				<div className={styles.headerWrap}>
-					<div className={styles.logo}>
+					<div
+						className={styles.logo}
+						onClick={!isHiddenMode ? () => router.push("/") : undefined}
+						style={{
+							pointerEvents: isHiddenMode ? "none" : "auto",
+						}}
+					>
 						<div className={styles.logo}>
 							<div
 								className={styles.logoImg}
-								onClick={() => router.push("/")}
+								style={{
+									backgroundImage: isHiddenMode
+										? 'url("/icons/ugcShare.webp")'
+										: 'url("/icons/icon-256.png")',
+								}}
 							/>
 						</div>
-						<div className={styles.logoText} onClick={() => router.push("/")}>
-							Next Music
+						<div className={styles.logoText}>
+							{isHiddenMode ? "UGC Share" : "Next Music"}
 						</div>
 					</div>
 
-					{/* Full nav — hidden when there's not enough space */}
 					<nav className={styles.nav}>
 						{NAV_LINKS.map((l) => (
 							<Link key={l.href} href={l.href}>
@@ -62,7 +79,6 @@ export default function Header() {
 						))}
 					</nav>
 
-					{/* Burger — shown when nav doesn't fit */}
 					<div ref={burgerRef} className={styles.burger}>
 						<button
 							className={styles.burgerBtn}
