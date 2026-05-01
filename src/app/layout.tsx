@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { ThemeProvider } from "@/lib/theme";
 import { PlayerProvider } from "@/components/fckcensor/FckCensorTabs";
 import "./globals.css";
@@ -35,7 +36,9 @@ export default function RootLayout({
 			</head>
 			<body suppressHydrationWarning>
 				<ThemeProvider>
-					<PlayerProvider>{children}</PlayerProvider>
+					<Suspense fallback={<>{children}</>}>
+						<PlayerProvider>{children}</PlayerProvider>
+					</Suspense>
 				</ThemeProvider>
 			</body>
 		</html>

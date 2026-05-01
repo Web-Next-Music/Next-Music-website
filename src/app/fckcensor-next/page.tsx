@@ -2,6 +2,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import FckCensorTabs from "@/components/fckcensor/FckCensorTabs";
 import Image from "next/image";
+import { Suspense } from "react";
 import styles from "./page.module.css";
 import { Metadata } from "next";
 
@@ -73,7 +74,9 @@ export default function FckCensorPage() {
 						</p>
 					</div>
 				</div>
-				<FckCensorTabs />
+				<Suspense fallback={<div />}>
+					<FckCensorTabs />
+				</Suspense>
 			</main>
 			<Footer />
 		</>
