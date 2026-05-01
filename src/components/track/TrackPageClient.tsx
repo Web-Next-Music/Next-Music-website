@@ -82,7 +82,9 @@ async function handleDownload(
 	title: string,
 	cover?: string,
 ) {
-	const audioRes = await fetch(audioUrl);
+	const audioRes = await fetch(
+		`https://proxy.nm.diram1x.ru/?url=${encodeURIComponent(audioUrl)}`,
+	);
 	const arrayBuffer = await audioRes.arrayBuffer();
 
 	const writer = new ID3Writer(arrayBuffer);
