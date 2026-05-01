@@ -7,6 +7,7 @@
 	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
+	user-select: none;
 }
 
 :root {
@@ -30,14 +31,14 @@
 
 [data-theme="light"] {
 	--bg: #f4f4f8;
-	--header: #f2f2f026;
+	--header: #f2f2f090;
 	--surface: #ffffff;
 	--surface2: #eaeaf0;
 	--border: #d4d4de;
 	--text: #111116;
-	--muted: #666672;
-	--accent: #00aea8;
-	--accent2: #007d79;
+	--muted: #666;
+	--accent: #2bfef5;
+	--accent2: #00c9c0;
 	--shadow: rgba(0, 0, 0, 0.1);
 }
 
