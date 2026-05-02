@@ -125,10 +125,7 @@ export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
 					onClick={handleSeek}
 					ref={progressRef}
 				>
-					<div
-						className={styles.progressFill}
-						style={{ width: `${pct}%` }}
-					/>
+					<div className={styles.progressFill} style={{ width: `${pct}%` }} />
 				</div>
 				<span className={styles.timeSingle}>{fmt(duration)}</span>
 

@@ -1,12 +1,6 @@
 "use client";
 
-import {
-	useEffect,
-	useRef,
-	useCallback,
-	useContext,
-	useState,
-} from "react";
+import { useEffect, useRef, useCallback, useContext, useState } from "react";
 import type { NowPlaying } from "@/types/player";
 
 const WS_PORT = 6972;
