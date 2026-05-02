@@ -508,46 +508,48 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 						</div>
 
 						<div className={styles.heroActions}>
-							<button
-								onClick={async () => {
-									setIsDownloading(true);
-									try {
-										await handleDownload(
-											directUrl,
-											paramArtist,
-											paramTitle,
-											paramCover,
-										);
-									} catch (error) {
-										setShowDownloadError(true);
-									} finally {
-										setIsDownloading(false);
-									}
-								}}
-								disabled={isDownloading}
-								className={styles.outlineBtn}
-							>
-								<svg
-									xmlns="http://www.w3.org/2000/svg"
-									aria-hidden="true"
-									role="img"
-									width="15"
-									height="15"
-									viewBox="0 0 24 24"
+							{directUrl && !id && (
+								<button
+									onClick={async () => {
+										setIsDownloading(true);
+										try {
+											await handleDownload(
+												directUrl,
+												paramArtist,
+												paramTitle,
+												paramCover,
+											);
+										} catch (error) {
+											setShowDownloadError(true);
+										} finally {
+											setIsDownloading(false);
+										}
+									}}
+									disabled={isDownloading}
+									className={styles.outlineBtn}
 								>
-									<g
-										fill="none"
-										stroke="currentColor"
-										strokeLinecap="round"
-										strokeLinejoin="round"
-										strokeWidth={2}
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										aria-hidden="true"
+										role="img"
+										width="15"
+										height="15"
+										viewBox="0 0 24 24"
 									>
-										<path d="M12 15V3m9 12v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-										<path d="m7 10l5 5l5-5" />
-									</g>
-								</svg>
-								{isDownloading ? "Downloading..." : "Download"}
-							</button>
+										<g
+											fill="none"
+											stroke="currentColor"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+											strokeWidth={2}
+										>
+											<path d="M12 15V3m9 12v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+											<path d="m7 10l5 5l5-5" />
+										</g>
+									</svg>
+									{isDownloading ? "Downloading..." : "Download"}
+								</button>
+							)}
 
 							{displayTrack?.yandexUrl && (
 								<a
