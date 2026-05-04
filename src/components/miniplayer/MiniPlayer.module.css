@@ -136,10 +136,10 @@
 	height: 3px;
 	background: linear-gradient(90deg, var(--accent2) 50%, var(--accent) 100%);
 	border-radius: 99px;
+	pointer-events: none;
 	transition:
 		width 0.1s linear,
 		height 0.15s;
-	pointer-events: none;
 }
 
 .progressWrap:hover .progressFill {
