@@ -19,8 +19,8 @@
 	display: inline-flex;
 	align-items: center;
 	gap: 6px;
-	background: rgba(43, 254, 245, 0.08);
-	border: 1px solid rgba(43, 254, 245, 0.2);
+	background: var(--badge-background-color);
+	border: 1px solid var(--badge-border-color);
 	color: var(--accent);
 	font-size: 11px;
 	font-family: var(--font-base);

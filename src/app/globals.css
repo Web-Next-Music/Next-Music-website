@@ -16,6 +16,21 @@
 	--mini-player-h: 0px;
 }
 
+[data-theme="light"] {
+	--bg: #f4f4f8;
+	--header: #ffffff90;
+	--surface: #ffffff;
+	--surface2: #eaeaf0;
+	--border: #d4d4de;
+	--text: #111116;
+	--muted: #666;
+	--accent: #00c9c0;
+	--accent2: #2bfef5;
+	--badge-background-color: #2bfef514;
+	--badge-border-color: #00c9c050;
+	--active-lyrics-line-background-color: #f4f4f880;
+}
+
 [data-theme="dark"] {
 	--bg: #0d0d0f;
 	--header: #0d0d0fd9;
@@ -26,20 +41,9 @@
 	--muted: #888894;
 	--accent: #2bfef5;
 	--accent2: #00c9c0;
-	--shadow: rgba(0, 0, 0, 0.4);
-}
-
-[data-theme="light"] {
-	--bg: #f4f4f8;
-	--header: #f2f2f090;
-	--surface: #ffffff;
-	--surface2: #eaeaf0;
-	--border: #d4d4de;
-	--text: #111116;
-	--muted: #666;
-	--accent: #2bfef5;
-	--accent2: #00c9c0;
-	--shadow: rgba(0, 0, 0, 0.1);
+	--badge-background-color: #2bfef514;
+	--badge-border-color: #2bfef533;
+	--active-lyrics-line-background-color: #2bfef50d;
 }
 
 body {

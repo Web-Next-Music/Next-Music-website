@@ -134,7 +134,7 @@
 	position: absolute;
 	left: 0;
 	height: 3px;
-	background: var(--accent);
+	background: linear-gradient(90deg, var(--accent2) 50%, var(--accent) 100%);
 	border-radius: 99px;
 	transition:
 		width 0.1s linear,
@@ -213,16 +213,11 @@
 	cursor: pointer;
 	background: linear-gradient(
 		to right,
-		var(--accent) 0%,
+		var(--accent2) 0%,
 		var(--accent) var(--vol, 100%),
 		var(--surface2) var(--vol, 100%),
 		var(--surface2) 100%
 	);
-	transition: height 0.15s;
-}
-
-.volumeSlider:hover {
-	height: 5px;
 }
 
 .volumeSlider::-webkit-slider-thumb {
@@ -233,7 +228,6 @@
 	background: var(--accent);
 	cursor: pointer;
 	border: none;
-	box-shadow: 0 0 0 2px var(--header);
 	transition: transform 0.1s;
 }
 

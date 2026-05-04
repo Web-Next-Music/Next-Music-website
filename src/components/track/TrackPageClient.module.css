@@ -537,11 +537,11 @@
 	color: var(--text) !important;
 	opacity: 1 !important;
 	transform: translateX(4px);
-	background: rgba(43, 254, 245, 0.05);
+	background: var(--active-lyrics-line-background-color);
 }
 
 .lyricLineActive:hover {
-	background: rgba(43, 254, 245, 0.1);
+	background: var(--badge-border-color);
 }
 
 .lyricLineActive .lyricText {
