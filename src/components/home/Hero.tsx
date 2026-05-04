@@ -43,6 +43,19 @@ function PkgIcon() {
 	);
 }
 
+function downloadViaIframe(url: string) {
+	const iframe = document.createElement("iframe");
+	iframe.style.display = "none";
+	iframe.src = url;
+
+	document.body.appendChild(iframe);
+
+	// через время можно удалить (чтобы не копились)
+	setTimeout(() => {
+		iframe.remove();
+	}, 10000);
+}
+
 export default function Hero() {
 	const [release, setRelease] = useState<GithubRelease | null>(null);
 	const [loading, setLoading] = useState(true);
@@ -123,28 +136,38 @@ export default function Hero() {
 					Rich Presence (RPC) and OBS widget
 				</p>
 				<div className={styles.dlGrid}>
-					{buttons.map((btn, i) => (
-						<a
-							key={i}
-							href={btn.href}
-							target="_blank"
-							rel="noopener noreferrer"
-							className={`${styles.dlBtn} ${loading ? styles.dlBtnLoading : ""}`}
-						>
-							<div className={`${styles.dlIcon} ${styles[btn.iconClass]}`}>
-								{btn.icon}
-							</div>
-							<div className={styles.dlText}>
-								<span className={styles.dlLabel}>{btn.label}</span>
-								<span className={styles.dlName}>
-									{btn.name}
-									{btn.size && (
-										<span className={styles.dlSize}>{btn.size}</span>
-									)}
-								</span>
-							</div>
-						</a>
-					))}
+					{buttons.map((btn, i) => {
+						const isDisabled = loading || !btn.href || btn.href === "#";
+
+						return (
+							<a
+								key={i}
+								href={btn.href}
+								onClick={(e) => {
+									if (isDisabled) return;
+
+									e.preventDefault();
+									downloadViaIframe(btn.href);
+								}}
+								className={`${styles.dlBtn} ${loading ? styles.dlBtnLoading : ""}`}
+							>
+								<div className={`${styles.dlIcon} ${styles[btn.iconClass]}`}>
+									{btn.icon}
+								</div>
+
+								<div className={styles.dlText}>
+									<span className={styles.dlLabel}>{btn.label}</span>
+
+									<span className={styles.dlName}>
+										{btn.name}
+										{btn.size && (
+											<span className={styles.dlSize}>{btn.size}</span>
+										)}
+									</span>
+								</div>
+							</a>
+						);
+					})}
 				</div>
 			</div>
 			<div className={styles.heroRight}>
