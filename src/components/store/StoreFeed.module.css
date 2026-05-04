@@ -194,7 +194,7 @@
 }
 
 .main {
-	padding: 24px 28px;
+	padding: calc(24px + var(--mini-player-h)) 28px;
 	max-width: 1080px;
 	margin: 0 auto;
 }
