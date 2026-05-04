@@ -1,7 +1,7 @@
 .main {
 	max-width: 1000px;
 	margin: 0 auto;
-	padding: 55px 40px 80px;
+	padding: calc(30px + var(--mini-player-h)) 40px 30px;
 }
 
 .addonHero {
