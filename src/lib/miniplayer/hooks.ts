@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useCallback, useContext, useState } from "react";
 import type { NowPlaying } from "@/types/player";
+import { encodeTrackKey } from "@/lib/trackKey";
 
 const WS_PORT = 6972;
 const WS_URL = `ws://127.0.0.1:${WS_PORT}`;
@@ -41,13 +42,13 @@ export function useRichPresenceWS(
 			const trackUrl = np?.directUrl ?? np?.url ?? null;
 			const nmUGCPlayerUrl = trackId.includes("-")
 				? (() => {
-						const params = new URLSearchParams({
-							url: trackUrl || "",
-							...(np?.title && { title: np.title }),
-							...(np?.artist && { artist: np.artist }),
-							...(np?.cover && { cover: np.cover }),
+						const key = encodeTrackKey({
+							url:    trackUrl || "",
+							title:  np?.title,
+							artist: np?.artist,
+							cover:  np?.cover,
 						});
-						return `${window.location.origin}/track?${params.toString()}`;
+						return `${window.location.origin}/track?key=${key}`;
 					})()
 				: null;
 			return {

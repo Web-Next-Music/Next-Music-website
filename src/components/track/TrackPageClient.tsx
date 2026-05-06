@@ -12,6 +12,7 @@ import {
 	findTrackById,
 	type CachedTrack,
 } from "@/lib/trackStore";
+import { decodeTrackKey } from "@/lib/trackKey";
 import styles from "./TrackPageClient.module.css";
 import { ID3Writer } from "browser-id3-writer";
 
@@ -125,10 +126,19 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 	const searchParams = useSearchParams();
 
 	const id = searchParams.get("id") ?? "";
-	const directUrl = searchParams.get("url")!;
-	const paramCover = searchParams.get("cover") ?? undefined;
-	const paramArtist = searchParams.get("artist") ?? "Unknown Artist";
-	const paramTitle = searchParams.get("title") ?? "Unknown Title";
+
+	// Single encoded key
+	const keyData = (() => {
+		const k = searchParams.get("key");
+		return k ? decodeTrackKey(k) : null;
+	})();
+
+	const directUrl = keyData?.url ?? searchParams.get("url") ?? "";
+	const paramCover = keyData?.cover ?? searchParams.get("cover") ?? undefined;
+	const paramArtist =
+		keyData?.artist ?? searchParams.get("artist") ?? "Unknown Artist";
+	const paramTitle =
+		keyData?.title ?? searchParams.get("title") ?? "Unknown Title";
 
 	const router = useRouter();
 
@@ -849,7 +859,12 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 
 export default function TrackPage() {
 	const searchParams = useSearchParams();
-	const paramToken = searchParams.get("token") ?? "";
+	// Token can come from the encoded key OR as a plain ?token= param (old clients)
+	const keyToken = (() => {
+		const k = searchParams.get("key");
+		return k ? (decodeTrackKey(k)?.token ?? "") : "";
+	})();
+	const paramToken = keyToken || searchParams.get("token") || "";
 	const isHiddenMode = paramToken === process.env.NEXT_PUBLIC_HIDDEN_MODE_TOKEN;
 
 	return (

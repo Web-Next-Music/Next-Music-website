@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePlayer } from "@/lib/miniplayer";
+import { encodeTrackKey } from "@/lib/trackKey";
 import styles from "./MiniPlayer.module.css";
 
 export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
@@ -96,13 +97,13 @@ export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
 					}}
 					onClick={() => {
 						if (nowPlaying.directUrl) {
-							const params = new URLSearchParams({
-								url: nowPlaying.directUrl,
+							const key = encodeTrackKey({
+								url:    nowPlaying.directUrl,
+								title:  nowPlaying.title,
+								artist: nowPlaying.artist,
+								cover:  nowPlaying.cover,
 							});
-							if (nowPlaying.cover) params.set("cover", nowPlaying.cover);
-							if (nowPlaying.artist) params.set("artist", nowPlaying.artist);
-							if (nowPlaying.title) params.set("title", nowPlaying.title);
-							router.push(`/track?${params.toString()}`);
+							router.push(`/track?key=${key}`);
 						} else if (trackId) {
 							router.push(`/track?id=${trackId}`);
 						}
