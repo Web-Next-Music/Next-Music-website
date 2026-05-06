@@ -70,6 +70,7 @@ jobs:
         run: ${{ steps.detect-package-manager.outputs.runner }} next build
         env:
           NEXT_PUBLIC_HIDDEN_MODE_TOKEN: ${{ secrets.NEXT_PUBLIC_HIDDEN_MODE_TOKEN }}
+          NEXT_PUBLIC_TRACK_KEY: ${{ secrets.NEXT_PUBLIC_TRACK_KEY }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
