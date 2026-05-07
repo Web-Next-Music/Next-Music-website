@@ -12,7 +12,7 @@ import {
 	findTrackById,
 	type CachedTrack,
 } from "@/lib/trackStore";
-import { decodeTrackKey } from "@/lib/trackKey";
+import { decodeTrackKey, encodeTrackKey } from "@/lib/trackKey";
 import styles from "./TrackPageClient.module.css";
 import { ID3Writer } from "browser-id3-writer";
 
@@ -139,6 +139,7 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 		keyData?.artist ?? searchParams.get("artist") ?? "Unknown Artist";
 	const paramTitle =
 		keyData?.title ?? searchParams.get("title") ?? "Unknown Title";
+	const paramToken = keyData?.token ?? searchParams.get("token") ?? "";
 
 	const router = useRouter();
 
@@ -175,6 +176,7 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 
 	const [showDownloadError, setShowDownloadError] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
+	const [copyKeyFeedback, setCopyKeyFeedback] = useState<"idle" | "copied">("idle");
 
 	const lyricsContainerRef = useRef<HTMLDivElement>(null);
 	const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -334,6 +336,24 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 			yandexUrl: displayTrack.yandexUrl,
 		});
 	}, [displayTrack, player, directUrl]);
+
+	const handleCopyKey = useCallback(async () => {
+		if (!displayTrack) return;
+		const key = encodeTrackKey({
+			url: displayTrack.url,
+			title: displayTrack.title,
+			artist: displayTrack.artist,
+			cover: displayTrack.cover,
+			token: paramToken || undefined,
+		});
+		try {
+			await navigator.clipboard.writeText(key);
+			setCopyKeyFeedback("copied");
+			setTimeout(() => setCopyKeyFeedback("idle"), 2000);
+		} catch (error) {
+			console.error("Failed to copy key:", error);
+		}
+	}, [displayTrack, paramToken]);
 
 	useEffect(() => {
 		window.dispatchEvent(
@@ -558,6 +578,38 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 										</g>
 									</svg>
 									{isDownloading ? "Downloading..." : "Download"}
+								</button>
+							)}
+
+							{directUrl && !id && (
+								<button
+									onClick={handleCopyKey}
+									className={styles.outlineBtn}
+									style={{
+										borderColor:
+											copyKeyFeedback === "copied"
+												? "var(--accent)"
+												: "var(--border)",
+										color:
+											copyKeyFeedback === "copied"
+												? "var(--accent)"
+												: "var(--text)",
+									}}
+								>
+									<svg
+										width="15"
+										height="15"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										strokeWidth="2"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									>
+										<path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+										<rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+									</svg>
+									{copyKeyFeedback === "copied" ? "Copied!" : "Copy key"}
 								</button>
 							)}
 
