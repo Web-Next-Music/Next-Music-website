@@ -1,13 +1,14 @@
 {
 	"name": "next-music-website",
 	"private": true,
+	"packageManager": "pnpm@10.33.0",
 	"scripts": {
 		"dev": "next dev",
 		"build": "next build",
 		"start": "npx serve@latest out",
-		"fetch-meta": "npx tsx scripts/fetch-track-meta.ts",
-		"fetch-experiments": "npx tsx scripts/fetch-experiments.ts",
-		"prebuild": "npm run fetch-meta && npm run fetch-experiments",
+		"fetch-meta": "pnpm exec tsx scripts/fetch-track-meta.ts",
+		"fetch-experiments": "pnpm exec tsx scripts/fetch-experiments.ts",
+		"prebuild": "pnpm run fetch-meta && pnpm run fetch-experiments",
 		"format": "prettier --write .",
 		"format:check": "prettier --check .",
 		"typecheck": "tsc --noEmit"
