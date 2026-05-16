@@ -7,15 +7,6 @@ import type { Stargazer } from "@/types/github";
 
 const REPO = "Web-Next-Music/Next-Music-Client";
 
-const COLORS: [string, string][] = [
-	["rgba(255,60,111,0.15)", "#ff8fab"],
-	["rgba(0,120,215,0.15)", "#7ab8f5"],
-	["rgba(255,170,0,0.12)", "#ffcc60"],
-	["rgba(40,200,120,0.12)", "#6fdba8"],
-	["rgba(160,90,220,0.15)", "#c49cef"],
-	["rgba(255,107,53,0.12)", "#ffaa7a"],
-];
-
 async function fetchAllStargazers(): Promise<Stargazer[]> {
 	const all: Stargazer[] = [];
 	let page = 1;
@@ -36,9 +27,12 @@ async function fetchAllStargazers(): Promise<Stargazer[]> {
 	return all;
 }
 
+const PAGE_SIZE = 12;
+
 export default function StarsSection() {
 	const [stargazers, setStargazers] = useState<Stargazer[]>([]);
 	const [loading, setLoading] = useState(true);
+	const [page, setPage] = useState(1);
 
 	useEffect(() => {
 		fetchAllStargazers()
@@ -46,6 +40,9 @@ export default function StarsSection() {
 			.catch(() => setStargazers([]))
 			.finally(() => setLoading(false));
 	}, []);
+
+	const totalPages = Math.ceil(stargazers.length / PAGE_SIZE);
+	const pageItems = stargazers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
 	return (
 		<section className={styles.section}>
@@ -66,8 +63,7 @@ export default function StarsSection() {
 				)}
 
 				{!loading &&
-					stargazers.map((user, i) => {
-						const [bg, fg] = COLORS[i % COLORS.length];
+					pageItems.map((user) => {
 						return (
 							<a
 								key={user.login}
@@ -89,6 +85,36 @@ export default function StarsSection() {
 						);
 					})}
 			</div>
+
+			{!loading && totalPages > 1 && (
+				<div className={styles.pagination}>
+					<button
+						className={styles.pageBtn}
+						onClick={() => setPage((p) => Math.max(1, p - 1))}
+						disabled={page === 1}
+					>
+						←
+					</button>
+
+					{Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+						<button
+							key={p}
+							className={`${styles.pageBtn} ${p === page ? styles.pageBtnActive : ""}`}
+							onClick={() => setPage(p)}
+						>
+							{p}
+						</button>
+					))}
+
+					<button
+						className={styles.pageBtn}
+						onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+						disabled={page === totalPages}
+					>
+						→
+					</button>
+				</div>
+			)}
 		</section>
 	);
 }

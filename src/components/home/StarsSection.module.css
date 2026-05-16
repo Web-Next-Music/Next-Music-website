@@ -48,7 +48,7 @@
 
 .card:hover {
 	background: var(--surface2);
-	border-color: #3a3a44;
+	border-color: var(--border);
 }
 
 .avatarImg {
@@ -72,6 +72,53 @@
 	font-size: 13px;
 	color: var(--muted);
 	grid-column: 1 / -1;
+}
+
+.pagination {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 28px;
+}
+
+.pageBtn {
+	min-width: 34px;
+	height: 34px;
+	padding: 0 10px;
+	border-radius: 8px;
+	border: 1px solid var(--border);
+	background: var(--surface);
+	color: var(--text);
+	font-size: 13px;
+	font-family: var(--font-base);
+	cursor: pointer;
+	transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.pageBtn:hover:not(:disabled) {
+	background: var(--surface2);
+	border-color: var(--accent);
+	color: var(--accent);
+}
+
+.pageBtn:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.pageBtnActive {
+	background: var(--accent);
+	border-color: var(--accent);
+	color: var(--bg);
+	font-weight: 700;
+}
+
+.pageBtnActive:hover:not(:disabled) {
+	background: var(--accent2);
+	border-color: var(--accent2);
+	color: var(--bg);
 }
 
 @media (max-width: 900px) {
