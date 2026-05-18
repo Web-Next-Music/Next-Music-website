@@ -1,6 +1,12 @@
 @import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400;1,700&family=Syne:wght@400..800&display=swap");
 
+@font-face {
+	font-family: "Science Gothic";
+	src: local("Science Gothic");
+	font-weight: 500;
+}
+
 *,
 *::before,
 *::after {

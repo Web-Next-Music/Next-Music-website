@@ -26,7 +26,7 @@
 
 .centeredTitle {
 	font-size: 22px;
-	font-weight: 700;
+	font-weight: 500;
 	color: var(--text);
 	font-family: var(--font-heading-large);
 	margin: 0;
@@ -292,7 +292,7 @@
 
 .heroTitle {
 	font-size: 18px;
-	font-weight: 700;
+	font-weight: 500;
 	letter-spacing: -0.3px;
 	font-family: var(--font-heading-large);
 	color: var(--text);
