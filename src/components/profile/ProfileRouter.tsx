@@ -13,13 +13,20 @@ export default function ProfileRouter() {
 	const name = searchParams.get("n");
 
 	useEffect(() => {
-		if (!name || loading) return;
-		const ownLogin = user?.user_metadata?.user_name as string | undefined;
-		if (ownLogin && name.toLowerCase() === ownLogin.toLowerCase()) {
-			router.replace("/profile");
+		if (loading) return;
+		if (!name && user) {
+			const ownLogin = user?.user_metadata?.user_name as string | undefined;
+			if (ownLogin) router.replace(`/profile?n=${ownLogin}`);
 		}
 	}, [name, user, loading, router]);
 
-	if (name) return <PublicProfileClient username={name} />;
+	if (name) {
+		const ownLogin = user?.user_metadata?.user_name as string | undefined;
+		if (!loading && ownLogin && name.toLowerCase() === ownLogin.toLowerCase()) {
+			return <ProfileClient />;
+		}
+		return <PublicProfileClient username={name} />;
+	}
+
 	return <ProfileClient />;
 }

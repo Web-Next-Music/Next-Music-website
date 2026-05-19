@@ -53,7 +53,7 @@ export default function AuthButton() {
 						{user.user_metadata?.user_name ?? user.email}
 					</p>
 					<Link
-						href="/profile"
+						href={`/profile?n=${user.user_metadata?.user_name ?? ""}`}
 						className={styles.dropdownLink}
 						onClick={() => setDropdownOpen(false)}
 					>

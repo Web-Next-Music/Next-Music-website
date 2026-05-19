@@ -367,7 +367,7 @@ export default function PublicProfileClient({
 						style={profile.bio ? { marginTop: 20 } : undefined}
 					>
 						<div className={styles.sectionHeader}>
-							<h2 className={styles.sectionTitle}>Playlists</h2>
+							<h2 className={styles.sectionTitle}>Pinned Playlists</h2>
 						</div>
 						{playlists.length === 0 ? (
 							<div className={styles.empty}>No pinned playlists</div>

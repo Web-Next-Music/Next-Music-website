@@ -1022,7 +1022,7 @@ export default function ProfileClient() {
 										</div>
 										{pinnedPlaylists.length === 0 ? (
 											<div className={styles.empty}>
-												No pinned playlists — go to <strong>Playlists</strong>{" "}
+												No pinned playlists - go to <strong>Playlists</strong>{" "}
 												and pin some with the 📌 button.
 											</div>
 										) : (
@@ -1084,7 +1084,9 @@ export default function ProfileClient() {
 							<div className={styles.sectionHeader}>
 								<h2 className={styles.sectionTitle}>Playlists</h2>
 								{playlists.length > 0 && (
-									<span className={styles.sectionCount}>{playlists.length}</span>
+									<span className={styles.sectionCount}>
+										{playlists.length}
+									</span>
 								)}
 								<button
 									className={styles.newPlaylistBtn}
