@@ -24,11 +24,12 @@ export default function LikeButton({ target, className, compact }: Props) {
 	const [individualLiked, setIndividualLiked] = useState(false);
 	const [loading, setLoading] = useState(true);
 
-	const table = target.type === "track" ? "track_likes" : "account_likes";
-	const id = target.type === "track" ? target.trackId : target.githubLogin;
+	const isTrack = target.type === "track";
+	const table = isTrack ? "track_likes" : "account_likes";
+	const id = isTrack ? target.trackId : target.githubLogin;
 
 	useEffect(() => {
-		if (compact) {
+		if (isTrack) {
 			setLoading(false);
 			return;
 		}
@@ -49,21 +50,17 @@ export default function LikeButton({ target, className, compact }: Props) {
 		return () => {
 			cancelled = true;
 		};
-	}, [compact, table, id, user?.id]);
+	}, [isTrack, table, id, user?.id]);
 
-	// For key-based tracks (those with title/artist meta), check liked by metadata
-	// so a changed URL/key still resolves to the same liked state.
+	// Track likes always read from shared context so all buttons stay in sync.
 	const metaLikedId =
-		compact &&
-		target.type === "track" &&
-		(target.meta?.title || target.meta?.artist)
+		isTrack && (target.meta?.title || target.meta?.artist)
 			? likes.findLikedByMeta(target.meta?.title, target.meta?.artist)
 			: null;
 
-	const liked =
-		compact && target.type === "track"
-			? metaLikedId !== null || likes.likedTrackIds.has(target.trackId)
-			: individualLiked;
+	const liked = isTrack
+		? metaLikedId !== null || likes.likedTrackIds.has(target.trackId)
+		: individualLiked;
 
 	const toggle = useCallback(async () => {
 		if (!user) {
@@ -71,9 +68,9 @@ export default function LikeButton({ target, className, compact }: Props) {
 			return;
 		}
 
-		if (compact && target.type === "track") {
+		if (isTrack) {
 			const storedId = metaLikedId ?? target.trackId;
-			await likes.toggle(storedId, target.meta);
+			await likes.toggle(storedId, target.type === "track" ? target.meta : undefined);
 			return;
 		}
 
@@ -87,7 +84,9 @@ export default function LikeButton({ target, className, compact }: Props) {
 			setIndividualLiked(wasLiked);
 			setCount((c) => c + (wasLiked ? 1 : -1));
 		}
-	}, [user, liked, compact, target, likes, table, id, openAuthModal]);
+	}, [user, liked, isTrack, target, likes, metaLikedId, table, id, openAuthModal]);
+
+	if (!user) return null;
 
 	return (
 		<button
@@ -100,7 +99,7 @@ export default function LikeButton({ target, className, compact }: Props) {
 			onClick={toggle}
 			disabled={!compact && loading}
 			aria-label={liked ? "Unlike" : "Like"}
-			title={user ? (liked ? "Unlike" : "Like") : "Sign in to like"}
+			title={liked ? "Unlike" : "Like"}
 		>
 			<svg
 				className={styles.heart}

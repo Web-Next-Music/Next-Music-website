@@ -3,6 +3,12 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import Link from "next/link";
+import { marked } from "marked";
+
+marked.use({ breaks: true, gfm: true } as Parameters<typeof marked.use>[0]);
+function renderBio(text: string): string {
+	return marked.parse(text) as string;
+}
 import { useAuth } from "@/lib/auth";
 import { useLikes, type TrackLikeMeta } from "@/lib/likesContext";
 import { usePlayer } from "@/lib/miniplayer/context";
@@ -25,6 +31,14 @@ import {
 	type Playlist,
 	type PlaylistTrack,
 } from "@/lib/playlists";
+import {
+	syncGitHubMeta,
+	getOwnProfile,
+	saveBio,
+	getPinnedPlaylistIds,
+	pinPlaylist,
+	unpinPlaylist,
+} from "@/lib/publicProfile";
 import styles from "./ProfileClient.module.css";
 
 function trackHref(trackId: string, dbMeta?: TrackLikeMeta): string {
@@ -397,15 +411,21 @@ function TrackItem({
 function PlaylistSection({
 	playlist,
 	likedMeta,
+	isPinned,
+	readOnly,
 	onDelete,
 	onRename,
+	onTogglePin,
 	onContentsLoaded,
 	onTrackRemoved,
 }: {
 	playlist: Playlist;
 	likedMeta: Map<string, TrackLikeMeta>;
+	isPinned: boolean;
+	readOnly?: boolean;
 	onDelete: (id: string) => void;
 	onRename: (id: string, name: string) => void;
+	onTogglePin: (id: string) => void;
 	onContentsLoaded: (playlistId: string, trackIds: string[]) => void;
 	onTrackRemoved: (playlistId: string, trackId: string) => void;
 }) {
@@ -486,49 +506,72 @@ function PlaylistSection({
 				<span className={styles.playlistCount}>
 					{tracks.length > 0 ? `${tracks.length} tracks` : ""}
 				</span>
-				<div
-					className={styles.playlistActions}
-					onClick={(e) => e.stopPropagation()}
-				>
-					<button
-						className={styles.iconBtn}
-						onClick={() => setEditing(true)}
-						title="Rename"
+				{!readOnly && (
+					<div
+						className={styles.playlistActions}
+						onClick={(e) => e.stopPropagation()}
 					>
-						<svg
-							width="13"
-							height="13"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
+						<button
+							className={`${styles.iconBtn} ${isPinned ? styles.iconBtnPinned : ""}`}
+							onClick={() => onTogglePin(playlist.id)}
+							title={
+								isPinned ? "Unpin from public profile" : "Pin to public profile"
+							}
 						>
-							<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-							<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-						</svg>
-					</button>
-					<button
-						className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-						onClick={() => onDelete(playlist.id)}
-						title="Delete playlist"
-					>
-						<svg
-							width="13"
-							height="13"
-							viewBox="0 0 24 24"
-							fill="none"
-							stroke="currentColor"
-							strokeWidth="2"
-							strokeLinecap="round"
+							<svg
+								width="13"
+								height="13"
+								viewBox="0 0 24 24"
+								fill={isPinned ? "currentColor" : "none"}
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<line x1="12" y1="17" x2="12" y2="22" />
+								<path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z" />
+							</svg>
+						</button>
+						<button
+							className={styles.iconBtn}
+							onClick={() => setEditing(true)}
+							title="Rename"
 						>
-							<polyline points="3 6 5 6 21 6" />
-							<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
-							<path d="M10 11v6M14 11v6" />
-							<path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-						</svg>
-					</button>
-				</div>
+							<svg
+								width="13"
+								height="13"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+							>
+								<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+								<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+							</svg>
+						</button>
+						<button
+							className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
+							onClick={() => onDelete(playlist.id)}
+							title="Delete playlist"
+						>
+							<svg
+								width="13"
+								height="13"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+							>
+								<polyline points="3 6 5 6 21 6" />
+								<path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+								<path d="M10 11v6M14 11v6" />
+								<path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+							</svg>
+						</button>
+					</div>
+				)}
 			</div>
 
 			{open && (
@@ -617,12 +660,21 @@ export default function ProfileClient() {
 	const [creating, setCreating] = useState(false);
 	const [newName, setNewName] = useState("");
 	const newNameRef = useRef<HTMLInputElement>(null);
-	const [tab, setTab] = useState<"liked" | "playlists">("liked");
+	const [tab, setTab] = useState<"bio" | "liked" | "playlists">("bio");
 	const [, setStoreReady] = useState(() => getStoreSnapshot().loaded);
 	// Cache of playlistId -> Set of trackIds already in that playlist
 	const [playlistContents, setPlaylistContents] = useState<
 		Record<string, Set<string>>
 	>({});
+
+	// Bio
+	const [bio, setBio] = useState<string>("");
+	const [editingBio, setEditingBio] = useState(false);
+	const [bioInput, setBioInput] = useState("");
+	const [bioSaving, setBioSaving] = useState(false);
+
+	// Pinned playlists
+	const [pinnedIds, setPinnedIds] = useState<Set<string>>(new Set());
 
 	useEffect(() => {
 		if (getStoreSnapshot().loaded) return;
@@ -643,6 +695,19 @@ export default function ProfileClient() {
 		return true;
 	});
 	const hasPlayer = !!player?.nowPlaying;
+
+	// Sync GitHub metadata and load own bio on login
+	useEffect(() => {
+		if (!user) return;
+		const login = user.user_metadata?.user_name as string | undefined;
+		const name = user.user_metadata?.full_name as string | undefined;
+		const avatar = user.user_metadata?.avatar_url as string | undefined;
+		if (login) syncGitHubMeta(user.id, login, name ?? null, avatar ?? null);
+		getOwnProfile(user.id).then((p) => {
+			if (p?.bio) setBio(p.bio);
+		});
+		getPinnedPlaylistIds(user.id).then(setPinnedIds);
+	}, [user?.id]);
 
 	useEffect(() => {
 		if (!user) return;
@@ -726,6 +791,30 @@ export default function ProfileClient() {
 		});
 	};
 
+	const handleSaveBio = async () => {
+		if (!user) return;
+		setBioSaving(true);
+		await saveBio(user.id, bioInput);
+		setBio(bioInput);
+		setEditingBio(false);
+		setBioSaving(false);
+	};
+
+	const handleTogglePin = async (playlistId: string) => {
+		if (!user) return;
+		if (pinnedIds.has(playlistId)) {
+			setPinnedIds((prev) => {
+				const s = new Set(prev);
+				s.delete(playlistId);
+				return s;
+			});
+			await unpinPlaylist(user.id, playlistId);
+		} else {
+			setPinnedIds((prev) => new Set(prev).add(playlistId));
+			await pinPlaylist(user.id, playlistId, pinnedIds.size);
+		}
+	};
+
 	if (loading) {
 		return (
 			<div className={styles.centered}>
@@ -769,6 +858,27 @@ export default function ProfileClient() {
 					</div>
 
 					<div className={styles.statsCard}>
+						<button
+							className={`${styles.statItem} ${tab === "bio" ? styles.statItemActive : ""}`}
+							onClick={() => setTab("bio")}
+						>
+							<svg
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+								<circle cx="12" cy="7" r="4" />
+							</svg>
+							<span className={styles.statLabel} style={{ flex: 1 }}>
+								Public profile
+							</span>
+						</button>
 						<button
 							className={`${styles.statItem} ${tab === "liked" ? styles.statItemActive : ""}`}
 							onClick={() => setTab("liked")}
@@ -815,6 +925,131 @@ export default function ProfileClient() {
 				</aside>
 
 				<div className={styles.content}>
+					{tab === "bio" &&
+						(() => {
+							const pinnedPlaylists = playlists.filter((pl) =>
+								pinnedIds.has(pl.id),
+							);
+							return (
+								<>
+									<section className={styles.section}>
+										<div className={styles.sectionHeader}>
+											<h2 className={styles.sectionTitle}>Bio</h2>
+											{!editingBio && (
+												<button
+													className={styles.newPlaylistBtn}
+													onClick={() => {
+														setBioInput(bio);
+														setEditingBio(true);
+													}}
+												>
+													<svg
+														width="12"
+														height="12"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="currentColor"
+														strokeWidth="2"
+														strokeLinecap="round"
+													>
+														<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+														<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+													</svg>
+													{bio ? "Edit bio" : "Add bio"}
+												</button>
+											)}
+										</div>
+										{editingBio ? (
+											<div className={styles.bioEditArea}>
+												<textarea
+													className={styles.bioTextarea}
+													value={bioInput}
+													onChange={(e) => setBioInput(e.target.value)}
+													placeholder="Write something about yourself… (Markdown supported)"
+													rows={6}
+													autoFocus
+												/>
+												<div className={styles.bioBtnRow}>
+													<button
+														className={styles.bioCancel}
+														onClick={() => setEditingBio(false)}
+														disabled={bioSaving}
+													>
+														Cancel
+													</button>
+													<button
+														className={styles.bioSave}
+														onClick={handleSaveBio}
+														disabled={bioSaving}
+													>
+														{bioSaving ? "Saving…" : "Save"}
+													</button>
+												</div>
+											</div>
+										) : bio ? (
+											<div
+												className={styles.bioRendered}
+												dangerouslySetInnerHTML={{ __html: renderBio(bio) }}
+											/>
+										) : (
+											<div className={styles.empty}>
+												No bio yet. Click <strong>Add bio</strong> to write
+												something.
+											</div>
+										)}
+									</section>
+
+									<section className={styles.section} style={{ marginTop: 20 }}>
+										<div className={styles.sectionHeader}>
+											<h2 className={styles.sectionTitle}>Pinned Playlists</h2>
+											<button
+												className={styles.newPlaylistBtn}
+												onClick={() => setTab("playlists")}
+											>
+												Manage
+												<svg
+													width="11"
+													height="11"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													strokeWidth="2.5"
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													style={{ marginLeft: 4 }}
+												>
+													<path d="M9 18l6-6-6-6" />
+												</svg>
+											</button>
+										</div>
+										{pinnedPlaylists.length === 0 ? (
+											<div className={styles.empty}>
+												No pinned playlists — go to <strong>Playlists</strong>{" "}
+												and pin some with the 📌 button.
+											</div>
+										) : (
+											<div className={styles.playlistList}>
+												{pinnedPlaylists.map((pl) => (
+													<PlaylistSection
+														key={pl.id}
+														playlist={pl}
+														likedMeta={likedMeta}
+														isPinned={true}
+														readOnly
+														onDelete={handleDeletePlaylist}
+														onRename={handleRenamePlaylist}
+														onTogglePin={handleTogglePin}
+														onContentsLoaded={handleContentsLoaded}
+														onTrackRemoved={handleTrackRemoved}
+													/>
+												))}
+											</div>
+										)}
+									</section>
+								</>
+							);
+						})()}
+
 					{tab === "liked" && (
 						<section className={styles.section}>
 							<div className={styles.sectionHeader}>
@@ -912,8 +1147,10 @@ export default function ProfileClient() {
 											key={pl.id}
 											playlist={pl}
 											likedMeta={likedMeta}
+											isPinned={pinnedIds.has(pl.id)}
 											onDelete={handleDeletePlaylist}
 											onRename={handleRenamePlaylist}
+											onTogglePin={handleTogglePin}
 											onContentsLoaded={handleContentsLoaded}
 											onTrackRemoved={handleTrackRemoved}
 										/>

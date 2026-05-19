@@ -10,6 +10,7 @@ import {
 } from "react";
 import type { User, Session } from "@supabase/supabase-js";
 import { getSupabase } from "./supabase";
+import { syncGitHubMeta } from "./publicProfile";
 
 interface AuthContextValue {
 	user: User | null;
@@ -43,6 +44,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		const { data: listener } = sb.auth.onAuthStateChange((_event, session) => {
 			setSession(session);
 			setUser(session?.user ?? null);
+			const u = session?.user;
+			if (u) {
+				const login = u.user_metadata?.user_name as string | undefined;
+				if (login) {
+					syncGitHubMeta(
+						u.id,
+						login,
+						(u.user_metadata?.full_name as string | undefined) ?? null,
+						(u.user_metadata?.avatar_url as string | undefined) ?? null,
+					);
+				}
+			}
 		});
 
 		return () => listener.subscription.unsubscribe();

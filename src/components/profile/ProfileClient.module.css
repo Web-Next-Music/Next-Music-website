@@ -62,12 +62,6 @@
 	font-family: var(--font-heading-large);
 }
 
-.usernameHandle {
-	font-size: 12px;
-	color: var(--muted);
-	margin: 0;
-}
-
 .statsCard {
 	background: var(--surface);
 	border: 1px solid var(--border);
@@ -493,6 +487,209 @@
 	color: #f87171;
 	border-color: rgba(248, 113, 113, 0.3);
 	background: rgba(248, 113, 113, 0.08);
+}
+
+.iconBtnPinned {
+	color: var(--accent);
+}
+
+.iconBtnPinned:hover {
+	color: #f87171;
+	border-color: rgba(248, 113, 113, 0.3);
+	background: rgba(248, 113, 113, 0.08);
+}
+
+/* ── Bio card ── */
+.bioCard {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 16px;
+	padding: 14px 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.bioCardHeader {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.bioCardLabel {
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.5px;
+	color: var(--muted);
+}
+
+.bioEditBtn {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	background: none;
+	border: none;
+	font-size: 11px;
+	color: var(--muted);
+	cursor: pointer;
+	padding: 0;
+	transition: color 0.15s;
+}
+
+.bioEditBtn:hover {
+	color: var(--accent);
+}
+
+.bioText {
+	font-size: 12px;
+	color: var(--text);
+	line-height: 1.6;
+	margin: 0;
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.bioEmpty {
+	font-size: 12px;
+	color: var(--muted);
+	font-style: italic;
+	margin: 0;
+}
+
+.bioTextarea {
+	width: 100%;
+	box-sizing: border-box;
+	font-size: 12px;
+	color: var(--text);
+	background: var(--surface2);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	padding: 8px 10px;
+	outline: none;
+	resize: vertical;
+	font-family: inherit;
+	line-height: 1.6;
+	transition: border-color 0.15s;
+}
+
+.bioTextarea:focus {
+	border-color: var(--accent);
+}
+
+.bioBtnRow {
+	display: flex;
+	gap: 6px;
+	justify-content: flex-end;
+}
+
+.bioCancel {
+	background: none;
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	padding: 5px 10px;
+	font-size: 12px;
+	color: var(--muted);
+	cursor: pointer;
+	transition: all 0.15s;
+}
+
+.bioCancel:hover {
+	border-color: var(--text);
+	color: var(--text);
+}
+
+.bioSave {
+	background: var(--accent);
+	border: none;
+	border-radius: 6px;
+	padding: 5px 12px;
+	font-size: 12px;
+	font-weight: 500;
+	color: #000;
+	cursor: pointer;
+	transition: opacity 0.15s;
+}
+
+.bioSave:hover {
+	opacity: 0.85;
+}
+
+.bioSave:disabled,
+.bioCancel:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
+.bioEditArea {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+	padding: 12px 20px 16px;
+}
+
+.bioEditArea .bioTextarea {
+	width: 100%;
+}
+
+.bioEditArea .bioBtnRow {
+	justify-content: flex-end;
+}
+
+/* Rendered markdown bio in the section content area */
+.bioRendered {
+	padding: 14px 20px 18px;
+	font-size: 13px;
+	color: var(--text);
+	line-height: 1.7;
+	word-break: break-word;
+}
+
+.bioRendered h1,
+.bioRendered h2,
+.bioRendered h3 {
+	margin: 10px 0 4px;
+	font-family: var(--font-heading-large);
+	color: var(--text);
+}
+
+.bioRendered h1 {
+	font-size: 16px;
+}
+.bioRendered h2 {
+	font-size: 14px;
+}
+.bioRendered h3 {
+	font-size: 13px;
+}
+
+.bioRendered p {
+	margin: 4px 0;
+}
+
+.bioRendered a {
+	color: var(--accent);
+	text-decoration: none;
+}
+
+.bioRendered a:hover {
+	text-decoration: underline;
+}
+
+.bioRendered strong {
+	font-weight: 600;
+}
+.bioRendered em {
+	font-style: italic;
+}
+
+.bioRendered img {
+	max-width: 100%;
+	max-height: 320px;
+	border-radius: 8px;
+	object-fit: contain;
+	display: block;
+	margin: 8px 0;
 }
 
 /* ── Playlist add menu ── */

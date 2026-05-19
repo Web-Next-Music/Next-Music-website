@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { usePlayer } from "@/lib/miniplayer/context";
-import { encodeTrackKey } from "@/lib/trackKey";
+import { encodeTrackKey, decodeTrackKey } from "@/lib/trackKey";
 import LikeButton from "@/components/ui/LikeButton";
 import styles from "./MiniPlayer.module.css";
 
@@ -106,6 +106,9 @@ export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
 									cover:  nowPlaying.cover,
 								});
 								router.push(`/track?key=${key}`);
+							} else if (trackId && !trackId.startsWith("http") && decodeTrackKey(trackId)?.url) {
+								// trackId is an encoded key — use it directly as ?key=
+								router.push(`/track?key=${trackId}`);
 							} else if (trackId) {
 								router.push(`/track?id=${trackId}`);
 							}
@@ -125,7 +128,16 @@ export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
 						<LikeButton
 							compact
 							className={styles.likeBtn}
-							target={{ type: "track", trackId }}
+							target={{
+								type: "track",
+								trackId,
+								meta: {
+									title: nowPlaying.title,
+									artist: nowPlaying.artist,
+									cover: nowPlaying.cover,
+									mp3_url: nowPlaying.url,
+								},
+							}}
 						/>
 					)}
 				</div>
