@@ -57,6 +57,8 @@ jobs:
         env:
           NEXT_PUBLIC_HIDDEN_MODE_TOKEN: ${{ secrets.NEXT_PUBLIC_HIDDEN_MODE_TOKEN }}
           NEXT_PUBLIC_TRACK_KEY: ${{ secrets.NEXT_PUBLIC_TRACK_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANONKEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANONKEY }}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
