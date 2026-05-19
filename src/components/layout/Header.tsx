@@ -85,9 +85,11 @@ export default function Header({
 							))}
 						</div>
 
-						<div className={styles.headerRight}>
-							{!isHiddenMode && <AuthButton />}
-						</div>
+						{!isHiddenMode && (
+							<div className={styles.headerRight}>
+								<AuthButton />
+							</div>
+						)}
 
 						<div ref={burgerRef} className={styles.burger}>
 							<button
