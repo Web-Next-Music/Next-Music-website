@@ -895,7 +895,6 @@ export default function ProfileClient() {
 							>
 								<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
 							</svg>
-							<span className={styles.statValue}>{likedIds.length}</span>
 							<span className={styles.statLabel}>Liked tracks</span>
 						</button>
 						<button
@@ -918,7 +917,6 @@ export default function ProfileClient() {
 								<line x1="3" y1="12" x2="3.01" y2="12" />
 								<line x1="3" y1="18" x2="3.01" y2="18" />
 							</svg>
-							<span className={styles.statValue}>{playlists.length}</span>
 							<span className={styles.statLabel}>Playlists</span>
 						</button>
 					</div>
@@ -1054,6 +1052,9 @@ export default function ProfileClient() {
 						<section className={styles.section}>
 							<div className={styles.sectionHeader}>
 								<h2 className={styles.sectionTitle}>Liked Tracks</h2>
+								{likedIds.length > 0 && (
+									<span className={styles.sectionCount}>{likedIds.length}</span>
+								)}
 							</div>
 							{likedIds.length === 0 ? (
 								<div className={styles.empty}>No liked tracks yet</div>
@@ -1082,6 +1083,9 @@ export default function ProfileClient() {
 						<section className={styles.section}>
 							<div className={styles.sectionHeader}>
 								<h2 className={styles.sectionTitle}>Playlists</h2>
+								{playlists.length > 0 && (
+									<span className={styles.sectionCount}>{playlists.length}</span>
+								)}
 								<button
 									className={styles.newPlaylistBtn}
 									onClick={() => setCreating(true)}

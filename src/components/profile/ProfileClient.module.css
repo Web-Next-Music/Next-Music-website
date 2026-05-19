@@ -143,6 +143,16 @@
 	flex: 1;
 }
 
+.sectionCount {
+	font-size: 12px;
+	font-weight: 600;
+	color: var(--muted);
+	background: var(--surface2);
+	border: 1px solid var(--border);
+	border-radius: 20px;
+	padding: 2px 8px;
+}
+
 .newPlaylistBtn {
 	display: inline-flex;
 	align-items: center;
@@ -914,8 +924,18 @@
 		flex-direction: row;
 	}
 
+	.statItem {
+		justify-content: center;
+		padding: 14px 0;
+	}
+
 	.statItem:not(:last-child) {
 		border-bottom: none;
 		border-right: 1px solid var(--border);
+	}
+
+	.statLabel,
+	.statValue {
+		display: none;
 	}
 }
