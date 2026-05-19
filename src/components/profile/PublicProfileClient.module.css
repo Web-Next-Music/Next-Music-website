@@ -506,4 +506,23 @@
 	.sidebar {
 		position: static;
 	}
+
+	.statsCard {
+		flex-direction: row;
+	}
+
+	.statItem {
+		flex: 1;
+		justify-content: center;
+		padding: 14px 0;
+	}
+
+	.statItem:not(:last-child) {
+		border-bottom: none;
+		border-right: 1px solid var(--border);
+	}
+
+	.statLabel {
+		display: none;
+	}
 }
