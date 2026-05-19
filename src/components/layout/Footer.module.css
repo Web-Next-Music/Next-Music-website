@@ -1,5 +1,9 @@
 .footer {
 	border-top: 1px solid var(--border);
+	border-bottom: 1px solid var(--border);
+}
+
+.content {
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 40px 40px;
@@ -46,7 +50,6 @@
 	max-width: 1200px;
 	margin: 0 auto;
 	padding: 16px 40px;
-	border-top: 1px solid var(--border);
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -126,7 +129,7 @@
 }
 
 @media (max-width: 768px) {
-	.footer {
+	.content {
 		grid-template-columns: 1fr 1fr;
 		padding: 40px 20px;
 	}

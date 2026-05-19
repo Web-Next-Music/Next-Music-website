@@ -127,42 +127,44 @@ export default function Footer({
 	return (
 		<>
 			<footer className={styles.footer}>
-				<div className={styles.col}>
-					<div className={styles.brand}>
-						{isHiddenMode ? "UGC Share" : "Next Music"}
+				<div className={styles.content}>
+					<div className={styles.col}>
+						<div className={styles.brand}>
+							{isHiddenMode ? "UGC Share" : "Next Music"}
+						</div>
+						<p className={styles.copy}>
+							{isHiddenMode
+								? "Add-on for sharing UGC tracks from Yandex Music"
+								: "Web client for Yandex Music"}
+						</p>
 					</div>
-					<p className={styles.copy}>
-						{isHiddenMode
-							? "Add-on for sharing UGC tracks from Yandex Music"
-							: "Web client for Yandex Music"}
-					</p>
-				</div>
 
-				<div className={styles.col}>
-					<h4>PRODUCT</h4>
-					{links.product.map((l) => (
-						<Link key={l.label} href={l.href}>
-							{l.label}
-						</Link>
-					))}
-				</div>
+					<div className={styles.col}>
+						<h4>PRODUCT</h4>
+						{links.product.map((l) => (
+							<Link key={l.label} href={l.href}>
+								{l.label}
+							</Link>
+						))}
+					</div>
 
-				<div className={styles.col}>
-					<h4>RESOURCES</h4>
-					{links.resources.map((l) => (
-						<Link key={l.label} href={l.href}>
-							{l.label}
-						</Link>
-					))}
-				</div>
+					<div className={styles.col}>
+						<h4>RESOURCES</h4>
+						{links.resources.map((l) => (
+							<Link key={l.label} href={l.href}>
+								{l.label}
+							</Link>
+						))}
+					</div>
 
-				<div className={styles.col}>
-					<h4>LINKS</h4>
-					{links.links.map((l) => (
-						<Link key={l.label} href={l.href}>
-							{l.label}
-						</Link>
-					))}
+					<div className={styles.col}>
+						<h4>LINKS</h4>
+						{links.links.map((l) => (
+							<Link key={l.label} href={l.href}>
+								{l.label}
+							</Link>
+						))}
+					</div>
 				</div>
 			</footer>
 
