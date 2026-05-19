@@ -45,6 +45,11 @@
 }
 
 /* Full nav */
+.navWrap {
+	display: flex;
+	flex-direction: row;
+}
+
 .nav {
 	display: flex;
 	gap: 8px;
@@ -69,10 +74,17 @@
 	background: var(--surface);
 }
 
+.headerRight {
+	display: flex;
+	align-items: center;
+	margin-left: 10px;
+}
+
 /* Burger button */
 .burger {
 	display: none;
 	position: relative;
+	margin-left: 10px;
 }
 
 .burgerBtn {
@@ -190,7 +202,7 @@
 	}
 }
 
-@media (max-width: 600px) {
+@media (max-width: 690px) {
 	.nav {
 		display: none;
 	}

@@ -41,14 +41,20 @@
 .left {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	gap: 8px;
 	flex-shrink: 0;
+}
+
+.leftClickable {
+	display: flex;
+	align-items: center;
+	gap: 10px;
 	cursor: pointer;
 	opacity: 1;
 	transition: opacity 0.15s;
 }
 
-.left:hover {
+.leftClickable:hover {
 	opacity: 0.7;
 }
 
@@ -75,7 +81,7 @@
 	flex-direction: column;
 	min-width: 0;
 	width: 100%;
-	max-width: 160px;
+	max-width: 132px;
 	margin-right: 10px;
 }
 
@@ -168,6 +174,13 @@
 	background: var(--surface2);
 	border-color: var(--accent);
 	color: var(--accent);
+}
+
+.likeBtn {
+	opacity: 1 !important;
+	width: 28px !important;
+	height: 28px !important;
+	border-radius: 6px !important;
 }
 
 .btnActive {

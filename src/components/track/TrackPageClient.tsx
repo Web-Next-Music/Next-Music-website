@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import LikeButton from "@/components/ui/LikeButton";
 import { usePlayer } from "@/lib/miniplayer";
 import {
 	ensureTracksLoaded,
@@ -12,7 +13,7 @@ import {
 	findTrackById,
 	type CachedTrack,
 } from "@/lib/trackStore";
-import { decodeTrackKey, encodeTrackKey } from "@/lib/trackKey";
+import { decodeTrackKey, encodeTrackKey, stableTrackKey } from "@/lib/trackKey";
 import styles from "./TrackPageClient.module.css";
 import { ID3Writer } from "browser-id3-writer";
 
@@ -176,7 +177,9 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 
 	const [showDownloadError, setShowDownloadError] = useState(false);
 	const [isDownloading, setIsDownloading] = useState(false);
-	const [copyKeyFeedback, setCopyKeyFeedback] = useState<"idle" | "copied">("idle");
+	const [copyKeyFeedback, setCopyKeyFeedback] = useState<"idle" | "copied">(
+		"idle",
+	);
 
 	const lyricsContainerRef = useRef<HTMLDivElement>(null);
 	const lineRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -528,10 +531,37 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 						</div>
 
 						<div className={styles.heroMeta}>
-							<h1 className={styles.heroTitle}>{displayTrack?.title}</h1>
-							<p className={styles.heroArtist}>
-								{displayTrack?.artist || "Unknown artist"}
-							</p>
+							<div className={styles.heroInfoRow}>
+								<div>
+									<div className={styles.heroTitleRow}>
+										<h1 className={styles.heroTitle}>{displayTrack?.title}</h1>
+									</div>
+									<p className={styles.heroArtist}>
+										{displayTrack?.artist || "Unknown artist"}
+									</p>
+								</div>
+								{(displayTrack?.id || directUrl) && (
+									<LikeButton
+										compact
+										className={styles.trackLikeBtn}
+										target={{
+											type: "track",
+											trackId:
+												displayTrack?.id ||
+												stableTrackKey(directUrl, paramTitle, paramArtist, paramCover),
+											meta:
+												!displayTrack?.id && directUrl
+													? {
+															title: displayTrack?.title,
+															artist: displayTrack?.artist,
+															cover: displayTrack?.cover,
+															mp3_url: directUrl,
+														}
+													: undefined,
+										}}
+									/>
+								)}
+							</div>
 							{displayTrack?.id && (
 								<p className={styles.heroId}>ID: {displayTrack?.id}</p>
 							)}

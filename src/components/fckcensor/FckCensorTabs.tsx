@@ -27,6 +27,7 @@ import {
 } from "@/lib/trackStore";
 import { usePlayer, PlayerProvider } from "@/lib/miniplayer";
 import { MiniPlayerInner } from "@/components/miniplayer/MiniPlayer";
+import LikeButton from "@/components/ui/LikeButton";
 import styles from "./FckCensorTabs.module.css";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -272,17 +273,29 @@ function OfficialList({ tracks, query }: OfficialListProps) {
 										<Highlight text={track.artist} query={query} />
 									</div>
 								</div>
-								<PlayBtn
-									track={{
-										id: trackId,
-										url: track.url,
-										title: track.title || "—",
-										artist: track.artist || "",
-										cover: track.cover,
-										yandexUrl:
-											yandexHref !== track.url ? yandexHref : undefined,
-									}}
-								/>
+								<div
+									className={styles.rowActions}
+									onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+								>
+									{trackId && (
+										<LikeButton
+											compact
+											className={styles.likeBtn}
+											target={{ type: "track", trackId }}
+										/>
+									)}
+									<PlayBtn
+										track={{
+											id: trackId,
+											url: track.url,
+											title: track.title || "—",
+											artist: track.artist || "",
+											cover: track.cover,
+											yandexUrl:
+												yandexHref !== track.url ? yandexHref : undefined,
+										}}
+									/>
+								</div>
 							</Link>
 						);
 					})}
@@ -457,16 +470,26 @@ function LegacyList({ tracks, query }: LegacyListProps) {
 										)}
 									</div>
 								</div>
-								<PlayBtn
-									track={{
-										id: track.id,
-										url: track.url,
-										title: meta?.title ?? `Track #${track.id}`,
-										artist: meta?.artist ?? "",
-										cover: meta?.cover,
-										yandexUrl: track.yandexUrl,
-									}}
-								/>
+								<div
+									className={styles.rowActions}
+									onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+								>
+									<LikeButton
+										compact
+										className={styles.likeBtn}
+										target={{ type: "track", trackId: track.id }}
+									/>
+									<PlayBtn
+										track={{
+											id: track.id,
+											url: track.url,
+											title: meta?.title ?? `Track #${track.id}`,
+											artist: meta?.artist ?? "",
+											cover: meta?.cover,
+											yandexUrl: track.yandexUrl,
+										}}
+									/>
+								</div>
 							</>
 						);
 

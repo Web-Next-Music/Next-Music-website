@@ -24,6 +24,7 @@ export function PlayerProvider({ children }: { children: React.ReactNode }) {
 	const play = useCallback((track: NowPlaying) => {
 		const id =
 			track.id && !track.directUrl ? track.id : (track.url ?? undefined);
+		currentTrackUrlRef.current = null;
 		setNowPlaying({ ...track, id });
 		setIsPlaying(true);
 	}, []);

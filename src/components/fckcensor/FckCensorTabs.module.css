@@ -239,6 +239,13 @@
 	background: rgba(43, 254, 245, 0.08);
 }
 
+.rowActions {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	flex-shrink: 0;
+}
+
 .sentinel {
 	display: flex;
 	justify-content: center;

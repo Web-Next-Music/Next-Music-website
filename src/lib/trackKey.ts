@@ -27,6 +27,15 @@ export function encodeTrackKey(data: TrackKeyData): string {
 		.replace(/=/g, "");
 }
 
+export function stableTrackKey(
+	mp3_url: string,
+	title?: string,
+	artist?: string,
+	cover?: string,
+): string {
+	return encodeTrackKey({ url: mp3_url, title, artist, cover });
+}
+
 export function decodeTrackKey(key: string): TrackKeyData | null {
 	try {
 		const raw = Buffer.from(

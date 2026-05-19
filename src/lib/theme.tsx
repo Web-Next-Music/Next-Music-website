@@ -3,7 +3,7 @@
 import {
 	createContext,
 	useContext,
-	useEffect,
+	useLayoutEffect,
 	useState,
 	useCallback,
 	ReactNode,
@@ -20,11 +20,16 @@ const ThemeContext = createContext<ThemeContextValue>({
 export function ThemeProvider({ children }: { children: ReactNode }) {
 	const [theme, setTheme] = useState<Theme>("dark");
 
-	useEffect(() => {
-		const current = document.documentElement.getAttribute(
-			"data-theme",
-		) as Theme | null;
-		if (current) setTheme(current);
+	useLayoutEffect(() => {
+		try {
+			const saved = localStorage.getItem("nm-theme") as Theme | null;
+			const preferred = window.matchMedia("(prefers-color-scheme: light)").matches
+				? "light"
+				: "dark";
+			const resolved: Theme = saved ?? preferred;
+			document.documentElement.setAttribute("data-theme", resolved);
+			setTheme(resolved);
+		} catch {}
 	}, []);
 
 	const toggle = useCallback(() => {

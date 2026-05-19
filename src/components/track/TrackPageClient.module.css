@@ -284,6 +284,33 @@
 	}
 }
 
+.heroInfoRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.heroTitleRow {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 8px;
+}
+
+.trackLikeBtn {
+	width: 34px !important;
+	height: 34px !important;
+	border-radius: 50% !important;
+	opacity: 1 !important;
+	flex-shrink: 0;
+}
+
+.trackLikeBtn svg {
+	width: 18px !important;
+	height: 18px !important;
+}
+
 .heroMeta {
 	display: flex;
 	flex-direction: column;

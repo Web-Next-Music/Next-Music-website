@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { ThemeProvider } from "@/lib/theme";
 import { PlayerProvider } from "@/lib/miniplayer";
+import { AuthProvider } from "@/lib/auth";
+import { LikesProvider } from "@/lib/likesContext";
+import AuthModal from "@/components/auth/AuthModal";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,8 +22,6 @@ export const metadata: Metadata = {
 	},
 };
 
-const THEME_SCRIPT = `(function(){try{var s=localStorage.getItem('nm-theme');var t=s||(window.matchMedia('(prefers-color-scheme:light)').matches?'light':'dark');document.documentElement.setAttribute('data-theme',t);}catch(e){}})();`;
-
 export default function RootLayout({
 	children,
 }: {
@@ -28,18 +29,17 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en" suppressHydrationWarning>
-			<head>
-				<script
-					suppressHydrationWarning
-					dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }}
-				/>
-			</head>
 			<body suppressHydrationWarning>
-				<ThemeProvider>
-					<Suspense fallback={<>{children}</>}>
-						<PlayerProvider>{children}</PlayerProvider>
-					</Suspense>
-				</ThemeProvider>
+				<AuthProvider>
+					<LikesProvider>
+						<ThemeProvider>
+							<Suspense fallback={<>{children}</>}>
+								<PlayerProvider>{children}</PlayerProvider>
+							</Suspense>
+						</ThemeProvider>
+						<AuthModal />
+					</LikesProvider>
+				</AuthProvider>
 			</body>
 		</html>
 	);

@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import styles from "./Header.module.css";
 import { useRouter } from "next/navigation";
+import AuthButton from "@/components/auth/AuthButton";
 
 export default function Header({
 	isHiddenMode = false,
@@ -75,44 +76,50 @@ export default function Header({
 						</div>
 					</div>
 
-					<nav className={styles.nav}>
-						{NAV_LINKS.map((l) => (
-							<Link key={l.href} href={l.href}>
-								{l.label}
-							</Link>
-						))}
-					</nav>
+					<div className={styles.navWrap}>
+						<div className={styles.nav}>
+							{NAV_LINKS.map((l) => (
+								<Link key={l.href} href={l.href}>
+									{l.label}
+								</Link>
+							))}
+						</div>
 
-					<div ref={burgerRef} className={styles.burger}>
-						<button
-							className={styles.burgerBtn}
-							onClick={() => setOpen((v) => !v)}
-							aria-label="Toggle navigation menu"
-							aria-expanded={open}
-						>
-							<span
-								className={`${styles.burgerIcon} ${open ? styles.burgerIconOpen : ""}`}
+						<div className={styles.headerRight}>
+							{!isHiddenMode && <AuthButton />}
+						</div>
+
+						<div ref={burgerRef} className={styles.burger}>
+							<button
+								className={styles.burgerBtn}
+								onClick={() => setOpen((v) => !v)}
+								aria-label="Toggle navigation menu"
+								aria-expanded={open}
 							>
-								<span />
-								<span />
-								<span />
-							</span>
-						</button>
+								<span
+									className={`${styles.burgerIcon} ${open ? styles.burgerIconOpen : ""}`}
+								>
+									<span />
+									<span />
+									<span />
+								</span>
+							</button>
 
-						{open && (
-							<div className={styles.dropdown}>
-								{NAV_LINKS.map((l) => (
-									<Link
-										key={l.href}
-										href={l.href}
-										className={styles.dropdownLink}
-										onClick={() => setOpen(false)}
-									>
-										{l.label}
-									</Link>
-								))}
-							</div>
-						)}
+							{open && (
+								<div className={styles.dropdown}>
+									{NAV_LINKS.map((l) => (
+										<Link
+											key={l.href}
+											href={l.href}
+											className={styles.dropdownLink}
+											onClick={() => setOpen(false)}
+										>
+											{l.label}
+										</Link>
+									))}
+								</div>
+							)}
+						</div>
 					</div>
 				</div>
 			</header>

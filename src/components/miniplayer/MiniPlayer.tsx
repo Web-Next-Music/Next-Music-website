@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { usePlayer } from "@/lib/miniplayer";
+import { usePlayer } from "@/lib/miniplayer/context";
 import { encodeTrackKey } from "@/lib/trackKey";
+import LikeButton from "@/components/ui/LikeButton";
 import styles from "./MiniPlayer.module.css";
 
 export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
@@ -90,34 +91,43 @@ export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
 	return (
 		<div className={styles.bar}>
 			<div className={styles.inner}>
-				<div
-					className={styles.left}
-					style={{
-						pointerEvents: isHiddenMode ? "none" : "auto",
-					}}
-					onClick={() => {
-						if (nowPlaying.directUrl) {
-							const key = encodeTrackKey({
-								url:    nowPlaying.directUrl,
-								title:  nowPlaying.title,
-								artist: nowPlaying.artist,
-								cover:  nowPlaying.cover,
-							});
-							router.push(`/track?key=${key}`);
-						} else if (trackId) {
-							router.push(`/track?id=${trackId}`);
-						}
-					}}
-				>
-					{nowPlaying.cover ? (
-						<img src={nowPlaying.cover} alt="" className={styles.cover} />
-					) : (
-						<div className={styles.coverPlaceholder} />
-					)}
-					<div className={styles.info}>
-						<span className={styles.title}>{nowPlaying.title}</span>
-						<span className={styles.artist}>{nowPlaying.artist}</span>
+				<div className={styles.left}>
+					<div
+						className={styles.leftClickable}
+						style={{
+							pointerEvents: isHiddenMode ? "none" : "auto",
+						}}
+						onClick={() => {
+							if (nowPlaying.directUrl) {
+								const key = encodeTrackKey({
+									url:    nowPlaying.directUrl,
+									title:  nowPlaying.title,
+									artist: nowPlaying.artist,
+									cover:  nowPlaying.cover,
+								});
+								router.push(`/track?key=${key}`);
+							} else if (trackId) {
+								router.push(`/track?id=${trackId}`);
+							}
+						}}
+					>
+						{nowPlaying.cover ? (
+							<img src={nowPlaying.cover} alt="" className={styles.cover} />
+						) : (
+							<div className={styles.coverPlaceholder} />
+						)}
+						<div className={styles.info}>
+							<span className={styles.title}>{nowPlaying.title}</span>
+							<span className={styles.artist}>{nowPlaying.artist}</span>
+						</div>
 					</div>
+					{trackId && (
+						<LikeButton
+							compact
+							className={styles.likeBtn}
+							target={{ type: "track", trackId }}
+						/>
+					)}
 				</div>
 
 				<span className={styles.timeSingle}>{fmt(progress)}</span>
