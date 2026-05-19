@@ -1,6 +1,7 @@
 import type { ReactNode, RefObject } from "react";
 import type { NowPlaying } from "./player";
 import type { OfficialTrack, LegacyTrack } from "./track";
+import type { Playlist } from "@/lib/playlists";
 
 export interface CardShellProps {
 	delay?: number;
@@ -37,11 +38,13 @@ export interface SearchBarProps {
 export interface OfficialListProps {
 	tracks: OfficialTrack[];
 	query: string;
+	playlists: Playlist[];
 }
 
 export interface LegacyListProps {
 	tracks: LegacyTrack[];
 	query: string;
+	playlists: Playlist[];
 }
 
 export interface DownloadTabProps {

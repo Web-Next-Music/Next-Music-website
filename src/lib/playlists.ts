@@ -71,7 +71,7 @@ export async function addTrackToPlaylist(playlistId: string, trackId: string, po
 	if (!sb) return false;
 	const { error } = await sb
 		.from("playlist_tracks")
-		.insert({ playlist_id: playlistId, track_id: trackId, position });
+		.upsert({ playlist_id: playlistId, track_id: trackId, position }, { onConflict: "playlist_id,track_id", ignoreDuplicates: true });
 	if (error) console.error("[playlists] addTrackToPlaylist:", error.message);
 	return !error;
 }

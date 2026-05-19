@@ -25,9 +25,18 @@ import {
 	getServerSnapshot,
 	findTrackById,
 } from "@/lib/trackStore";
+import { createPortal } from "react-dom";
 import { usePlayer, PlayerProvider } from "@/lib/miniplayer";
 import { MiniPlayerInner } from "@/components/miniplayer/MiniPlayer";
 import LikeButton from "@/components/ui/LikeButton";
+import { useAuth } from "@/lib/auth";
+import {
+	getPlaylists,
+	getPlaylistTracks,
+	addTrackToPlaylist,
+	removeTrackFromPlaylist,
+	type Playlist,
+} from "@/lib/playlists";
 import styles from "./FckCensorTabs.module.css";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -40,6 +49,114 @@ import type {
 } from "@/types/ui";
 
 export type { NowPlaying } from "@/types/player";
+
+function AddToPlaylistBtn({
+	trackId,
+	playlists,
+}: {
+	trackId: string;
+	playlists: Playlist[];
+}) {
+	const { user } = useAuth();
+	const [open, setOpen] = useState(false);
+	const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
+	const [inPlaylists, setInPlaylists] = useState<Set<string>>(new Set());
+	const btnRef = useRef<HTMLButtonElement>(null);
+	const menuRef = useRef<HTMLDivElement>(null);
+
+	useEffect(() => {
+		if (!open) return;
+		const handler = (e: MouseEvent) => {
+			if (
+				!btnRef.current?.contains(e.target as Node) &&
+				!menuRef.current?.contains(e.target as Node)
+			)
+				setOpen(false);
+		};
+		document.addEventListener("mousedown", handler);
+		return () => document.removeEventListener("mousedown", handler);
+	}, [open]);
+
+	if (!user) return null;
+
+	const handleOpen = async (e: React.MouseEvent) => {
+		e.preventDefault();
+		e.stopPropagation();
+		if (open) { setOpen(false); return; }
+		if (btnRef.current) {
+			const rect = btnRef.current.getBoundingClientRect();
+			setPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
+		}
+		const results = await Promise.all(playlists.map((pl) => getPlaylistTracks(pl.id)));
+		const containing = new Set<string>();
+		playlists.forEach((pl, i) => {
+			if (results[i].some((t) => t.track_id === trackId)) containing.add(pl.id);
+		});
+		setInPlaylists(containing);
+		setOpen(true);
+	};
+
+	const handleToggle = async (e: React.MouseEvent, playlistId: string) => {
+		e.preventDefault();
+		e.stopPropagation();
+		const isIn = inPlaylists.has(playlistId);
+		if (isIn) {
+			await removeTrackFromPlaylist(playlistId, trackId);
+			setInPlaylists((prev) => { const s = new Set(prev); s.delete(playlistId); return s; });
+		} else {
+			await addTrackToPlaylist(playlistId, trackId, 0);
+			setInPlaylists((prev) => new Set(prev).add(playlistId));
+		}
+	};
+
+	return (
+		<>
+			<button
+				ref={btnRef}
+				className={styles.addToPlaylistBtn}
+				onClick={handleOpen}
+				aria-label="Add to playlist"
+			>
+				<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+					<line x1="12" y1="5" x2="12" y2="19" />
+					<line x1="5" y1="12" x2="19" y2="12" />
+				</svg>
+			</button>
+			{open && pos && typeof document !== "undefined" &&
+				createPortal(
+					<div
+						ref={menuRef}
+						className={styles.playlistMenu}
+						style={{ top: pos.top, right: pos.right }}
+						onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+					>
+						{playlists.length === 0 ? (
+							<div className={styles.playlistMenuEmpty}>No playlists</div>
+						) : (
+							playlists.map((pl) => {
+								const inPlaylist = inPlaylists.has(pl.id);
+								return (
+									<button
+										key={pl.id}
+										className={`${styles.playlistMenuItem} ${inPlaylist ? styles.playlistMenuItemActive : ""}`}
+										onClick={(e) => handleToggle(e, pl.id)}
+									>
+										<span>{pl.name}</span>
+										{inPlaylist && (
+											<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+												<polyline points="20 6 9 17 4 12" />
+											</svg>
+										)}
+									</button>
+								);
+							})
+						)}
+					</div>,
+					document.body,
+				)}
+		</>
+	);
+}
 
 const PAGE_SIZE = 20;
 const TRACK_HEIGHT = 58;
@@ -142,7 +259,7 @@ function SearchBar({ value, onChange }: SearchBarProps) {
 	);
 }
 
-function OfficialList({ tracks, query }: OfficialListProps) {
+function OfficialList({ tracks, query, playlists }: OfficialListProps) {
 	const filtered = useMemo(() => {
 		const q = query.trim().toLowerCase();
 		if (!q) return tracks;
@@ -278,6 +395,9 @@ function OfficialList({ tracks, query }: OfficialListProps) {
 									onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
 								>
 									{trackId && (
+										<AddToPlaylistBtn trackId={trackId} playlists={playlists} />
+									)}
+									{trackId && (
 										<LikeButton
 											compact
 											className={styles.likeBtn}
@@ -305,7 +425,7 @@ function OfficialList({ tracks, query }: OfficialListProps) {
 	);
 }
 
-function LegacyList({ tracks, query }: LegacyListProps) {
+function LegacyList({ tracks, query, playlists }: LegacyListProps) {
 	const enriched = useMemo(
 		() =>
 			tracks.map((t) => ({
@@ -474,6 +594,7 @@ function LegacyList({ tracks, query }: LegacyListProps) {
 									className={styles.rowActions}
 									onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
 								>
+									<AddToPlaylistBtn trackId={track.id} playlists={playlists} />
 									<LikeButton
 										compact
 										className={styles.likeBtn}
@@ -574,6 +695,8 @@ function Skeleton() {
 export default function FckCensorTabs() {
 	const [tab, setTab] = useState<TabId>("official");
 	const [query, setQuery] = useState("");
+	const [playlists, setPlaylists] = useState<Playlist[]>([]);
+	const { user } = useAuth();
 
 	const { official, legacy, loaded } = useSyncExternalStore(
 		subscribeStore,
@@ -585,6 +708,11 @@ export default function FckCensorTabs() {
 	useEffect(() => {
 		ensureTracksLoaded();
 	}, []);
+
+	useEffect(() => {
+		if (!user) { setPlaylists([]); return; }
+		getPlaylists(user.id).then(setPlaylists);
+	}, [user?.id]);
 
 	useEffect(() => {
 		const initial = getTabFromHash();
@@ -635,7 +763,7 @@ export default function FckCensorTabs() {
 					{loading ? (
 						<Skeleton />
 					) : (
-						<OfficialList tracks={official} query={query} />
+						<OfficialList tracks={official} query={query} playlists={playlists} />
 					)}
 				</>
 			)}
@@ -645,7 +773,7 @@ export default function FckCensorTabs() {
 					{loading ? (
 						<Skeleton />
 					) : (
-						<LegacyList tracks={legacy} query={query} />
+						<LegacyList tracks={legacy} query={query} playlists={playlists} />
 					)}
 				</>
 			)}

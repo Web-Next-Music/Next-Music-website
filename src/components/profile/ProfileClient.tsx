@@ -186,6 +186,7 @@ function TrackItem({
 	playlistContents,
 	likedMeta,
 	onAddToPlaylist,
+	onRemoveFromPlaylist,
 	onEnsurePlaylistLoaded,
 	onUnlike,
 	showUnlike,
@@ -196,6 +197,7 @@ function TrackItem({
 	playlistContents: Record<string, Set<string>>;
 	likedMeta: Map<string, TrackLikeMeta>;
 	onAddToPlaylist: (trackId: string, playlistId: string) => void;
+	onRemoveFromPlaylist: (trackId: string, playlistId: string) => void;
 	onEnsurePlaylistLoaded: (playlistId: string) => Promise<void>;
 	onUnlike?: (trackId: string) => void;
 	showUnlike?: boolean;
@@ -249,7 +251,8 @@ function TrackItem({
 	};
 
 	return (
-		<div
+		<Link
+			href={trackHref(trackId, dbMeta)}
 			className={`${styles.trackRow} ${isThis ? styles.trackRowActive : ""}`}
 		>
 			<span className={styles.trackNum}>{index + 1}</span>
@@ -288,15 +291,18 @@ function TrackItem({
 						</svg>
 					</div>
 				)}
-				<PlayTrackBtn trackId={trackId} dbMeta={dbMeta} />
 			</div>
 			<div className={styles.trackInfo}>
-				<Link href={trackHref(trackId, dbMeta)} className={styles.trackTitle}>
-					{title}
-				</Link>
+				<span className={styles.trackTitle}>{title}</span>
 				{artist && <span className={styles.trackArtist}>{artist}</span>}
 			</div>
-			<div className={styles.trackActions}>
+			<div
+				className={styles.trackActions}
+				onClick={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+				}}
+			>
 				{playlists.length > 0 && (
 					<div className={styles.menuWrap} ref={menuWrapRef}>
 						<button
@@ -343,7 +349,6 @@ function TrackItem({
 										right: menuPos.right,
 									}}
 								>
-									<div className={styles.menuTitle}>Add to playlist</div>
 									{playlists.map((p) => {
 										const inPlaylist =
 											playlistContents[p.id]?.has(trackId) ?? false;
@@ -353,7 +358,8 @@ function TrackItem({
 												className={`${styles.menuItem} ${inPlaylist ? styles.menuItemActive : ""}`}
 												onClick={(e) => {
 													e.preventDefault();
-													if (!inPlaylist) onAddToPlaylist(trackId, p.id);
+													if (inPlaylist) onRemoveFromPlaylist(trackId, p.id);
+													else onAddToPlaylist(trackId, p.id);
 													setMenuOpen(false);
 												}}
 											>
@@ -403,8 +409,9 @@ function TrackItem({
 						</svg>
 					</button>
 				)}
+				<PlayTrackBtn trackId={trackId} dbMeta={dbMeta} />
 			</div>
-		</div>
+		</Link>
 	);
 }
 
@@ -791,6 +798,18 @@ export default function ProfileClient() {
 		});
 	};
 
+	const handleRemoveFromPlaylist = async (
+		trackId: string,
+		playlistId: string,
+	) => {
+		await removeTrackFromPlaylist(playlistId, trackId);
+		setPlaylistContents((prev) => {
+			const set = new Set(prev[playlistId] ?? []);
+			set.delete(trackId);
+			return { ...prev, [playlistId]: set };
+		});
+	};
+
 	const handleSaveBio = async () => {
 		if (!user) return;
 		setBioSaving(true);
@@ -1049,8 +1068,10 @@ export default function ProfileClient() {
 						})()}
 
 					{tab === "liked" && (
-						<section className={styles.section}>
-							<div className={styles.sectionHeader}>
+						<section>
+							<div
+								className={`${styles.sectionHeader} ${styles.sectionHeaderLiked}`}
+							>
 								<h2 className={styles.sectionTitle}>Liked Tracks</h2>
 								{likedIds.length > 0 && (
 									<span className={styles.sectionCount}>{likedIds.length}</span>
@@ -1069,6 +1090,7 @@ export default function ProfileClient() {
 											playlistContents={playlistContents}
 											likedMeta={likedMeta}
 											onAddToPlaylist={handleAddToPlaylist}
+											onRemoveFromPlaylist={handleRemoveFromPlaylist}
 											onEnsurePlaylistLoaded={handleEnsurePlaylistLoaded}
 											onUnlike={toggleLike}
 											showUnlike

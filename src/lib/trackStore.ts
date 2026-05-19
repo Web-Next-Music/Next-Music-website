@@ -35,8 +35,9 @@ export function getStoreSnapshot(): StoreSnapshot {
 	return snapshot;
 }
 
+const SERVER_SNAPSHOT: StoreSnapshot = { official: [], legacy: [], loaded: false };
 export function getServerSnapshot(): StoreSnapshot {
-	return { official: [], legacy: [], loaded: false };
+	return SERVER_SNAPSHOT;
 }
 
 export function ensureTracksLoaded(): Promise<void> {
