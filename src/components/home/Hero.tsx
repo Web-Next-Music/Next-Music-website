@@ -119,7 +119,7 @@ export default function Hero() {
 						<span className={styles.skeletonBadge} />
 					) : (
 						<>
-							{version} — {isPrerelease ? "pre-release" : "latest release"}
+							{version} - {isPrerelease ? "pre-release" : "latest release"}
 						</>
 					)}
 				</div>

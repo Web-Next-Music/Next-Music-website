@@ -7,7 +7,7 @@ import styles from "./page.module.scss";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-	title: "FckCensor Next — Track List",
+	title: "FckCensor Next - Track List",
 	description: "List of tracks bypassing Yandex Music censorship",
 };
 

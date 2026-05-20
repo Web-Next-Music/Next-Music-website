@@ -83,7 +83,7 @@ function loadExisting(): MetaMap {
 	try {
 		return JSON.parse(readFileSync(OUTPUT_PATH, "utf8")) as MetaMap;
 	} catch {
-		console.warn("[WARN] Failed to read existing file — starting fresh");
+		console.warn("[WARN] Failed to read existing file - starting fresh");
 		return {};
 	}
 }
@@ -94,7 +94,7 @@ function save(meta: MetaMap) {
 	writeFileSync(OUTPUT_PATH, JSON.stringify(meta, null, 2) + "\n", "utf8");
 }
 
-// Using curl instead of Node fetch — Yandex blocks Node by TLS fingerprint
+// Using curl instead of Node fetch - Yandex blocks Node by TLS fingerprint
 function fetchBatch(ids: string[]): MetaMap {
 	const output = execSync(
 		`curl -s -X POST "${YANDEX_API}"` +

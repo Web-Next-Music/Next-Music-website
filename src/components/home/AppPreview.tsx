@@ -280,8 +280,8 @@ function LiveCard() {
 					<CoverPlaceholder />
 				)
 			}
-			title={data.title ?? "—"}
-			artist={data.artists || "—"}
+			title={data.title ?? "-"}
+			artist={data.artists || "-"}
 			timeRow={
 				<ProgressRow elapsed={fmt(pos)} progress={progress} total={fmt(dur)} />
 			}

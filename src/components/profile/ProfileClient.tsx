@@ -79,7 +79,7 @@ function resolveTrackMeta(
 	const db = likedMeta?.get(trackId);
 	if (db?.title || db?.artist || db?.cover)
 		return { title: db.title, artist: db.artist, cover: db.cover };
-	// Stable keys encode title/artist/cover inside them — decode as last resort
+	// Stable keys encode title/artist/cover inside them - decode as last resort
 	if (!trackId.startsWith("http")) {
 		const decoded = decodeTrackKey(trackId);
 		if (decoded?.title || decoded?.artist)

@@ -10,7 +10,9 @@ export interface UserProfile {
 	bio: string | null;
 }
 
-export async function getProfileByGithubId(githubId: string): Promise<UserProfile | null> {
+export async function getProfileByGithubId(
+	githubId: string,
+): Promise<UserProfile | null> {
 	const sb = getSupabase();
 	if (!sb) return null;
 	const { data } = await sb
@@ -21,7 +23,9 @@ export async function getProfileByGithubId(githubId: string): Promise<UserProfil
 	return (data as UserProfile) ?? null;
 }
 
-export async function getProfileByUsername(githubLogin: string): Promise<UserProfile | null> {
+export async function getProfileByUsername(
+	githubLogin: string,
+): Promise<UserProfile | null> {
 	const sb = getSupabase();
 	if (!sb) return null;
 	const { data } = await sb
@@ -32,7 +36,9 @@ export async function getProfileByUsername(githubLogin: string): Promise<UserPro
 	return (data as UserProfile) ?? null;
 }
 
-export async function getOwnProfile(userId: string): Promise<UserProfile | null> {
+export async function getOwnProfile(
+	userId: string,
+): Promise<UserProfile | null> {
 	const sb = getSupabase();
 	if (!sb) return null;
 	const { data } = await sb
@@ -44,7 +50,7 @@ export async function getOwnProfile(userId: string): Promise<UserProfile | null>
 }
 
 // Syncs GitHub metadata to user_profiles on login.
-// Does NOT overwrite bio — only sets identity fields.
+// Does NOT overwrite bio - only sets identity fields.
 export async function syncGitHubMeta(
 	userId: string,
 	github_id: string,
@@ -75,7 +81,9 @@ export async function saveBio(userId: string, bio: string): Promise<boolean> {
 	return !error;
 }
 
-export async function getUserPinnedPlaylists(userId: string): Promise<Playlist[]> {
+export async function getUserPinnedPlaylists(
+	userId: string,
+): Promise<Playlist[]> {
 	const sb = getSupabase();
 	if (!sb) return [];
 	const { data, error } = await sb
@@ -92,14 +100,18 @@ export async function getUserPinnedPlaylists(userId: string): Promise<Playlist[]
 		.filter(Boolean);
 }
 
-export async function getPinnedPlaylistIds(userId: string): Promise<Set<string>> {
+export async function getPinnedPlaylistIds(
+	userId: string,
+): Promise<Set<string>> {
 	const sb = getSupabase();
 	if (!sb) return new Set();
 	const { data } = await sb
 		.from("pinned_playlists")
 		.select("playlist_id")
 		.eq("user_id", userId);
-	return new Set((data ?? []).map((r: { playlist_id: string }) => r.playlist_id));
+	return new Set(
+		(data ?? []).map((r: { playlist_id: string }) => r.playlist_id),
+	);
 }
 
 export async function pinPlaylist(
@@ -119,12 +131,16 @@ export async function pinPlaylist(
 	return !error;
 }
 
-export async function getUserStats(userId: string): Promise<{ likes: number; playlists: number }> {
+export async function getUserStats(
+	userId: string,
+): Promise<{ likes: number; playlists: number }> {
 	const sb = getSupabase();
 	if (!sb) return { likes: 0, playlists: 0 };
 	const { data, error } = await sb.rpc("get_user_stats", { p_user_id: userId });
 	if (error) console.error("[profile] getUserStats:", error.message);
-	return (data as { likes: number; playlists: number }) ?? { likes: 0, playlists: 0 };
+	return (
+		(data as { likes: number; playlists: number }) ?? { likes: 0, playlists: 0 }
+	);
 }
 
 export async function unpinPlaylist(

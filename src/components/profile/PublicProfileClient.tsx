@@ -134,10 +134,15 @@ export default function PublicProfileClient({
 		getProfileByGithubId(githubId).then((p) => {
 			setProfile(p);
 			if (p) {
+				const name = p.display_name ?? p.github_login ?? githubId;
+				document.title = `${name} - Next Music`;
 				getUserPinnedPlaylists(p.user_id).then(setPlaylists);
 				getUserStats(p.user_id).then(setStats);
 			}
 		});
+		return () => {
+			document.title = "Next Music";
+		};
 	}, [githubId]);
 
 	if (profile === "loading") {
@@ -155,9 +160,7 @@ export default function PublicProfileClient({
 	if (!profile) {
 		return (
 			<div className={styles.centered}>
-				<p className={styles.centeredText}>
-					User not found
-				</p>
+				<p className={styles.centeredText}>User not found</p>
 			</div>
 		);
 	}

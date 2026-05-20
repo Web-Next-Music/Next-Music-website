@@ -82,12 +82,17 @@ function AddToPlaylistBtn({
 	const handleOpen = async (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (open) { setOpen(false); return; }
+		if (open) {
+			setOpen(false);
+			return;
+		}
 		if (btnRef.current) {
 			const rect = btnRef.current.getBoundingClientRect();
 			setPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
 		}
-		const results = await Promise.all(playlists.map((pl) => getPlaylistTracks(pl.id)));
+		const results = await Promise.all(
+			playlists.map((pl) => getPlaylistTracks(pl.id)),
+		);
 		const containing = new Set<string>();
 		playlists.forEach((pl, i) => {
 			if (results[i].some((t) => t.track_id === trackId)) containing.add(pl.id);
@@ -102,7 +107,11 @@ function AddToPlaylistBtn({
 		const isIn = inPlaylists.has(playlistId);
 		if (isIn) {
 			await removeTrackFromPlaylist(playlistId, trackId);
-			setInPlaylists((prev) => { const s = new Set(prev); s.delete(playlistId); return s; });
+			setInPlaylists((prev) => {
+				const s = new Set(prev);
+				s.delete(playlistId);
+				return s;
+			});
 		} else {
 			await addTrackToPlaylist(playlistId, trackId, 0);
 			setInPlaylists((prev) => new Set(prev).add(playlistId));
@@ -117,18 +126,31 @@ function AddToPlaylistBtn({
 				onClick={handleOpen}
 				aria-label="Add to playlist"
 			>
-				<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+				<svg
+					width="13"
+					height="13"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2.5"
+					strokeLinecap="round"
+				>
 					<line x1="12" y1="5" x2="12" y2="19" />
 					<line x1="5" y1="12" x2="19" y2="12" />
 				</svg>
 			</button>
-			{open && pos && typeof document !== "undefined" &&
+			{open &&
+				pos &&
+				typeof document !== "undefined" &&
 				createPortal(
 					<div
 						ref={menuRef}
 						className={styles.playlistMenu}
 						style={{ top: pos.top, right: pos.right }}
-						onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+						onClick={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+						}}
 					>
 						{playlists.length === 0 ? (
 							<div className={styles.playlistMenuEmpty}>No playlists</div>
@@ -143,7 +165,16 @@ function AddToPlaylistBtn({
 									>
 										<span>{pl.name}</span>
 										{inPlaylist && (
-											<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+											<svg
+												width="12"
+												height="12"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												strokeWidth="2.5"
+												strokeLinecap="round"
+												strokeLinejoin="round"
+											>
 												<polyline points="20 6 9 17 4 12" />
 											</svg>
 										)}
@@ -384,7 +415,7 @@ function OfficialList({ tracks, query, playlists }: OfficialListProps) {
 								)}
 								<div className={styles.info}>
 									<div className={styles.title}>
-										<Highlight text={track.title || "—"} query={query} />
+										<Highlight text={track.title || "-"} query={query} />
 									</div>
 									<div className={styles.artist}>
 										<Highlight text={track.artist} query={query} />
@@ -392,7 +423,10 @@ function OfficialList({ tracks, query, playlists }: OfficialListProps) {
 								</div>
 								<div
 									className={styles.rowActions}
-									onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+									}}
 								>
 									{trackId && (
 										<AddToPlaylistBtn trackId={trackId} playlists={playlists} />
@@ -408,7 +442,7 @@ function OfficialList({ tracks, query, playlists }: OfficialListProps) {
 										track={{
 											id: trackId,
 											url: track.url,
-											title: track.title || "—",
+											title: track.title || "-",
 											artist: track.artist || "",
 											cover: track.cover,
 											yandexUrl:
@@ -592,7 +626,10 @@ function LegacyList({ tracks, query, playlists }: LegacyListProps) {
 								</div>
 								<div
 									className={styles.rowActions}
-									onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+									onClick={(e) => {
+										e.preventDefault();
+										e.stopPropagation();
+									}}
 								>
 									<AddToPlaylistBtn trackId={track.id} playlists={playlists} />
 									<LikeButton
@@ -710,7 +747,10 @@ export default function FckCensorTabs() {
 	}, []);
 
 	useEffect(() => {
-		if (!user) { setPlaylists([]); return; }
+		if (!user) {
+			setPlaylists([]);
+			return;
+		}
 		getPlaylists(user.id).then(setPlaylists);
 	}, [user?.id]);
 
@@ -763,7 +803,11 @@ export default function FckCensorTabs() {
 					{loading ? (
 						<Skeleton />
 					) : (
-						<OfficialList tracks={official} query={query} playlists={playlists} />
+						<OfficialList
+							tracks={official}
+							query={query}
+							playlists={playlists}
+						/>
 					)}
 				</>
 			)}

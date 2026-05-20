@@ -19,7 +19,9 @@ const REPO = "Next-Music-Extensions";
 const GH = "https://api.github.com";
 
 function ghHeaders(token?: string): Record<string, string> {
-	const h: Record<string, string> = { Accept: "application/vnd.github.v3+json" };
+	const h: Record<string, string> = {
+		Accept: "application/vnd.github.v3+json",
+	};
 	if (token) h["Authorization"] = `Bearer ${token}`;
 	return h;
 }
@@ -113,7 +115,13 @@ async function findLogoRecursive(
 		const logo = pickImg(items);
 		if (logo) return logo;
 		for (const sub of items.filter((i) => i.type === "dir")) {
-			const found = await findLogoRecursive(owner, repo, sub.path, depth + 1, token);
+			const found = await findLogoRecursive(
+				owner,
+				repo,
+				sub.path,
+				depth + 1,
+				token,
+			);
 			if (found) return found;
 		}
 	} catch {}
@@ -135,14 +143,25 @@ async function findBrandingDir(
 	for (const sub of items.filter((i) => i.type === "dir")) {
 		try {
 			const subItems: any[] = await ghContents(owner, repo, sub.path, token);
-			const found = await findBrandingDir(owner, repo, subItems, depth + 1, token);
+			const found = await findBrandingDir(
+				owner,
+				repo,
+				subItems,
+				depth + 1,
+				token,
+			);
 			if (found) return found;
 		} catch {}
 	}
 	return null;
 }
 
-async function getFolderMeta(owner: string, repo: string, folderPath: string, token?: string) {
+async function getFolderMeta(
+	owner: string,
+	repo: string,
+	folderPath: string,
+	token?: string,
+) {
 	try {
 		const items: any[] = await ghContents(owner, repo, folderPath, token);
 
@@ -158,7 +177,12 @@ async function getFolderMeta(owner: string, repo: string, folderPath: string, to
 		if (!logo) {
 			for (const sub of items.filter((i) => i.type === "dir")) {
 				try {
-					const subItems: any[] = await ghContents(owner, repo, sub.path, token);
+					const subItems: any[] = await ghContents(
+						owner,
+						repo,
+						sub.path,
+						token,
+					);
 					if (
 						subItems.some(
 							(i) => i.type === "file" && /\.(css|js|json)$/i.test(i.name),
@@ -1113,7 +1137,7 @@ function DownloadModal({
 		>
 			<div className={styles.modalBox}>
 				<div className={styles.modalBoxHead}>
-					<span className={styles.modalBoxTitle}>Download — {ext.name}</span>
+					<span className={styles.modalBoxTitle}>Download - {ext.name}</span>
 					<button className={styles.modalBoxClose} onClick={onClose}>
 						<IconX />
 					</button>
@@ -1243,7 +1267,7 @@ function ExtensionPage({
 			el.setAttribute(attr, value);
 		}
 
-		const title = `${ext.name} — Next Music Store`;
+		const title = `${ext.name} - Next Music Store`;
 		document.title = title;
 		setMeta('meta[property="og:title"]', "content", title);
 		setMeta(
@@ -1476,8 +1500,11 @@ export default function NextMusicStore() {
 		const prevToken = prevTokenRef.current;
 		prevTokenRef.current = githubToken;
 
-		// Token appeared for the first time — cached data was loaded without it, clear and re-fetch
-		if (prevToken === undefined || (prevToken === null && githubToken !== null)) {
+		// Token appeared for the first time - cached data was loaded without it, clear and re-fetch
+		if (
+			prevToken === undefined ||
+			(prevToken === null && githubToken !== null)
+		) {
 			clearCache();
 		}
 

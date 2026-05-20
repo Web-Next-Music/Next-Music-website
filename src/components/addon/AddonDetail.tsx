@@ -815,7 +815,7 @@ function DownloadModal({
 		>
 			<div className={styles.modalBox}>
 				<div className={styles.modalBoxHead}>
-					<span className={styles.modalBoxTitle}>Download — {ext.name}</span>
+					<span className={styles.modalBoxTitle}>Download - {ext.name}</span>
 					<button className={styles.modalBoxClose} onClick={onClose}>
 						<IconX />
 					</button>
@@ -945,7 +945,7 @@ function ExtensionPage({
 			el.setAttribute(attr, value);
 		}
 
-		const title = `${ext.name} — Next Music Store`;
+		const title = `${ext.name} - Next Music Store`;
 		document.title = title;
 		setMeta('meta[property="og:title"]', "content", title);
 		setMeta(

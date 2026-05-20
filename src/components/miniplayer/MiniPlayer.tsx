@@ -100,14 +100,18 @@ export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
 						onClick={() => {
 							if (nowPlaying.directUrl) {
 								const key = encodeTrackKey({
-									url:    nowPlaying.directUrl,
-									title:  nowPlaying.title,
+									url: nowPlaying.directUrl,
+									title: nowPlaying.title,
 									artist: nowPlaying.artist,
-									cover:  nowPlaying.cover,
+									cover: nowPlaying.cover,
 								});
 								router.push(`/track?key=${key}`);
-							} else if (trackId && !trackId.startsWith("http") && decodeTrackKey(trackId)?.url) {
-								// trackId is an encoded key — use it directly as ?key=
+							} else if (
+								trackId &&
+								!trackId.startsWith("http") &&
+								decodeTrackKey(trackId)?.url
+							) {
+								// trackId is an encoded key - use it directly as ?key=
 								router.push(`/track?key=${trackId}`);
 							} else if (trackId) {
 								router.push(`/track?id=${trackId}`);

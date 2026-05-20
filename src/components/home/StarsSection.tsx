@@ -33,14 +33,14 @@ export default function StarsSection() {
 				{loading
 					? "Loading stargazers…"
 					: stargazers.length > 0
-						? `${stargazers.length} people gave this project a star on GitHub — thank you!`
-						: "Everyone who gave the project a star on GitHub — thank you!"}
+						? `${stargazers.length} people gave this project a star on GitHub - thank you!`
+						: "Everyone who gave the project a star on GitHub - thank you!"}
 			</p>
 			<div className={styles.grid}>
 				{loading && <p className={styles.empty}>Loading…</p>}
 
 				{!loading && stargazers.length === 0 && (
-					<p className={styles.empty}>No stars yet — be the first!</p>
+					<p className={styles.empty}>No stars yet - be the first!</p>
 				)}
 
 				{!loading &&

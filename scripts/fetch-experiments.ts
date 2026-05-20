@@ -113,7 +113,7 @@ function parseStateExperiments(html: string): ExperimentMap | null {
 				)
 					results.set(keys.length, parsed);
 			} catch {
-				/* malformed JSON — skip */
+				/* malformed JSON - skip */
 			}
 		}
 		pos = idx + 1;
@@ -181,7 +181,7 @@ const SKIP = new Set([
 async function fetchBundleNames(html: string): Promise<Set<string>> {
 	const versionMatch = html.match(/music\/(v[\d.]+)\/_next\/static/);
 	if (!versionMatch) {
-		warn("Bundle version not found — skipping");
+		warn("Bundle version not found - skipping");
 		return new Set();
 	}
 
@@ -191,7 +191,7 @@ async function fetchBundleNames(html: string): Promise<Set<string>> {
 
 	const rscMatch = html.match(/src="([^"]*rsc-cache-update[^"]*)"/);
 	if (!rscMatch) {
-		warn("rsc-cache-update not found — skipping");
+		warn("rsc-cache-update not found - skipping");
 		return new Set();
 	}
 
@@ -232,7 +232,7 @@ async function fetchBundleNames(html: string): Promise<Set<string>> {
 				))
 					allNames.add(m[1]);
 			} catch {
-				/* single chunk network error — ignore */
+				/* single chunk network error - ignore */
 			}
 		}),
 	);
@@ -249,13 +249,13 @@ export interface ExperimentsFile {
 
 // Main
 async function main(): Promise<void> {
-	console.log("\n\x1b[1mYandex Music — experiments export\x1b[0m\n");
+	console.log("\n\x1b[1mYandex Music - experiments export\x1b[0m\n");
 
 	info("Loading music.yandex.ru...");
 	const html = await curlGet("https://music.yandex.ru/");
 
 	if (html.length < 1000)
-		throw new Error(`Empty response (${html.length} bytes) — check your token`);
+		throw new Error(`Empty response (${html.length} bytes) - check your token`);
 	if (!html.includes('"experiments"')) {
 		console.error("Response preview:", html.slice(0, 500));
 		throw new Error('"experiments" not found in response');
