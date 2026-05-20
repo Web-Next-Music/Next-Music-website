@@ -670,10 +670,11 @@ export default function ProfileClient() {
 	// Sync GitHub metadata and load own bio on login
 	useEffect(() => {
 		if (!user) return;
+		const githubId = (user.user_metadata?.provider_id ?? user.user_metadata?.sub) as string | undefined;
 		const login = user.user_metadata?.user_name as string | undefined;
 		const name = user.user_metadata?.full_name as string | undefined;
 		const avatar = user.user_metadata?.avatar_url as string | undefined;
-		if (login) syncGitHubMeta(user.id, login, name ?? null, avatar ?? null);
+		if (githubId && login) syncGitHubMeta(user.id, githubId, login, name ?? null, avatar ?? null);
 		getOwnProfile(user.id).then((p) => {
 			if (p?.bio) setBio(p.bio);
 		});
