@@ -116,7 +116,8 @@
 }
 
 .playlistName {
-	font-size: 13px;
+	font-family: var(--font-heading-large);
+	font-size: 15px;
 	font-weight: 500;
 	color: var(--text);
 	flex: 1;
