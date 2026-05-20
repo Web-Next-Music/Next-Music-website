@@ -143,6 +143,40 @@ export async function getUserStats(
 	);
 }
 
+export async function getPublicProfile(githubId: string): Promise<{
+	profile: UserProfile;
+	stats: { likes: number; playlists: number };
+} | null> {
+	const sb = getSupabase();
+	if (!sb) return null;
+	const { data, error } = await sb
+		.from("user_profiles")
+		.select(
+			"user_id, github_id, github_login, display_name, avatar_url, bio, track_likes(count), playlists(count)",
+		)
+		.eq("github_id", githubId)
+		.single();
+	if (error || !data) return null;
+	const d = data as unknown as UserProfile & {
+		track_likes: [{ count: number }];
+		playlists: [{ count: number }];
+	};
+	return {
+		profile: {
+			user_id: d.user_id,
+			github_id: d.github_id,
+			github_login: d.github_login,
+			display_name: d.display_name,
+			avatar_url: d.avatar_url,
+			bio: d.bio,
+		},
+		stats: {
+			likes: d.track_likes?.[0]?.count ?? 0,
+			playlists: d.playlists?.[0]?.count ?? 0,
+		},
+	};
+}
+
 export async function unpinPlaylist(
 	userId: string,
 	playlistId: string,

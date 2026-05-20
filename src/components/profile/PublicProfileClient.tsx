@@ -2,9 +2,8 @@
 
 import { useState, useEffect } from "react";
 import {
-	getProfileByGithubId,
+	getPublicProfile,
 	getUserPinnedPlaylists,
-	getUserStats,
 	type UserProfile,
 } from "@/lib/publicProfile";
 import {
@@ -131,14 +130,17 @@ export default function PublicProfileClient({
 	} | null>(null);
 
 	useEffect(() => {
-		getProfileByGithubId(githubId).then((p) => {
-			setProfile(p);
-			if (p) {
-				const name = p.display_name ?? p.github_login ?? githubId;
-				document.title = `${name} - Next Music`;
-				getUserPinnedPlaylists(p.user_id).then(setPlaylists);
-				getUserStats(p.user_id).then(setStats);
+		getPublicProfile(githubId).then((result) => {
+			if (!result) {
+				setProfile(null);
+				return;
 			}
+			const { profile, stats } = result;
+			setProfile(profile);
+			setStats(stats);
+			const name = profile.display_name ?? profile.github_login ?? githubId;
+			document.title = `${name} - Next Music`;
+			getUserPinnedPlaylists(profile.user_id).then(setPlaylists);
 		});
 		return () => {
 			document.title = "Next Music";
