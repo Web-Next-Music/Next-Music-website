@@ -3,6 +3,7 @@
 	margin: calc(0px + var(--mini-player-h)) auto 0 auto;
 	padding: 20px;
 	min-height: 600px;
+	transition: margin 0.25s ease;
 }
 
 .layout {
