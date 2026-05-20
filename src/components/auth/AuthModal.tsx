@@ -10,12 +10,17 @@ export default function AuthModal() {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		if (!authModalOpen) { setError(null); setLoading(false); }
+		if (!authModalOpen) {
+			setError(null);
+			setLoading(false);
+		}
 	}, [authModalOpen]);
 
 	useEffect(() => {
 		if (!authModalOpen) return;
-		const handler = (e: KeyboardEvent) => { if (e.key === "Escape") closeAuthModal(); };
+		const handler = (e: KeyboardEvent) => {
+			if (e.key === "Escape") closeAuthModal();
+		};
 		document.addEventListener("keydown", handler);
 		return () => document.removeEventListener("keydown", handler);
 	}, [authModalOpen, closeAuthModal]);
@@ -24,7 +29,10 @@ export default function AuthModal() {
 		setLoading(true);
 		setError(null);
 		const err = await signInWithGitHub();
-		if (err) { setError(err); setLoading(false); }
+		if (err) {
+			setError(err);
+			setLoading(false);
+		}
 	}, [signInWithGitHub]);
 
 	if (!authModalOpen) return null;
@@ -32,14 +40,23 @@ export default function AuthModal() {
 	return (
 		<div className={styles.overlay} onClick={closeAuthModal}>
 			<div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-				<button className={styles.closeBtn} onClick={closeAuthModal} aria-label="Close">
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-						<path d="M18 6L6 18M6 6l12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-					</svg>
-				</button>
-
-				<p className={styles.title}>Sign in</p>
-				<p className={styles.sub}>to like tracks and accounts</p>
+				<p className={styles.title}>
+					Sign in
+					<button
+						className={styles.closeBtn}
+						onClick={closeAuthModal}
+						aria-label="Close"
+					>
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+							<path
+								d="M18 6L6 18M6 6l12 12"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+							/>
+						</svg>
+					</button>
+				</p>
 
 				<button
 					className={styles.githubBtn}
