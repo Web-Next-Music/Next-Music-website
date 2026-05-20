@@ -1,5 +1,6 @@
 "use client";
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useAuth } from "@/lib/auth";
 import styles from "./StoreFeed.module.scss";
 import {
 	Extension,
@@ -9,23 +10,30 @@ import {
 	saveToCache,
 	refreshCacheTimestamp,
 	cacheMatchesNewData,
+	clearCache,
 } from "@/lib/addonCache";
 import type { CalloutType } from "@/types/addon";
 
 const OWNER = "Web-Next-Music";
 const REPO = "Next-Music-Extensions";
 const GH = "https://api.github.com";
-const GH_H = { Accept: "application/vnd.github.v3+json" };
+
+function ghHeaders(token?: string): Record<string, string> {
+	const h: Record<string, string> = { Accept: "application/vnd.github.v3+json" };
+	if (token) h["Authorization"] = `Bearer ${token}`;
+	return h;
+}
 
 async function ghContents(
 	owner: string,
 	repo: string,
 	path: string,
+	token?: string,
 ): Promise<any[]> {
 	const url = path
 		? `${GH}/repos/${owner}/${repo}/contents/${path}`
 		: `${GH}/repos/${owner}/${repo}/contents`;
-	const res = await fetch(url, { headers: GH_H });
+	const res = await fetch(url, { headers: ghHeaders(token) });
 	if (!res.ok)
 		throw new Error(`ghContents ${res.status}: ${owner}/${repo}/${path}`);
 	return res.json();
@@ -97,14 +105,15 @@ async function findLogoRecursive(
 	repo: string,
 	dirPath: string,
 	depth = 0,
+	token?: string,
 ): Promise<string | null> {
 	if (depth > 5) return null;
 	try {
-		const items: any[] = await ghContents(owner, repo, dirPath);
+		const items: any[] = await ghContents(owner, repo, dirPath, token);
 		const logo = pickImg(items);
 		if (logo) return logo;
 		for (const sub of items.filter((i) => i.type === "dir")) {
-			const found = await findLogoRecursive(owner, repo, sub.path, depth + 1);
+			const found = await findLogoRecursive(owner, repo, sub.path, depth + 1, token);
 			if (found) return found;
 		}
 	} catch {}
@@ -116,6 +125,7 @@ async function findBrandingDir(
 	repo: string,
 	items: any[],
 	depth = 0,
+	token?: string,
 ): Promise<string | null> {
 	const branding = items.find(
 		(i) => i.type === "dir" && /^branding$/i.test(i.name),
@@ -124,21 +134,21 @@ async function findBrandingDir(
 	if (depth >= 3) return null;
 	for (const sub of items.filter((i) => i.type === "dir")) {
 		try {
-			const subItems: any[] = await ghContents(owner, repo, sub.path);
-			const found = await findBrandingDir(owner, repo, subItems, depth + 1);
+			const subItems: any[] = await ghContents(owner, repo, sub.path, token);
+			const found = await findBrandingDir(owner, repo, subItems, depth + 1, token);
 			if (found) return found;
 		} catch {}
 	}
 	return null;
 }
 
-async function getFolderMeta(owner: string, repo: string, folderPath: string) {
+async function getFolderMeta(owner: string, repo: string, folderPath: string, token?: string) {
 	try {
-		const items: any[] = await ghContents(owner, repo, folderPath);
+		const items: any[] = await ghContents(owner, repo, folderPath, token);
 
-		const brandingPath = await findBrandingDir(owner, repo, items);
+		const brandingPath = await findBrandingDir(owner, repo, items, 0, token);
 		let logo: string | null = brandingPath
-			? await findLogoRecursive(owner, repo, brandingPath)
+			? await findLogoRecursive(owner, repo, brandingPath, 0, token)
 			: null;
 
 		if (!logo) {
@@ -148,7 +158,7 @@ async function getFolderMeta(owner: string, repo: string, folderPath: string) {
 		if (!logo) {
 			for (const sub of items.filter((i) => i.type === "dir")) {
 				try {
-					const subItems: any[] = await ghContents(owner, repo, sub.path);
+					const subItems: any[] = await ghContents(owner, repo, sub.path, token);
 					if (
 						subItems.some(
 							(i) => i.type === "file" && /\.(css|js|json)$/i.test(i.name),
@@ -192,10 +202,11 @@ async function getFolderMeta(owner: string, repo: string, folderPath: string) {
 async function getAllReleaseAssets(
 	owner: string,
 	repo: string,
+	token?: string,
 ): Promise<ReleaseAsset[]> {
 	try {
 		const res = await fetch(`${GH}/repos/${owner}/${repo}/releases/latest`, {
-			headers: GH_H,
+			headers: ghHeaders(token),
 		});
 		if (!res.ok) return [];
 		const release = await res.json();
@@ -262,6 +273,7 @@ function deriveTagsAndClients(
 
 async function loadExtensions(
 	onProgress?: (msg: string) => void,
+	token?: string,
 ): Promise<Extension[]> {
 	onProgress?.("Loading submodule map…");
 	const gitmodules = await loadGitmodules();
@@ -300,7 +312,7 @@ async function loadExtensions(
 		}
 
 		try {
-			const items: any[] = await ghContents(OWNER, REPO, section);
+			const items: any[] = await ghContents(OWNER, REPO, section, token);
 			for (const item of items) {
 				if (item.type !== "dir" || seen.has(item.name.toLowerCase())) continue;
 				entries.push({
@@ -326,8 +338,8 @@ async function loadExtensions(
 			const entry = entries[idx];
 			try {
 				const [meta, releaseAssets] = await Promise.all([
-					getFolderMeta(entry.owner, entry.repo, entry.folderPath),
-					getAllReleaseAssets(entry.owner, entry.repo),
+					getFolderMeta(entry.owner, entry.repo, entry.folderPath, token),
+					getAllReleaseAssets(entry.owner, entry.repo, token),
 				]);
 				const { tags, clients } = deriveTagsAndClients(
 					releaseAssets,
@@ -1407,6 +1419,8 @@ function ExtCard({
 }
 
 export default function NextMusicStore() {
+	const { githubToken, loading: authLoading } = useAuth();
+
 	const [activeTab, setActiveTab] = useState<"addons" | "themes">("addons");
 	const [activeTags, setActiveTags] = useState<Tag[]>([]);
 	const [searchQuery, setSearchQuery] = useState("");
@@ -1418,7 +1432,7 @@ export default function NextMusicStore() {
 	const [error, setError] = useState<string | null>(null);
 	const [hashNotFound, setHashNotFound] = useState<string | null>(null);
 
-	const fetchExtensions = useCallback(async () => {
+	const fetchExtensions = useCallback(async (token?: string) => {
 		setLoading(true);
 		setError(null);
 
@@ -1431,7 +1445,7 @@ export default function NextMusicStore() {
 		}
 
 		try {
-			const freshExts = await loadExtensions(setLoadingMsg);
+			const freshExts = await loadExtensions(setLoadingMsg, token);
 
 			if (cached.exts && cacheMatchesNewData(freshExts)) {
 				refreshCacheTimestamp();
@@ -1454,9 +1468,21 @@ export default function NextMusicStore() {
 		}
 	}, []);
 
+	const prevTokenRef = useRef<string | null | undefined>(undefined);
+
 	useEffect(() => {
-		fetchExtensions();
-	}, [fetchExtensions]);
+		if (authLoading) return;
+
+		const prevToken = prevTokenRef.current;
+		prevTokenRef.current = githubToken;
+
+		// Token appeared for the first time — cached data was loaded without it, clear and re-fetch
+		if (prevToken === undefined || (prevToken === null && githubToken !== null)) {
+			clearCache();
+		}
+
+		fetchExtensions(githubToken ?? undefined);
+	}, [authLoading, githubToken, fetchExtensions]);
 
 	const initialSlugRef = React.useRef<string | null>(null);
 	const initialWasHashRef = React.useRef(false);
@@ -1680,7 +1706,7 @@ export default function NextMusicStore() {
 										<br />
 										<button
 											className={styles.retryBtn}
-											onClick={fetchExtensions}
+											onClick={() => fetchExtensions(githubToken ?? undefined)}
 										>
 											Retry
 										</button>

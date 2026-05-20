@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import styles from "./Hero.module.scss";
 import AppPreview from "@/components/home/AppPreview";
-import { findAsset, formatSize } from "@/lib/github";
+import { findAsset, formatSize, fetchLatestRelease } from "@/lib/github";
+import { useAuth } from "@/lib/auth";
 import type { GithubAsset, GithubRelease } from "@/types/ui";
-
-const REPO = "Web-Next-Music/Next-Music-Client";
 
 function WindowsIcon() {
 	return (
@@ -57,18 +56,16 @@ function downloadViaIframe(url: string) {
 }
 
 export default function Hero() {
+	const { githubToken } = useAuth();
 	const [release, setRelease] = useState<GithubRelease | null>(null);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
-		fetch(`https://api.github.com/repos/${REPO}/releases/latest`, {
-			headers: { Accept: "application/vnd.github+json" },
-		})
-			.then((res) => res.json())
-			.then((data: GithubRelease) => setRelease(data))
+		fetchLatestRelease(githubToken ?? undefined)
+			.then((data) => setRelease(data as GithubRelease | null))
 			.catch(() => setRelease(null))
 			.finally(() => setLoading(false));
-	}, []);
+	}, [githubToken]);
 
 	const version = release?.tag_name ?? "unknown";
 	const isPrerelease = release?.prerelease ?? false;

@@ -4,42 +4,23 @@ import { useEffect, useState } from "react";
 import styles from "./StarsSection.module.scss";
 import Image from "next/image";
 import type { Stargazer } from "@/types/github";
-
-const REPO = "Web-Next-Music/Next-Music-Client";
-
-async function fetchAllStargazers(): Promise<Stargazer[]> {
-	const all: Stargazer[] = [];
-	let page = 1;
-
-	while (true) {
-		const res = await fetch(
-			`https://api.github.com/repos/${REPO}/stargazers?per_page=100&page=${page}`,
-			{ headers: { Accept: "application/vnd.github+json" } },
-		);
-		if (!res.ok) break;
-		const batch: Stargazer[] = await res.json();
-		if (batch.length === 0) break;
-		all.push(...batch);
-		if (batch.length < 100) break;
-		page++;
-	}
-
-	return all;
-}
+import { fetchStargazers } from "@/lib/github";
+import { useAuth } from "@/lib/auth";
 
 const PAGE_SIZE = 12;
 
 export default function StarsSection() {
+	const { githubToken } = useAuth();
 	const [stargazers, setStargazers] = useState<Stargazer[]>([]);
 	const [loading, setLoading] = useState(true);
 	const [page, setPage] = useState(1);
 
 	useEffect(() => {
-		fetchAllStargazers()
+		fetchStargazers(githubToken ?? undefined)
 			.then(setStargazers)
 			.catch(() => setStargazers([]))
 			.finally(() => setLoading(false));
-	}, []);
+	}, [githubToken]);
 
 	const totalPages = Math.ceil(stargazers.length / PAGE_SIZE);
 	const pageItems = stargazers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);

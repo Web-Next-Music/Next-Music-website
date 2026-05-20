@@ -5,35 +5,31 @@ export type { Stargazer, ReleaseAsset, RepoRelease };
 const REPO = "Web-Next-Music/Next-Music-Client";
 const BASE = "https://api.github.com";
 
-const FALLBACK_BASES: string[] = ["https://ghapi.huchen.dev"];
-
-function headers(): HeadersInit {
-	return {
+function headers(token?: string): HeadersInit {
+	const h: Record<string, string> = {
 		Accept: "application/vnd.github+json",
 		"X-GitHub-Api-Version": "2022-11-28",
 	};
+	if (token) h["Authorization"] = `Bearer ${token}`;
+	return h;
 }
 
-async function fetchWithFallback(path: string): Promise<Response | null> {
-	const bases = [BASE, ...FALLBACK_BASES];
-
-	for (const base of bases) {
-		try {
-			const res = await fetch(`${base}${path}`, { headers: headers() });
-			if (res.ok) return res;
-		} catch {}
-	}
-
+async function fetchWithFallback(path: string, token?: string): Promise<Response | null> {
+	try {
+		const res = await fetch(`${BASE}${path}`, { headers: headers(token) });
+		if (res.ok) return res;
+	} catch {}
 	return null;
 }
 
-export async function fetchStargazers(): Promise<Stargazer[]> {
+export async function fetchStargazers(token?: string): Promise<Stargazer[]> {
 	const all: Stargazer[] = [];
 	let page = 1;
 
 	while (true) {
 		const res = await fetchWithFallback(
 			`/repos/${REPO}/stargazers?per_page=100&page=${page}`,
+			token,
 		);
 		if (!res) break;
 
@@ -47,8 +43,8 @@ export async function fetchStargazers(): Promise<Stargazer[]> {
 	return all;
 }
 
-export async function fetchLatestRelease(): Promise<RepoRelease | null> {
-	const res = await fetchWithFallback(`/repos/${REPO}/releases/latest`);
+export async function fetchLatestRelease(token?: string): Promise<RepoRelease | null> {
+	const res = await fetchWithFallback(`/repos/${REPO}/releases/latest`, token);
 	if (!res) return null;
 	return res.json();
 }

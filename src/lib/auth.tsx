@@ -12,9 +12,12 @@ import type { User, Session } from "@supabase/supabase-js";
 import { getSupabase } from "./supabase";
 import { syncGitHubMeta } from "./publicProfile";
 
+const GH_TOKEN_KEY = "gh_provider_token";
+
 interface AuthContextValue {
 	user: User | null;
 	session: Session | null;
+	githubToken: string | null;
 	loading: boolean;
 	signInWithGitHub: () => Promise<string | null>;
 	signOut: () => Promise<void>;
@@ -28,6 +31,7 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
 	const [user, setUser] = useState<User | null>(null);
 	const [session, setSession] = useState<Session | null>(null);
+	const [githubToken, setGithubToken] = useState<string | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [authModalOpen, setAuthModalOpen] = useState(false);
 
@@ -36,14 +40,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		if (!sb) { setLoading(false); return; }
 
 		sb.auth.getSession().then(({ data }) => {
-			setSession(data.session);
-			setUser(data.session?.user ?? null);
+			const s = data.session;
+			setSession(s);
+			setUser(s?.user ?? null);
+
+			if (s?.provider_token) {
+				localStorage.setItem(GH_TOKEN_KEY, s.provider_token);
+				setGithubToken(s.provider_token);
+			} else if (s?.user) {
+				const saved = localStorage.getItem(GH_TOKEN_KEY);
+				setGithubToken(saved);
+			}
+
 			setLoading(false);
 		});
 
 		const { data: listener } = sb.auth.onAuthStateChange((_event, session) => {
 			setSession(session);
 			setUser(session?.user ?? null);
+
+			if (session?.provider_token) {
+				localStorage.setItem(GH_TOKEN_KEY, session.provider_token);
+				setGithubToken(session.provider_token);
+			} else if (!session) {
+				localStorage.removeItem(GH_TOKEN_KEY);
+				setGithubToken(null);
+			}
+
 			const u = session?.user;
 			if (u) {
 				const login = u.user_metadata?.user_name as string | undefined;
@@ -83,6 +106,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			value={{
 				user,
 				session,
+				githubToken,
 				loading,
 				signInWithGitHub,
 				signOut,
