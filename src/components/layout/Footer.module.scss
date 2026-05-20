@@ -95,7 +95,9 @@
 	height: 24px;
 	border-radius: 12px;
 	border: 1px solid var(--border);
-	transition: background 0.25s, border-color 0.25s;
+	transition:
+		background 0.25s,
+		border-color 0.25s;
 	background: var(--surface2);
 
 	&.dark {
@@ -125,7 +127,9 @@
 	align-items: center;
 	justify-content: center;
 	color: var(--accent);
-	transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.25s;
+	transition:
+		transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+		background 0.25s;
 }
 
 @media (max-width: 768px) {

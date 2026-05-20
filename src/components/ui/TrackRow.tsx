@@ -33,7 +33,19 @@ function buildHref(trackId: string, dbMeta?: TrackLikeMeta): string {
 	return `/track?id=${trackId}`;
 }
 
-function PlayBtn({ trackId, title, artist, cover, dbMeta }: { trackId: string; title?: string; artist?: string; cover?: string; dbMeta?: TrackLikeMeta }) {
+function PlayBtn({
+	trackId,
+	title,
+	artist,
+	cover,
+	dbMeta,
+}: {
+	trackId: string;
+	title?: string;
+	artist?: string;
+	cover?: string;
+	dbMeta?: TrackLikeMeta;
+}) {
 	const player = usePlayer();
 	const [loading, setLoading] = useState(false);
 	if (!player) return null;
@@ -45,8 +57,13 @@ function PlayBtn({ trackId, title, artist, cover, dbMeta }: { trackId: string; t
 	const handleClick = async (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (isThis) { isPlaying ? pause() : resume(); return; }
-		const decoded = !trackId.startsWith("http") ? decodeTrackKey(trackId) : null;
+		if (isThis) {
+			isPlaying ? pause() : resume();
+			return;
+		}
+		const decoded = !trackId.startsWith("http")
+			? decodeTrackKey(trackId)
+			: null;
 		const playUrl = dbMeta?.mp3_url ?? decoded?.url;
 		if (playUrl) {
 			play({
@@ -59,10 +76,19 @@ function PlayBtn({ trackId, title, artist, cover, dbMeta }: { trackId: string; t
 			return;
 		}
 		setLoading(true);
-		const { ensureTracksLoaded, findTrackById } = await import("@/lib/trackStore");
+		const { ensureTracksLoaded, findTrackById } =
+			await import("@/lib/trackStore");
 		await ensureTracksLoaded();
 		const track = findTrackById(trackId);
-		if (track) play({ id: track.id, url: track.url, title: track.title, artist: track.artist, cover: track.cover, yandexUrl: track.yandexUrl });
+		if (track)
+			play({
+				id: track.id,
+				url: track.url,
+				title: track.title,
+				artist: track.artist,
+				cover: track.cover,
+				yandexUrl: track.yandexUrl,
+			});
 		setLoading(false);
 	};
 
@@ -73,7 +99,15 @@ function PlayBtn({ trackId, title, artist, cover, dbMeta }: { trackId: string; t
 			aria-label={active ? "Pause" : "Play"}
 		>
 			{loading ? (
-				<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+				<svg
+					width="13"
+					height="13"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2.5"
+					strokeLinecap="round"
+				>
 					<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
 				</svg>
 			) : active ? (
@@ -107,7 +141,10 @@ function AddToPlaylistMenu({
 	useEffect(() => {
 		if (!open) return;
 		const handler = (e: MouseEvent) => {
-			if (!btnRef.current?.contains(e.target as Node) && !menuRef.current?.contains(e.target as Node))
+			if (
+				!btnRef.current?.contains(e.target as Node) &&
+				!menuRef.current?.contains(e.target as Node)
+			)
 				setOpen(false);
 		};
 		document.addEventListener("mousedown", handler);
@@ -119,12 +156,17 @@ function AddToPlaylistMenu({
 	const handleOpen = async (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
-		if (open) { setOpen(false); return; }
+		if (open) {
+			setOpen(false);
+			return;
+		}
 		if (btnRef.current) {
 			const rect = btnRef.current.getBoundingClientRect();
 			setPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
 		}
-		const results = await Promise.all(playlists.map((pl) => getPlaylistTracks(pl.id)));
+		const results = await Promise.all(
+			playlists.map((pl) => getPlaylistTracks(pl.id)),
+		);
 		const containing = new Set<string>();
 		playlists.forEach((pl, i) => {
 			if (results[i].some((t) => t.track_id === trackId)) containing.add(pl.id);
@@ -139,7 +181,11 @@ function AddToPlaylistMenu({
 		const isIn = inPlaylists.has(playlistId);
 		if (isIn) {
 			await removeTrackFromPlaylist(playlistId, trackId);
-			setInPlaylists((prev) => { const s = new Set(prev); s.delete(playlistId); return s; });
+			setInPlaylists((prev) => {
+				const s = new Set(prev);
+				s.delete(playlistId);
+				return s;
+			});
 		} else {
 			await addTrackToPlaylist(playlistId, trackId, 0);
 			setInPlaylists((prev) => new Set(prev).add(playlistId));
@@ -154,18 +200,31 @@ function AddToPlaylistMenu({
 				onClick={handleOpen}
 				aria-label="Add to playlist"
 			>
-				<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+				<svg
+					width="13"
+					height="13"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					strokeWidth="2.5"
+					strokeLinecap="round"
+				>
 					<line x1="12" y1="5" x2="12" y2="19" />
 					<line x1="5" y1="12" x2="19" y2="12" />
 				</svg>
 			</button>
-			{open && pos && typeof document !== "undefined" &&
+			{open &&
+				pos &&
+				typeof document !== "undefined" &&
 				createPortal(
 					<div
 						ref={menuRef}
 						className={styles.menu}
 						style={{ top: pos.top, right: pos.right }}
-						onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+						onClick={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+						}}
 					>
 						{playlists.map((pl) => {
 							const isIn = inPlaylists.has(pl.id);
@@ -177,7 +236,16 @@ function AddToPlaylistMenu({
 								>
 									<span>{pl.name}</span>
 									{isIn && (
-										<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+										<svg
+											width="12"
+											height="12"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											strokeWidth="2.5"
+											strokeLinecap="round"
+											strokeLinejoin="round"
+										>
 											<polyline points="20 6 9 17 4 12" />
 										</svg>
 									)}
@@ -215,7 +283,8 @@ export default function TrackRow({
 	onRemove,
 }: TrackRowProps) {
 	const player = usePlayer();
-	const isThis = player?.nowPlaying?.id === trackId || player?.nowPlaying?.url === trackId;
+	const isThis =
+		player?.nowPlaying?.id === trackId || player?.nowPlaying?.url === trackId;
 	const href = buildHref(trackId, dbMeta);
 
 	return (
@@ -230,9 +299,27 @@ export default function TrackRow({
 				) : (
 					<div className={styles.coverPlaceholder}>
 						<svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-							<path d="M9 18V5l12-2v13" stroke="var(--muted)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-							<circle cx="6" cy="18" r="3" stroke="var(--muted)" strokeWidth="1.5" />
-							<circle cx="18" cy="16" r="3" stroke="var(--muted)" strokeWidth="1.5" />
+							<path
+								d="M9 18V5l12-2v13"
+								stroke="var(--muted)"
+								strokeWidth="1.5"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							/>
+							<circle
+								cx="6"
+								cy="18"
+								r="3"
+								stroke="var(--muted)"
+								strokeWidth="1.5"
+							/>
+							<circle
+								cx="18"
+								cy="16"
+								r="3"
+								stroke="var(--muted)"
+								strokeWidth="1.5"
+							/>
 						</svg>
 					</div>
 				)}
@@ -243,9 +330,14 @@ export default function TrackRow({
 			</div>
 			<div
 				className={styles.actions}
-				onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}
+				onClick={(e) => {
+					e.preventDefault();
+					e.stopPropagation();
+				}}
 			>
-				{playlists && <AddToPlaylistMenu trackId={trackId} playlists={playlists} />}
+				{playlists && (
+					<AddToPlaylistMenu trackId={trackId} playlists={playlists} />
+				)}
 				{showLike && (
 					<LikeButton
 						compact
@@ -262,13 +354,35 @@ export default function TrackRow({
 					/>
 				)}
 				{onRemove && (
-					<button className={`${styles.actionBtn} ${styles.actionBtnRemove}`} onClick={(e) => { e.preventDefault(); e.stopPropagation(); onRemove(e); }} aria-label="Remove">
-						<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+					<button
+						className={`${styles.actionBtn} ${styles.actionBtnRemove}`}
+						onClick={(e) => {
+							e.preventDefault();
+							e.stopPropagation();
+							onRemove(e);
+						}}
+						aria-label="Remove"
+					>
+						<svg
+							width="12"
+							height="12"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2.5"
+							strokeLinecap="round"
+						>
 							<path d="M18 6L6 18M6 6l12 12" />
 						</svg>
 					</button>
 				)}
-				<PlayBtn trackId={trackId} title={title} artist={artist} cover={cover} dbMeta={dbMeta} />
+				<PlayBtn
+					trackId={trackId}
+					title={title}
+					artist={artist}
+					cover={cover}
+					dbMeta={dbMeta}
+				/>
 			</div>
 		</Link>
 	);

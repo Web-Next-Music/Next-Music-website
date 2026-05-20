@@ -66,6 +66,7 @@ export async function removeLike(
 		.delete()
 		.eq(field, id)
 		.eq("user_id", userId);
-	if (error) console.error("[likes] removeLike error:", error.message, error.code);
+	if (error)
+		console.error("[likes] removeLike error:", error.message, error.code);
 	return !error;
 }

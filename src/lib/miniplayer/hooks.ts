@@ -43,10 +43,10 @@ export function useRichPresenceWS(
 			const nmUGCPlayerUrl = trackId.includes("-")
 				? (() => {
 						const key = encodeTrackKey({
-							url:    trackUrl || "",
-							title:  np?.title,
+							url: trackUrl || "",
+							title: np?.title,
 							artist: np?.artist,
-							cover:  np?.cover,
+							cover: np?.cover,
 						});
 						return `${window.location.origin}/track?key=${key}`;
 					})()

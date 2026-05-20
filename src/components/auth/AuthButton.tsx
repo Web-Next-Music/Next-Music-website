@@ -30,7 +30,9 @@ export default function AuthButton() {
 	}
 
 	const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
-	const initial = (user.user_metadata?.user_name ?? user.email ?? "?")[0].toUpperCase();
+	const initial = (user.user_metadata?.user_name ??
+		user.email ??
+		"?")[0].toUpperCase();
 
 	return (
 		<div ref={ref} className={styles.wrap}>
@@ -53,11 +55,20 @@ export default function AuthButton() {
 						{user.user_metadata?.user_name ?? user.email}
 					</p>
 					<Link
-						href={`/profile?id=${(user.user_metadata?.provider_id ?? user.user_metadata?.sub) ?? ""}`}
+						href={`/profile?id=${user.user_metadata?.provider_id ?? user.user_metadata?.sub ?? ""}`}
 						className={styles.dropdownLink}
 						onClick={() => setDropdownOpen(false)}
 					>
-						<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+						<svg
+							width="13"
+							height="13"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeLinecap="round"
+							strokeLinejoin="round"
+						>
 							<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
 							<circle cx="12" cy="7" r="4" />
 						</svg>

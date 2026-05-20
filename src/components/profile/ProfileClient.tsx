@@ -655,7 +655,17 @@ export default function ProfileClient() {
 		}
 		return true;
 	});
-	const hasPlayer = !!player?.nowPlaying;
+
+	useEffect(() => {
+		if (loading || !user) return;
+		const name =
+			(user.user_metadata?.full_name as string | undefined) ??
+			(user.user_metadata?.user_name as string | undefined);
+		if (name) document.title = `${name} - Next Music`;
+		return () => {
+			document.title = "Next Music";
+		};
+	}, [user, loading]);
 
 	// Sync GitHub metadata and load own bio on login
 	useEffect(() => {

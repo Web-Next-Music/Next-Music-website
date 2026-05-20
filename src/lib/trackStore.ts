@@ -35,7 +35,11 @@ export function getStoreSnapshot(): StoreSnapshot {
 	return snapshot;
 }
 
-const SERVER_SNAPSHOT: StoreSnapshot = { official: [], legacy: [], loaded: false };
+const SERVER_SNAPSHOT: StoreSnapshot = {
+	official: [],
+	legacy: [],
+	loaded: false,
+};
 export function getServerSnapshot(): StoreSnapshot {
 	return SERVER_SNAPSHOT;
 }

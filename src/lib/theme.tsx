@@ -23,7 +23,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 	useLayoutEffect(() => {
 		try {
 			const saved = localStorage.getItem("nm-theme") as Theme | null;
-			const preferred = window.matchMedia("(prefers-color-scheme: light)").matches
+			const preferred = window.matchMedia("(prefers-color-scheme: light)")
+				.matches
 				? "light"
 				: "dark";
 			const resolved: Theme = saved ?? preferred;

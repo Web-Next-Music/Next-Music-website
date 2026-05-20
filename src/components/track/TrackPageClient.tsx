@@ -548,7 +548,12 @@ function TrackPageContent({ isHiddenMode }: { isHiddenMode: boolean }) {
 											type: "track",
 											trackId:
 												displayTrack?.id ||
-												stableTrackKey(directUrl, paramTitle, paramArtist, paramCover),
+												stableTrackKey(
+													directUrl,
+													paramTitle,
+													paramArtist,
+													paramCover,
+												),
 											meta:
 												!displayTrack?.id && directUrl
 													? {

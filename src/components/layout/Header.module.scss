@@ -95,7 +95,10 @@
 	border-radius: 8px;
 	cursor: pointer;
 	color: var(--muted);
-	transition: border-color 0.2s, color 0.2s, background 0.2s;
+	transition:
+		border-color 0.2s,
+		color 0.2s,
+		background 0.2s;
 
 	&:hover {
 		border-color: rgba(43, 254, 245, 0.35);
@@ -117,14 +120,24 @@
 		background: currentColor;
 		border-radius: 2px;
 		transform-origin: center;
-		transition: transform 0.22s ease, opacity 0.22s ease, width 0.22s ease;
+		transition:
+			transform 0.22s ease,
+			opacity 0.22s ease,
+			width 0.22s ease;
 	}
 }
 
 .burgerIconOpen {
-	span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
-	span:nth-child(2) { opacity: 0; width: 0; }
-	span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+	span:nth-child(1) {
+		transform: translateY(6px) rotate(45deg);
+	}
+	span:nth-child(2) {
+		opacity: 0;
+		width: 0;
+	}
+	span:nth-child(3) {
+		transform: translateY(-6px) rotate(-45deg);
+	}
 }
 
 .dropdown {
@@ -144,8 +157,14 @@
 }
 
 @keyframes dropIn {
-	from { opacity: 0; transform: translateY(-6px); }
-	to { opacity: 1; transform: translateY(0); }
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .dropdownLink {
@@ -156,7 +175,10 @@
 	padding: 8px 12px;
 	border-radius: 7px;
 	border: 1px solid transparent;
-	transition: color 0.15s, background 0.15s, border-color 0.15s;
+	transition:
+		color 0.15s,
+		background 0.15s,
+		border-color 0.15s;
 	white-space: nowrap;
 
 	&:hover {

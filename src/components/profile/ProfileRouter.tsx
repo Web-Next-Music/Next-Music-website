@@ -15,13 +15,15 @@ export default function ProfileRouter() {
 	useEffect(() => {
 		if (loading) return;
 		if (!githubId && user) {
-			const ownGithubId = (user?.user_metadata?.provider_id ?? user?.user_metadata?.sub) as string | undefined;
+			const ownGithubId = (user?.user_metadata?.provider_id ??
+				user?.user_metadata?.sub) as string | undefined;
 			if (ownGithubId) router.replace(`/profile?id=${ownGithubId}`);
 		}
 	}, [githubId, user, loading, router]);
 
 	if (githubId) {
-		const ownGithubId = (user?.user_metadata?.provider_id ?? user?.user_metadata?.sub) as string | undefined;
+		const ownGithubId = (user?.user_metadata?.provider_id ??
+			user?.user_metadata?.sub) as string | undefined;
 		if (!loading && ownGithubId && githubId === ownGithubId) {
 			return <ProfileClient />;
 		}

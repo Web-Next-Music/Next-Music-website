@@ -5,6 +5,7 @@ let _client: SupabaseClient | null = null;
 
 export function getSupabase(): SupabaseClient | null {
 	if (!config.supabase.url || !config.supabase.anonKey) return null;
-	if (!_client) _client = createClient(config.supabase.url, config.supabase.anonKey);
+	if (!_client)
+		_client = createClient(config.supabase.url, config.supabase.anonKey);
 	return _client;
 }

@@ -37,7 +37,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 	useEffect(() => {
 		const sb = getSupabase();
-		if (!sb) { setLoading(false); return; }
+		if (!sb) {
+			setLoading(false);
+			return;
+		}
 
 		sb.auth.getSession().then(({ data }) => {
 			const s = data.session;
@@ -55,7 +58,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			const u = s?.user;
 			if (u) {
 				const login = u.user_metadata?.user_name as string | undefined;
-				const githubId = (u.user_metadata?.provider_id ?? u.user_metadata?.sub) as string | undefined;
+				const githubId = (u.user_metadata?.provider_id ??
+					u.user_metadata?.sub) as string | undefined;
 				if (login && githubId) {
 					syncGitHubMeta(
 						u.id,
@@ -85,7 +89,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			const u = session?.user;
 			if (u) {
 				const login = u.user_metadata?.user_name as string | undefined;
-				const githubId = (u.user_metadata?.provider_id ?? u.user_metadata?.sub) as string | undefined;
+				const githubId = (u.user_metadata?.provider_id ??
+					u.user_metadata?.sub) as string | undefined;
 				if (login && githubId) {
 					syncGitHubMeta(
 						u.id,

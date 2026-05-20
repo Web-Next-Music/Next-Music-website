@@ -60,13 +60,18 @@
 		opacity: 0.4;
 		animation: pulse 1.2s ease-in-out infinite;
 
-		&:nth-child(2) { animation-delay: 0.2s; }
-		&:nth-child(3) { animation-delay: 0.4s; }
+		&:nth-child(2) {
+			animation-delay: 0.2s;
+		}
+		&:nth-child(3) {
+			animation-delay: 0.4s;
+		}
 	}
 }
 
 @keyframes pulse {
-	0%, 100% {
+	0%,
+	100% {
 		opacity: 0.2;
 		transform: scale(0.85);
 	}
@@ -90,7 +95,10 @@
 	cursor: pointer;
 	align-self: start;
 	margin-top: 0;
-	transition: color 0.15s, border-color 0.15s, background 0.15s;
+	transition:
+		color 0.15s,
+		border-color 0.15s,
+		background 0.15s;
 
 	&:hover {
 		color: var(--text);
@@ -156,7 +164,11 @@
 		content: "";
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, rgba(43, 254, 245, 0.04) 0%, transparent 55%);
+		background: linear-gradient(
+			135deg,
+			rgba(43, 254, 245, 0.04) 0%,
+			transparent 55%
+		);
 		pointer-events: none;
 	}
 }
@@ -249,15 +261,29 @@
 		transform-origin: bottom;
 		animation: waveBar 1s ease-in-out infinite;
 
-		&:nth-child(1) { height: 8px; animation-delay: 0s; }
-		&:nth-child(2) { height: 14px; animation-delay: 0.15s; }
-		&:nth-child(3) { height: 6px; animation-delay: 0.3s; }
+		&:nth-child(1) {
+			height: 8px;
+			animation-delay: 0s;
+		}
+		&:nth-child(2) {
+			height: 14px;
+			animation-delay: 0.15s;
+		}
+		&:nth-child(3) {
+			height: 6px;
+			animation-delay: 0.3s;
+		}
 	}
 }
 
 @keyframes waveBar {
-	0%, 100% { transform: scaleY(0.35); }
-	50% { transform: scaleY(1); }
+	0%,
+	100% {
+		transform: scaleY(0.35);
+	}
+	50% {
+		transform: scaleY(1);
+	}
 }
 
 .heroInfoRow {
@@ -373,8 +399,12 @@
 		opacity: 0.5;
 		animation: pulse 1.2s ease-in-out infinite;
 
-		&:nth-child(2) { animation-delay: 0.2s; }
-		&:nth-child(3) { animation-delay: 0.4s; }
+		&:nth-child(2) {
+			animation-delay: 0.2s;
+		}
+		&:nth-child(3) {
+			animation-delay: 0.4s;
+		}
 	}
 }
 
@@ -394,8 +424,14 @@
 }
 
 @keyframes panelIn {
-	from { opacity: 0; transform: translateY(6px); }
-	to { opacity: 1; transform: translateY(0); }
+	from {
+		opacity: 0;
+		transform: translateY(6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 .lyricsMeta {
@@ -423,7 +459,9 @@
 	color: var(--muted);
 	text-decoration: none;
 	opacity: 0.6;
-	transition: opacity 0.15s, color 0.15s;
+	transition:
+		opacity 0.15s,
+		color 0.15s;
 
 	&:hover {
 		opacity: 1;
@@ -447,8 +485,13 @@
 }
 
 @keyframes shimmer {
-	0%, 100% { opacity: 0.35; }
-	50% { opacity: 0.7; }
+	0%,
+	100% {
+		opacity: 0.35;
+	}
+	50% {
+		opacity: 0.7;
+	}
 }
 
 .syncedLyrics {
@@ -483,7 +526,11 @@
 	cursor: pointer;
 	color: var(--muted);
 	opacity: 0.5;
-	transition: color 0.3s ease, opacity 0.3s ease, transform 0.25s ease, background 0.15s ease;
+	transition:
+		color 0.3s ease,
+		opacity 0.3s ease,
+		transform 0.25s ease,
+		background 0.15s ease;
 	font-family: "Montserrat", sans-serif;
 	animation: lineIn 0.35s ease both;
 
@@ -502,8 +549,14 @@
 }
 
 @keyframes lineIn {
-	from { opacity: 0; transform: translateY(5px); }
-	to { opacity: 0.5; transform: translateY(0); }
+	from {
+		opacity: 0;
+		transform: translateY(5px);
+	}
+	to {
+		opacity: 0.5;
+		transform: translateY(0);
+	}
 }
 
 .lyricLinePast {

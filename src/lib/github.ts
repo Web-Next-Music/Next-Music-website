@@ -14,7 +14,10 @@ function headers(token?: string): HeadersInit {
 	return h;
 }
 
-async function fetchWithFallback(path: string, token?: string): Promise<Response | null> {
+async function fetchWithFallback(
+	path: string,
+	token?: string,
+): Promise<Response | null> {
 	try {
 		const res = await fetch(`${BASE}${path}`, { headers: headers(token) });
 		if (res.ok) return res;
@@ -43,7 +46,9 @@ export async function fetchStargazers(token?: string): Promise<Stargazer[]> {
 	return all;
 }
 
-export async function fetchLatestRelease(token?: string): Promise<RepoRelease | null> {
+export async function fetchLatestRelease(
+	token?: string,
+): Promise<RepoRelease | null> {
 	const res = await fetchWithFallback(`/repos/${REPO}/releases/latest`, token);
 	if (!res) return null;
 	return res.json();

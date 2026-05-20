@@ -14,8 +14,14 @@
 }
 
 @keyframes slideDown {
-	from { opacity: 0; transform: translateY(-6px); }
-	to { opacity: 1; transform: translateY(0); }
+	from {
+		opacity: 0;
+		transform: translateY(-6px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
 }
 
 #mini-player-slot:empty {
@@ -143,7 +149,9 @@
 	background: linear-gradient(90deg, var(--accent2) 50%, var(--accent) 100%);
 	border-radius: 99px;
 	pointer-events: none;
-	transition: width 0.1s linear, height 0.15s;
+	transition:
+		width 0.1s linear,
+		height 0.15s;
 }
 
 .btn {
@@ -158,7 +166,10 @@
 	color: var(--text);
 	cursor: pointer;
 	flex-shrink: 0;
-	transition: background 0.15s, border-color 0.15s, color 0.15s;
+	transition:
+		background 0.15s,
+		border-color 0.15s,
+		color 0.15s;
 
 	&:hover {
 		background: var(--surface2);
@@ -201,7 +212,9 @@
 	overflow: hidden;
 	opacity: 0;
 	margin-top: -10px;
-	transition: width 0.2s ease, opacity 0.2s ease;
+	transition:
+		width 0.2s ease,
+		opacity 0.2s ease;
 }
 
 .volumeSlider {

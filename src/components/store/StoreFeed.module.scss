@@ -64,7 +64,10 @@
 	font-size: 0.8rem;
 	font-weight: 700;
 	cursor: pointer;
-	transition: color 0.2s, background 0.2s, border-color 0.2s;
+	transition:
+		color 0.2s,
+		background 0.2s,
+		border-color 0.2s;
 
 	&:hover {
 		color: var(--text);
@@ -177,7 +180,9 @@
 	border-radius: 20px;
 	border: 1px solid;
 	letter-spacing: 0.04em;
-	transition: opacity 0.15s, transform 0.15s;
+	transition:
+		opacity 0.15s,
+		transform 0.15s;
 	white-space: nowrap;
 }
 
@@ -263,8 +268,13 @@
 }
 
 @keyframes shimmer {
-	0%, 100% { opacity: 1; }
-	50% { opacity: 0.4; }
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.4;
+	}
 }
 
 .errorBox {
@@ -304,7 +314,9 @@
 	flex-direction: column;
 	gap: 11px;
 	cursor: pointer;
-	transition: border-color 0.2s, transform 0.2s;
+	transition:
+		border-color 0.2s,
+		transform 0.2s;
 	animation: cardIn 0.3s ease both;
 
 	&:hover {
@@ -313,8 +325,12 @@
 }
 
 @keyframes cardIn {
-	from { opacity: 0; }
-	to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 .cardTop {
@@ -408,7 +424,9 @@
 	font-weight: 700;
 	cursor: pointer;
 	border: none;
-	transition: opacity 0.15s, transform 0.1s;
+	transition:
+		opacity 0.15s,
+		transform 0.1s;
 	text-decoration: none;
 
 	&:active {
@@ -776,35 +794,45 @@
 	background: rgba(56, 139, 253, 0.08);
 	border-color: rgba(56, 139, 253, 0.35);
 
-	.mdCalloutTitle { color: #58a6ff; }
+	.mdCalloutTitle {
+		color: #58a6ff;
+	}
 }
 
 .calloutTip {
 	background: rgba(63, 185, 80, 0.08);
 	border-color: rgba(63, 185, 80, 0.35);
 
-	.mdCalloutTitle { color: #3fb950; }
+	.mdCalloutTitle {
+		color: #3fb950;
+	}
 }
 
 .calloutImportant {
 	background: rgba(163, 113, 247, 0.08);
 	border-color: rgba(163, 113, 247, 0.35);
 
-	.mdCalloutTitle { color: #a371f7; }
+	.mdCalloutTitle {
+		color: #a371f7;
+	}
 }
 
 .calloutWarning {
 	background: rgba(210, 153, 34, 0.08);
 	border-color: rgba(210, 153, 34, 0.35);
 
-	.mdCalloutTitle { color: #d29922; }
+	.mdCalloutTitle {
+		color: #d29922;
+	}
 }
 
 .calloutCaution {
 	background: rgba(248, 81, 73, 0.08);
 	border-color: rgba(248, 81, 73, 0.35);
 
-	.mdCalloutTitle { color: #f85149; }
+	.mdCalloutTitle {
+		color: #f85149;
+	}
 }
 
 .mdLink {
@@ -867,7 +895,9 @@
 	margin: 0.3em 0;
 	border-radius: 10px;
 	overflow: hidden;
-	transition: opacity 0.15s, transform 0.15s;
+	transition:
+		opacity 0.15s,
+		transform 0.15s;
 	border-bottom: none !important;
 
 	&:hover {
@@ -941,8 +971,12 @@
 }
 
 @keyframes fadeIn {
-	from { opacity: 0; }
-	to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 .modalBox {
@@ -956,8 +990,12 @@
 }
 
 @keyframes modalIn {
-	from { opacity: 0; }
-	to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 .modalBoxHead {
@@ -981,7 +1019,9 @@
 	display: flex;
 	padding: 4px;
 	border-radius: 6px;
-	transition: color 0.15s, background 0.15s;
+	transition:
+		color 0.15s,
+		background 0.15s;
 
 	&:hover {
 		color: #ef4444;
@@ -1009,7 +1049,9 @@
 	background: var(--surface2);
 	text-decoration: none;
 	color: var(--text);
-	transition: border-color 0.15s, background 0.15s;
+	transition:
+		border-color 0.15s,
+		background 0.15s;
 
 	&:hover {
 		border-color: var(--accent);
@@ -1075,7 +1117,9 @@
 }
 
 @keyframes spin {
-	to { transform: rotate(360deg); }
+	to {
+		transform: rotate(360deg);
+	}
 }
 
 .loadingMsg {

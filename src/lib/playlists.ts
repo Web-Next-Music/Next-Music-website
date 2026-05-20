@@ -26,7 +26,10 @@ export async function getPlaylists(userId: string): Promise<Playlist[]> {
 	return (data ?? []) as Playlist[];
 }
 
-export async function createPlaylist(userId: string, name: string): Promise<Playlist | null> {
+export async function createPlaylist(
+	userId: string,
+	name: string,
+): Promise<Playlist | null> {
 	const sb = getSupabase();
 	if (!sb) return null;
 	const { data, error } = await sb
@@ -46,15 +49,23 @@ export async function deletePlaylist(playlistId: string): Promise<boolean> {
 	return !error;
 }
 
-export async function renamePlaylist(playlistId: string, name: string): Promise<boolean> {
+export async function renamePlaylist(
+	playlistId: string,
+	name: string,
+): Promise<boolean> {
 	const sb = getSupabase();
 	if (!sb) return false;
-	const { error } = await sb.from("playlists").update({ name }).eq("id", playlistId);
+	const { error } = await sb
+		.from("playlists")
+		.update({ name })
+		.eq("id", playlistId);
 	if (error) console.error("[playlists] renamePlaylist:", error.message);
 	return !error;
 }
 
-export async function getPlaylistTracks(playlistId: string): Promise<PlaylistTrack[]> {
+export async function getPlaylistTracks(
+	playlistId: string,
+): Promise<PlaylistTrack[]> {
 	const sb = getSupabase();
 	if (!sb) return [];
 	const { data, error } = await sb
@@ -66,17 +77,27 @@ export async function getPlaylistTracks(playlistId: string): Promise<PlaylistTra
 	return (data ?? []) as PlaylistTrack[];
 }
 
-export async function addTrackToPlaylist(playlistId: string, trackId: string, position: number): Promise<boolean> {
+export async function addTrackToPlaylist(
+	playlistId: string,
+	trackId: string,
+	position: number,
+): Promise<boolean> {
 	const sb = getSupabase();
 	if (!sb) return false;
 	const { error } = await sb
 		.from("playlist_tracks")
-		.upsert({ playlist_id: playlistId, track_id: trackId, position }, { onConflict: "playlist_id,track_id", ignoreDuplicates: true });
+		.upsert(
+			{ playlist_id: playlistId, track_id: trackId, position },
+			{ onConflict: "playlist_id,track_id", ignoreDuplicates: true },
+		);
 	if (error) console.error("[playlists] addTrackToPlaylist:", error.message);
 	return !error;
 }
 
-export async function removeTrackFromPlaylist(playlistId: string, trackId: string): Promise<boolean> {
+export async function removeTrackFromPlaylist(
+	playlistId: string,
+	trackId: string,
+): Promise<boolean> {
 	const sb = getSupabase();
 	if (!sb) return false;
 	const { error } = await sb
@@ -84,6 +105,7 @@ export async function removeTrackFromPlaylist(playlistId: string, trackId: strin
 		.delete()
 		.eq("playlist_id", playlistId)
 		.eq("track_id", trackId);
-	if (error) console.error("[playlists] removeTrackFromPlaylist:", error.message);
+	if (error)
+		console.error("[playlists] removeTrackFromPlaylist:", error.message);
 	return !error;
 }

@@ -70,7 +70,10 @@ export default function LikeButton({ target, className, compact }: Props) {
 
 		if (isTrack) {
 			const storedId = metaLikedId ?? target.trackId;
-			await likes.toggle(storedId, target.type === "track" ? target.meta : undefined);
+			await likes.toggle(
+				storedId,
+				target.type === "track" ? target.meta : undefined,
+			);
 			return;
 		}
 
@@ -84,7 +87,17 @@ export default function LikeButton({ target, className, compact }: Props) {
 			setIndividualLiked(wasLiked);
 			setCount((c) => c + (wasLiked ? 1 : -1));
 		}
-	}, [user, liked, isTrack, target, likes, metaLikedId, table, id, openAuthModal]);
+	}, [
+		user,
+		liked,
+		isTrack,
+		target,
+		likes,
+		metaLikedId,
+		table,
+		id,
+		openAuthModal,
+	]);
 
 	if (!user) return null;
 

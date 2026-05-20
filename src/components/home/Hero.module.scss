@@ -88,10 +88,18 @@
 	flex-shrink: 0;
 }
 
-.win { background: #0174cf30; }
-.appimage { background: #739fb930; }
-.deb { background: #a81d3330; }
-.pkg { background: #1793d130; }
+.win {
+	background: #0174cf30;
+}
+.appimage {
+	background: #739fb930;
+}
+.deb {
+	background: #a81d3330;
+}
+.pkg {
+	background: #1793d130;
+}
 
 .dlText {
 	display: flex;
