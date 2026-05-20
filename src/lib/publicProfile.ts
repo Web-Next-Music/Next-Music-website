@@ -3,10 +3,22 @@ import type { Playlist } from "./playlists";
 
 export interface UserProfile {
 	user_id: string;
+	github_id: string | null;
 	github_login: string | null;
 	display_name: string | null;
 	avatar_url: string | null;
 	bio: string | null;
+}
+
+export async function getProfileByGithubId(githubId: string): Promise<UserProfile | null> {
+	const sb = getSupabase();
+	if (!sb) return null;
+	const { data } = await sb
+		.from("user_profiles")
+		.select("user_id, github_id, github_login, display_name, avatar_url, bio")
+		.eq("github_id", githubId)
+		.single();
+	return (data as UserProfile) ?? null;
 }
 
 export async function getProfileByUsername(githubLogin: string): Promise<UserProfile | null> {
@@ -14,7 +26,7 @@ export async function getProfileByUsername(githubLogin: string): Promise<UserPro
 	if (!sb) return null;
 	const { data } = await sb
 		.from("user_profiles")
-		.select("user_id, github_login, display_name, avatar_url, bio")
+		.select("user_id, github_id, github_login, display_name, avatar_url, bio")
 		.eq("github_login", githubLogin)
 		.single();
 	return (data as UserProfile) ?? null;
@@ -35,6 +47,7 @@ export async function getOwnProfile(userId: string): Promise<UserProfile | null>
 // Does NOT overwrite bio — only sets identity fields.
 export async function syncGitHubMeta(
 	userId: string,
+	github_id: string,
 	github_login: string,
 	display_name: string | null,
 	avatar_url: string | null,
@@ -44,7 +57,7 @@ export async function syncGitHubMeta(
 	await sb
 		.from("user_profiles")
 		.upsert(
-			{ user_id: userId, github_login, display_name, avatar_url },
+			{ user_id: userId, github_id, github_login, display_name, avatar_url },
 			{ onConflict: "user_id" },
 		);
 }

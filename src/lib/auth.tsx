@@ -52,6 +52,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 				setGithubToken(saved);
 			}
 
+			const u = s?.user;
+			if (u) {
+				const login = u.user_metadata?.user_name as string | undefined;
+				const githubId = (u.user_metadata?.provider_id ?? u.user_metadata?.sub) as string | undefined;
+				if (login && githubId) {
+					syncGitHubMeta(
+						u.id,
+						githubId,
+						login,
+						(u.user_metadata?.full_name as string | undefined) ?? null,
+						(u.user_metadata?.avatar_url as string | undefined) ?? null,
+					);
+				}
+			}
+
 			setLoading(false);
 		});
 
@@ -70,9 +85,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			const u = session?.user;
 			if (u) {
 				const login = u.user_metadata?.user_name as string | undefined;
-				if (login) {
+				const githubId = (u.user_metadata?.provider_id ?? u.user_metadata?.sub) as string | undefined;
+				if (login && githubId) {
 					syncGitHubMeta(
 						u.id,
+						githubId,
 						login,
 						(u.user_metadata?.full_name as string | undefined) ?? null,
 						(u.user_metadata?.avatar_url as string | undefined) ?? null,

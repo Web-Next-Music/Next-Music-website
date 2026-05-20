@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import {
-	getProfileByUsername,
+	getProfileByGithubId,
 	getUserPinnedPlaylists,
 	getUserStats,
 	type UserProfile,
@@ -117,9 +117,9 @@ function PublicPlaylistSection({ playlist }: { playlist: Playlist }) {
 }
 
 export default function PublicProfileClient({
-	username,
+	githubId,
 }: {
-	username: string;
+	githubId: string;
 }) {
 	const [profile, setProfile] = useState<UserProfile | null | "loading">(
 		"loading",
@@ -131,14 +131,14 @@ export default function PublicProfileClient({
 	} | null>(null);
 
 	useEffect(() => {
-		getProfileByUsername(username).then((p) => {
+		getProfileByGithubId(githubId).then((p) => {
 			setProfile(p);
 			if (p) {
 				getUserPinnedPlaylists(p.user_id).then(setPlaylists);
 				getUserStats(p.user_id).then(setStats);
 			}
 		});
-	}, [username]);
+	}, [githubId]);
 
 	if (profile === "loading") {
 		return (
@@ -156,13 +156,13 @@ export default function PublicProfileClient({
 		return (
 			<div className={styles.centered}>
 				<p className={styles.centeredText}>
-					User <strong>@{username}</strong> not found
+					User not found
 				</p>
 			</div>
 		);
 	}
 
-	const displayName = profile.display_name ?? profile.github_login ?? username;
+	const displayName = profile.display_name ?? profile.github_login ?? githubId;
 
 	return (
 		<div className={`${styles.page} ${styles.publicPage}`}>
