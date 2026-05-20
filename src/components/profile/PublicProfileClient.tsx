@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Link from "next/link";
 import {
 	getProfileByUsername,
 	getUserPinnedPlaylists,
@@ -13,28 +12,17 @@ import {
 	type Playlist,
 	type PlaylistTrack,
 } from "@/lib/playlists";
-import { usePlayer } from "@/lib/miniplayer/context";
-import { encodeTrackKey, decodeTrackKey } from "@/lib/trackKey";
-import { findTrackById, ensureTracksLoaded } from "@/lib/trackStore";
+import { decodeTrackKey } from "@/lib/trackKey";
+import { findTrackById } from "@/lib/trackStore";
 import { TRACK_META } from "@/lib/fckcensor";
 import { marked } from "marked";
-import LikeButton from "@/components/ui/LikeButton";
-import styles from "./PublicProfileClient.module.css";
+import TrackRow from "@/components/ui/TrackRow";
+import styles from "./profile.module.scss";
 
 marked.use({ breaks: true, gfm: true } as Parameters<typeof marked.use>[0]);
 
 function renderBio(text: string): string {
 	return marked.parse(text) as string;
-}
-
-function trackHref(trackId: string): string {
-	if (!trackId.startsWith("http")) {
-		const decoded = decodeTrackKey(trackId);
-		if (decoded?.url) {
-			return `/track?key=${encodeTrackKey(decoded)}`;
-		}
-	}
-	return `/track?id=${trackId}`;
 }
 
 function resolveTrackMeta(trackId: string) {
@@ -55,90 +43,10 @@ function resolveTrackMeta(trackId: string) {
 	return null;
 }
 
-function PlayBtn({ trackId, small }: { trackId: string; small?: boolean }) {
-	const player = usePlayer();
-	const [loading, setLoading] = useState(false);
-	if (!player) return null;
-
-	const { nowPlaying, isPlaying, play, pause, resume } = player;
-	const isThis = nowPlaying?.id === trackId || nowPlaying?.url === trackId;
-	const active = isThis && isPlaying;
-
-	const handleClick = async (e: React.MouseEvent) => {
-		e.preventDefault();
-		e.stopPropagation();
-		if (isThis) {
-			isPlaying ? pause() : resume();
-			return;
-		}
-
-		const decoded = !trackId.startsWith("http")
-			? decodeTrackKey(trackId)
-			: null;
-		const playUrl = decoded?.url;
-		if (playUrl) {
-			play({
-				id: trackId,
-				url: playUrl,
-				title: decoded?.title ?? "Unknown",
-				artist: decoded?.artist ?? "",
-				cover: decoded?.cover,
-			});
-			return;
-		}
-		setLoading(true);
-		await ensureTracksLoaded();
-		const track = findTrackById(trackId);
-		if (track)
-			play({
-				id: track.id,
-				url: track.url,
-				title: track.title,
-				artist: track.artist,
-				cover: track.cover,
-				yandexUrl: track.yandexUrl,
-			});
-		setLoading(false);
-	};
-
-	const sz = small ? 12 : 14;
-	return (
-		<button
-			className={`${styles.playBtn} ${isThis ? styles.playBtnActive : ""}`}
-			onClick={handleClick}
-			aria-label={active ? "Pause" : "Play"}
-		>
-			{loading ? (
-				<svg
-					width={sz}
-					height={sz}
-					viewBox="0 0 24 24"
-					fill="none"
-					stroke="currentColor"
-					strokeWidth="2.5"
-					strokeLinecap="round"
-				>
-					<path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83" />
-				</svg>
-			) : active ? (
-				<svg width={sz} height={sz} viewBox="0 0 24 24" fill="currentColor">
-					<rect x="6" y="4" width="4" height="16" rx="1" />
-					<rect x="14" y="4" width="4" height="16" rx="1" />
-				</svg>
-			) : (
-				<svg width={sz} height={sz} viewBox="0 0 24 24" fill="currentColor">
-					<path d="M5 3l14 9-14 9V3z" />
-				</svg>
-			)}
-		</button>
-	);
-}
-
 function PublicPlaylistSection({ playlist }: { playlist: Playlist }) {
 	const [open, setOpen] = useState(false);
 	const [tracks, setTracks] = useState<PlaylistTrack[]>([]);
 	const [loading, setLoading] = useState(false);
-	const player = usePlayer();
 
 	useEffect(() => {
 		if (open && tracks.length === 0) {
@@ -188,49 +96,17 @@ function PublicPlaylistSection({ playlist }: { playlist: Playlist }) {
 								(!pt.track_id.startsWith("http")
 									? decodeTrackKey(pt.track_id)?.url
 									: undefined) ?? findTrackById(pt.track_id)?.url;
-							const isThis =
-								player?.nowPlaying?.id === pt.track_id ||
-								player?.nowPlaying?.url === pt.track_id;
 							return (
-								<div
+								<TrackRow
 									key={pt.id}
-									className={`${styles.trackRow} ${isThis ? styles.trackRowActive : ""}`}
-								>
-									<span className={styles.trackNum}>{i + 1}</span>
-									<div className={styles.trackCoverWrap}>
-										{cover ? (
-											<img
-												src={cover}
-												alt=""
-												className={styles.trackCover}
-												loading="lazy"
-											/>
-										) : (
-											<div className={styles.trackCoverPlaceholder} />
-										)}
-										<PlayBtn trackId={pt.track_id} small />
-									</div>
-									<div className={styles.trackInfo}>
-										<Link
-											href={trackHref(pt.track_id)}
-											className={styles.trackTitle}
-										>
-											{title}
-										</Link>
-										{artist && (
-											<span className={styles.trackArtist}>{artist}</span>
-										)}
-									</div>
-									<LikeButton
-										target={{
-											type: "track",
-											trackId: pt.track_id,
-											meta: { title, artist, cover, mp3_url },
-										}}
-										compact
-										className={styles.trackLikeBtn}
-									/>
-								</div>
+									trackId={pt.track_id}
+									index={i}
+									title={title}
+									artist={artist}
+									cover={cover}
+									dbMeta={{ title, artist, cover, mp3_url }}
+									showLike
+								/>
 							);
 						})
 					)}
@@ -289,7 +165,7 @@ export default function PublicProfileClient({
 	const displayName = profile.display_name ?? profile.github_login ?? username;
 
 	return (
-		<div className={styles.page}>
+		<div className={`${styles.page} ${styles.publicPage}`}>
 			<div className={styles.layout}>
 				<aside className={styles.sidebar}>
 					<div className={styles.userCard}>
@@ -359,6 +235,8 @@ export default function PublicProfileClient({
 								className={styles.bioRendered}
 								dangerouslySetInnerHTML={{ __html: renderBio(profile.bio) }}
 							/>
+
+							<div className={styles.separator}></div>
 						</section>
 					)}
 

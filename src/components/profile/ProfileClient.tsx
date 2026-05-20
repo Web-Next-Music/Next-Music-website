@@ -39,7 +39,8 @@ import {
 	pinPlaylist,
 	unpinPlaylist,
 } from "@/lib/publicProfile";
-import styles from "./ProfileClient.module.css";
+import TrackRow from "@/components/ui/TrackRow";
+import styles from "./profile.module.scss";
 
 function trackHref(trackId: string, dbMeta?: TrackLikeMeta): string {
 	const mp3_url = dbMeta?.mp3_url;
@@ -591,64 +592,20 @@ function PlaylistSection({
 						tracks.map((pt, i) => {
 							const meta = resolveTrackMeta(pt.track_id, likedMeta);
 							const dbMeta = likedMeta.get(pt.track_id);
-							const title = meta?.title ?? `Track #${pt.track_id}`;
-							const artist = meta?.artist ?? "";
-							const cover = meta?.cover;
-							const isThis =
-								player?.nowPlaying?.id === pt.track_id ||
-								player?.nowPlaying?.url === pt.track_id;
 							return (
-								<div
+								<TrackRow
 									key={pt.id}
-									className={`${styles.playlistTrackRow} ${isThis ? styles.playlistTrackRowActive : ""}`}
-								>
-									<span className={styles.trackNum}>{i + 1}</span>
-									<div className={styles.trackCoverWrapSm}>
-										{cover ? (
-											<img
-												src={cover}
-												alt=""
-												className={styles.trackCoverSm}
-												loading="lazy"
-											/>
-										) : (
-											<div className={styles.trackCoverSmPlaceholder} />
-										)}
-										<PlayTrackBtn trackId={pt.track_id} dbMeta={dbMeta} small />
-									</div>
-									<div className={styles.trackInfo}>
-										<Link
-											href={trackHref(pt.track_id, dbMeta)}
-											className={styles.trackTitleLink}
-											onClick={(e) => e.stopPropagation()}
-										>
-											{title}
-										</Link>
-										{artist && (
-											<span className={styles.trackArtist}>{artist}</span>
-										)}
-									</div>
-									<button
-										className={`${styles.iconBtn} ${styles.iconBtnDanger}`}
-										onClick={(e) => {
-											e.stopPropagation();
-											handleRemoveTrack(pt.track_id);
-										}}
-										title="Remove"
-									>
-										<svg
-											width="12"
-											height="12"
-											viewBox="0 0 24 24"
-											fill="none"
-											stroke="currentColor"
-											strokeWidth="2.5"
-											strokeLinecap="round"
-										>
-											<path d="M18 6L6 18M6 6l12 12" />
-										</svg>
-									</button>
-								</div>
+									trackId={pt.track_id}
+									index={i}
+									title={meta?.title ?? `Track #${pt.track_id}`}
+									artist={meta?.artist}
+									cover={meta?.cover}
+									dbMeta={dbMeta}
+									onRemove={(e) => {
+										e.stopPropagation();
+										handleRemoveTrack(pt.track_id);
+									}}
+								/>
 							);
 						})
 					)}
@@ -669,7 +626,6 @@ export default function ProfileClient() {
 	const newNameRef = useRef<HTMLInputElement>(null);
 	const [tab, setTab] = useState<"bio" | "liked" | "playlists">("bio");
 	const [, setStoreReady] = useState(() => getStoreSnapshot().loaded);
-	// Cache of playlistId -> Set of trackIds already in that playlist
 	const [playlistContents, setPlaylistContents] = useState<
 		Record<string, Set<string>>
 	>({});
@@ -692,8 +648,6 @@ export default function ProfileClient() {
 		return unsub;
 	}, []);
 
-	// Hide legacy raw-URL track_ids with no metadata (pre-migration broken entries).
-	// New stable keys are base64url strings and won't start with "http".
 	const likedIds = Array.from(likedTrackIds).filter((id) => {
 		if (id.startsWith("http://") || id.startsWith("https://")) {
 			const m = likedMeta.get(id);
@@ -862,7 +816,7 @@ export default function ProfileClient() {
 	const displayName = user.user_metadata?.full_name as string | undefined;
 
 	return (
-		<div className={styles.page}>
+		<div className={`${styles.page} ${styles.profilePage}`}>
 			<div className={styles.layout}>
 				<aside className={styles.sidebar}>
 					<div className={styles.userCard}>
@@ -1011,9 +965,11 @@ export default function ProfileClient() {
 										) : (
 											<div className={styles.empty}>
 												No bio yet. Click <strong>Add bio</strong> to write
-												something.
+												something
 											</div>
 										)}
+
+										<div className={styles.separator}></div>
 									</section>
 
 									<section className={styles.section} style={{ marginTop: 20 }}>
@@ -1042,7 +998,7 @@ export default function ProfileClient() {
 										{pinnedPlaylists.length === 0 ? (
 											<div className={styles.empty}>
 												No pinned playlists - go to <strong>Playlists</strong>{" "}
-												and pin some with the 📌 button.
+												and pin some with the 📌 button
 											</div>
 										) : (
 											<div className={styles.playlistList}>
@@ -1069,9 +1025,7 @@ export default function ProfileClient() {
 
 					{tab === "liked" && (
 						<section>
-							<div
-								className={`${styles.sectionHeader} ${styles.sectionHeaderLiked}`}
-							>
+							<div className={styles.sectionHeader}>
 								<h2 className={styles.sectionTitle}>Liked Tracks</h2>
 								{likedIds.length > 0 && (
 									<span className={styles.sectionCount}>{likedIds.length}</span>
@@ -1081,21 +1035,23 @@ export default function ProfileClient() {
 								<div className={styles.empty}>No liked tracks yet</div>
 							) : (
 								<div className={styles.trackList}>
-									{likedIds.map((id, i) => (
-										<TrackItem
-											key={id}
-											trackId={id}
-											index={i}
-											playlists={playlists}
-											playlistContents={playlistContents}
-											likedMeta={likedMeta}
-											onAddToPlaylist={handleAddToPlaylist}
-											onRemoveFromPlaylist={handleRemoveFromPlaylist}
-											onEnsurePlaylistLoaded={handleEnsurePlaylistLoaded}
-											onUnlike={toggleLike}
-											showUnlike
-										/>
-									))}
+									{likedIds.map((id, i) => {
+										const meta = resolveTrackMeta(id, likedMeta);
+										const dbMeta = likedMeta.get(id);
+										return (
+											<TrackRow
+												key={id}
+												trackId={id}
+												index={i}
+												title={meta?.title ?? `Track #${id}`}
+												artist={meta?.artist}
+												cover={meta?.cover}
+												dbMeta={dbMeta}
+												playlists={playlists}
+												showLike
+											/>
+										);
+									})}
 								</div>
 							)}
 						</section>
