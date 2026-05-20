@@ -37,13 +37,13 @@
 	letter-spacing: -2px;
 	margin-bottom: 20px;
 	font-family: var(--font-heading-large);
-}
 
-.title span {
-	background: linear-gradient(135deg, var(--accent), var(--accent2));
-	-webkit-background-clip: text;
-	-webkit-text-fill-color: transparent;
-	background-clip: text;
+	span {
+		background: linear-gradient(135deg, var(--accent), var(--accent2));
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-clip: text;
+	}
 }
 
 .desc {
@@ -70,11 +70,11 @@
 	padding: 14px 16px;
 	cursor: pointer;
 	transition: all 0.2s;
-}
 
-.dlBtn:hover {
-	background: var(--surface2);
-	border-color: rgba(43, 254, 245, 0.2);
+	&:hover {
+		background: var(--surface2);
+		border-color: rgba(43, 254, 245, 0.2);
+	}
 }
 
 .dlIcon {
@@ -88,18 +88,10 @@
 	flex-shrink: 0;
 }
 
-.win {
-	background: #0174cf30;
-}
-.appimage {
-	background: #739fb930;
-}
-.deb {
-	background: #a81d3330;
-}
-.pkg {
-	background: #1793d130;
-}
+.win { background: #0174cf30; }
+.appimage { background: #739fb930; }
+.deb { background: #a81d3330; }
+.pkg { background: #1793d130; }
 
 .dlText {
 	display: flex;

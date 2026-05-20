@@ -5,7 +5,7 @@ import { PlayerProvider } from "@/lib/miniplayer";
 import { AuthProvider } from "@/lib/auth";
 import { LikesProvider } from "@/lib/likesContext";
 import AuthModal from "@/components/auth/AuthModal";
-import "./globals.css";
+import "./globals.scss";
 
 export const metadata: Metadata = {
 	title: "Next Music",

@@ -44,11 +44,11 @@
 	gap: 15px;
 	transition: all 0.2s;
 	cursor: pointer;
-}
 
-.card:hover {
-	background: var(--surface2);
-	border-color: var(--border);
+	&:hover {
+		background: var(--surface2);
+		border-color: var(--border);
+	}
 }
 
 .avatarImg {
@@ -98,17 +98,17 @@
 	font-family: var(--font-base);
 	cursor: pointer;
 	transition: background 0.15s, border-color 0.15s, color 0.15s;
-}
 
-.pageBtn:hover:not(:disabled) {
-	background: var(--surface2);
-	border-color: var(--accent);
-	color: var(--accent);
-}
+	&:hover:not(:disabled) {
+		background: var(--surface2);
+		border-color: var(--accent);
+		color: var(--accent);
+	}
 
-.pageBtn:disabled {
-	opacity: 0.35;
-	cursor: default;
+	&:disabled {
+		opacity: 0.35;
+		cursor: default;
+	}
 }
 
 .pageBtnActive {
@@ -116,12 +116,12 @@
 	border-color: var(--accent);
 	color: var(--bg);
 	font-weight: 700;
-}
 
-.pageBtnActive:hover:not(:disabled) {
-	background: var(--accent2);
-	border-color: var(--accent2);
-	color: var(--bg);
+	&:hover:not(:disabled) {
+		background: var(--accent2);
+		border-color: var(--accent2);
+		color: var(--bg);
+	}
 }
 
 @media (max-width: 900px) {

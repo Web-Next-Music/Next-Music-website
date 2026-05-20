@@ -21,18 +21,24 @@
 	cursor: pointer;
 	transition: all 0.15s;
 	border-radius: 6px 6px 0 0;
-}
 
-.tab:hover {
-	color: var(--text);
-	background: var(--surface);
-	border-bottom: 1px solid var(--border);
-}
+	&:hover {
+		color: var(--text);
+		background: var(--surface);
+		border-bottom: 1px solid var(--border);
+	}
 
-.tab.active {
-	color: var(--accent);
-	border-bottom-color: var(--accent);
-	background: var(--surface);
+	&.active {
+		color: var(--accent);
+		border-bottom-color: var(--accent);
+		background: var(--surface);
+
+		.count {
+			background: rgba(43, 254, 245, 0.1);
+			border-color: rgba(43, 254, 245, 0.2);
+			color: var(--accent);
+		}
+	}
 }
 
 .count {
@@ -44,12 +50,6 @@
 	padding: 1px 7px;
 	color: var(--muted);
 	font-weight: 400;
-}
-
-.tab.active .count {
-	background: rgba(43, 254, 245, 0.1);
-	border-color: rgba(43, 254, 245, 0.2);
-	color: var(--accent);
 }
 
 .searchWrap {
@@ -78,14 +78,14 @@
 	font-family: var(--font-base);
 	transition: border-color 0.15s;
 	outline: none;
-}
 
-.searchInput::placeholder {
-	color: var(--muted);
-}
+	&::placeholder {
+		color: var(--muted);
+	}
 
-.searchInput:focus {
-	border-color: var(--accent);
+	&:focus {
+		border-color: var(--accent);
+	}
 }
 
 .searchClear {
@@ -100,10 +100,10 @@
 	padding: 2px 4px;
 	border-radius: 4px;
 	transition: color 0.1s;
-}
 
-.searchClear:hover {
-	color: var(--text);
+	&:hover {
+		color: var(--text);
+	}
 }
 
 .highlight {
@@ -130,19 +130,23 @@
 	cursor: pointer;
 	text-decoration: none;
 	color: var(--text);
-}
 
-.trackRow:hover {
-	background: var(--surface);
-	border-color: var(--border);
-}
+	&:hover {
+		background: var(--surface);
+		border-color: var(--border);
 
-.trackRow:hover .playBtn {
-	opacity: 1;
-}
+		.playBtn {
+			opacity: 1;
+		}
 
-.trackRow:active {
-	transform: scale(0.995);
+		.addToPlaylistBtn {
+			opacity: 1;
+		}
+	}
+
+	&:active {
+		transform: scale(0.995);
+	}
 }
 
 .num {
@@ -219,17 +223,13 @@
 	cursor: pointer;
 	flex-shrink: 0;
 	opacity: 0;
-	transition:
-		opacity 0.15s,
-		background 0.15s,
-		color 0.15s,
-		border-color 0.15s;
-}
+	transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
 
-.playBtn:hover {
-	background: var(--surface2);
-	color: var(--accent);
-	border-color: var(--accent);
+	&:hover {
+		background: var(--surface2);
+		color: var(--accent);
+		border-color: var(--accent);
+	}
 }
 
 .playBtnActive {
@@ -259,21 +259,13 @@
 	cursor: pointer;
 	flex-shrink: 0;
 	opacity: 0;
-	transition:
-		opacity 0.15s,
-		background 0.15s,
-		color 0.15s,
-		border-color 0.15s;
-}
+	transition: opacity 0.15s, background 0.15s, color 0.15s, border-color 0.15s;
 
-.addToPlaylistBtn:hover {
-	background: var(--surface2);
-	color: var(--text);
-	border-color: var(--border);
-}
-
-.trackRow:hover .addToPlaylistBtn {
-	opacity: 1;
+	&:hover {
+		background: var(--surface2);
+		color: var(--text);
+		border-color: var(--border);
+	}
 }
 
 .playlistMenu {
@@ -305,26 +297,26 @@
 	border-radius: 6px;
 	cursor: pointer;
 	transition: background 0.1s;
-}
 
-.playlistMenuItem span {
-	flex: 1;
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
+	span {
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 
-.playlistMenuItem:hover {
-	background: var(--surface2);
+	&:hover {
+		background: var(--surface2);
+	}
 }
 
 .playlistMenuItemActive {
 	color: var(--accent);
-}
 
-.playlistMenuItemActive:hover {
-	background: rgba(43, 254, 245, 0.06);
+	&:hover {
+		background: rgba(43, 254, 245, 0.06);
+	}
 }
 
 .playlistMenuEmpty {
@@ -343,27 +335,22 @@
 	display: flex;
 	gap: 6px;
 	align-items: center;
-}
 
-.loadingDots span {
-	width: 6px;
-	height: 6px;
-	border-radius: 50%;
-	background: var(--accent);
-	opacity: 0.4;
-	animation: pulse 1.2s ease-in-out infinite;
-}
+	span {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--accent);
+		opacity: 0.4;
+		animation: pulse 1.2s ease-in-out infinite;
 
-.loadingDots span:nth-child(2) {
-	animation-delay: 0.2s;
-}
-.loadingDots span:nth-child(3) {
-	animation-delay: 0.4s;
+		&:nth-child(2) { animation-delay: 0.2s; }
+		&:nth-child(3) { animation-delay: 0.4s; }
+	}
 }
 
 @keyframes pulse {
-	0%,
-	100% {
+	0%, 100% {
 		opacity: 0.2;
 		transform: scale(0.85);
 	}
@@ -385,16 +372,20 @@
 		padding: 8px 12px;
 		font-size: 13px;
 	}
+
 	.trackRow {
 		gap: 10px;
 		padding: 8px 10px;
 	}
+
 	.num {
 		display: none;
 	}
+
 	.playBtn {
 		opacity: 1;
 	}
+
 	.addToPlaylistBtn {
 		opacity: 1;
 	}

@@ -7,14 +7,20 @@
 	border: 1px solid transparent;
 	color: inherit;
 	text-decoration: none;
-	transition:
-		background 0.15s,
-		border-color 0.15s;
-}
+	transition: background 0.15s, border-color 0.15s;
 
-.row:hover {
-	background: var(--surface2);
-	border-color: var(--border);
+	&:hover {
+		background: var(--surface2);
+		border-color: var(--border);
+
+		.title {
+			color: var(--accent);
+		}
+
+		.actions {
+			opacity: 1;
+		}
+	}
 }
 
 .rowActive {
@@ -73,10 +79,6 @@
 	text-overflow: ellipsis;
 }
 
-.row:hover .title {
-	color: var(--accent);
-}
-
 .artist {
 	font-size: 12px;
 	color: var(--muted);
@@ -85,7 +87,6 @@
 	text-overflow: ellipsis;
 }
 
-/* ── Actions ── */
 .actions {
 	display: flex;
 	align-items: center;
@@ -93,10 +94,6 @@
 	flex-shrink: 0;
 	opacity: 0;
 	transition: opacity 0.15s;
-}
-
-.row:hover .actions {
-	opacity: 1;
 }
 
 .actionBtn {
@@ -111,25 +108,23 @@
 	color: var(--muted);
 	cursor: pointer;
 	flex-shrink: 0;
-	transition:
-		background 0.15s,
-		color 0.15s,
-		border-color 0.15s;
+	transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+	&:hover {
+		background: var(--surface2);
+		color: var(--text);
+		border-color: var(--border);
+	}
 }
 
-.actionBtn:hover {
-	background: var(--surface2);
-	color: var(--text);
-	border-color: var(--border);
+.actionBtnRemove {
+	&:hover {
+		color: #f87171;
+		border-color: rgba(248, 113, 113, 0.3);
+		background: rgba(248, 113, 113, 0.08);
+	}
 }
 
-.actionBtnRemove:hover {
-	color: #f87171;
-	border-color: rgba(248, 113, 113, 0.3);
-	background: rgba(248, 113, 113, 0.08);
-}
-
-/* ── Play button ── */
 .playBtn {
 	display: flex;
 	align-items: center;
@@ -142,16 +137,13 @@
 	color: var(--muted);
 	cursor: pointer;
 	flex-shrink: 0;
-	transition:
-		background 0.15s,
-		color 0.15s,
-		border-color 0.15s;
-}
+	transition: background 0.15s, color 0.15s, border-color 0.15s;
 
-.playBtn:hover {
-	background: var(--surface2);
-	color: var(--accent);
-	border-color: var(--accent);
+	&:hover {
+		background: var(--surface2);
+		color: var(--accent);
+		border-color: var(--accent);
+	}
 }
 
 .playBtnActive {
@@ -160,7 +152,6 @@
 	background: rgba(43, 254, 245, 0.08) !important;
 }
 
-/* ── Playlist menu ── */
 .menu {
 	position: fixed;
 	z-index: 1000;
@@ -190,26 +181,26 @@
 	color: var(--text);
 	cursor: pointer;
 	transition: background 0.1s;
-}
 
-.menuItem span {
-	flex: 1;
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
+	span {
+		flex: 1;
+		min-width: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
 
-.menuItem:hover {
-	background: var(--surface2);
+	&:hover {
+		background: var(--surface2);
+	}
 }
 
 .menuItemActive {
 	color: var(--accent);
-}
 
-.menuItemActive:hover {
-	background: rgba(43, 254, 245, 0.06);
+	&:hover {
+		background: rgba(43, 254, 245, 0.06);
+	}
 }
 
 @media (max-width: 720px) {

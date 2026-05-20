@@ -10,12 +10,12 @@
 	cursor: pointer;
 	transition: color 0.15s, border-color 0.15s, background 0.15s;
 	white-space: nowrap;
-}
 
-.signInBtn:hover {
-	color: var(--accent);
-	border-color: var(--accent);
-	background: var(--badge-background-color);
+	&:hover {
+		color: var(--accent);
+		border-color: var(--accent);
+		background: var(--badge-background-color);
+	}
 }
 
 .wrap {
@@ -37,11 +37,11 @@
 	align-items: center;
 	justify-content: center;
 	transition: background 0.15s, border-color 0.15s;
-}
 
-.avatarBtn:hover {
-	background: rgba(43, 254, 245, 0.2);
-	border-color: rgba(43, 254, 245, 0.5);
+	&:hover {
+		background: rgba(43, 254, 245, 0.2);
+		border-color: rgba(43, 254, 245, 0.5);
+	}
 }
 
 .avatarImg {
@@ -93,11 +93,11 @@
 	text-decoration: none;
 	transition: color 0.15s, background 0.15s;
 	margin-bottom: 2px;
-}
 
-.dropdownLink:hover {
-	color: var(--text);
-	background: var(--surface2);
+	&:hover {
+		color: var(--text);
+		background: var(--surface2);
+	}
 }
 
 .signOutBtn {
@@ -115,9 +115,9 @@
 	cursor: pointer;
 	transition: color 0.15s, background 0.15s;
 	text-align: left;
-}
 
-.signOutBtn:hover {
-	color: #f87171;
-	background: rgba(248, 113, 113, 0.08);
+	&:hover {
+		color: #f87171;
+		background: rgba(248, 113, 113, 0.08);
+	}
 }

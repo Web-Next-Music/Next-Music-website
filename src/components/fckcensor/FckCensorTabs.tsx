@@ -37,7 +37,7 @@ import {
 	removeTrackFromPlaylist,
 	type Playlist,
 } from "@/lib/playlists";
-import styles from "./FckCensorTabs.module.css";
+import styles from "./FckCensorTabs.module.scss";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import type {

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { usePlayer } from "@/lib/miniplayer/context";
 import { encodeTrackKey, decodeTrackKey } from "@/lib/trackKey";
 import LikeButton from "@/components/ui/LikeButton";
-import styles from "./MiniPlayer.module.css";
+import styles from "./MiniPlayer.module.scss";
 
 export function MiniPlayerInner({ isHiddenMode }: { isHiddenMode: boolean }) {
 	const player = usePlayer();

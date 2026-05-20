@@ -14,7 +14,7 @@ import {
 	type CachedTrack,
 } from "@/lib/trackStore";
 import { decodeTrackKey, encodeTrackKey, stableTrackKey } from "@/lib/trackKey";
-import styles from "./TrackPageClient.module.css";
+import styles from "./TrackPageClient.module.scss";
 import { ID3Writer } from "browser-id3-writer";
 
 interface LrcLine {

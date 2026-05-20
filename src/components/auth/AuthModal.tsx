@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/lib/auth";
-import styles from "./AuthModal.module.css";
+import styles from "./AuthModal.module.scss";
 
 export default function AuthModal() {
 	const { authModalOpen, closeAuthModal, signInWithGitHub } = useAuth();

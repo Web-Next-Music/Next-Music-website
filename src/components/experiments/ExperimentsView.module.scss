@@ -17,14 +17,14 @@
 	display: flex;
 	align-items: center;
 	gap: 12px;
-}
 
-.heroTitle h1 {
-	font-family: var(--font-heading-large);
-	font-size: 2rem;
-	font-weight: 800;
-	letter-spacing: -0.03em;
-	line-height: 1;
+	h1 {
+		font-family: var(--font-heading-large);
+		font-size: 2rem;
+		font-weight: 800;
+		letter-spacing: -0.03em;
+		line-height: 1;
+	}
 }
 
 .countBadge {
@@ -72,7 +72,6 @@
 	padding: 2px 8px;
 }
 
-/* Toolbar */
 .toolbar {
 	background: var(--header);
 	border-bottom: 1px solid var(--border);
@@ -119,14 +118,14 @@
 	font-size: 0.73rem;
 	outline: none;
 	transition: border-color 0.2s;
-}
 
-.searchInput::placeholder {
-	color: var(--muted);
-}
+	&::placeholder {
+		color: var(--muted);
+	}
 
-.searchInput:focus {
-	border-color: rgba(43, 254, 245, 0.35);
+	&:focus {
+		border-color: rgba(43, 254, 245, 0.35);
+	}
 }
 
 .resultCount {
@@ -136,7 +135,6 @@
 	white-space: nowrap;
 }
 
-/* List */
 .main {
 	max-width: 1080px;
 	margin: 0 auto;
@@ -165,21 +163,17 @@
 	border-radius: 8px;
 	padding: 7px 12px;
 	user-select: all;
-	transition:
-		border-color 0.15s,
-		background 0.15s,
-		color 0.15s;
-
+	transition: border-color 0.15s, background 0.15s, color 0.15s;
 	white-space: normal;
 	overflow-wrap: anywhere;
 	word-break: break-word;
 	hyphens: auto;
-}
 
-.flag:hover {
-	border-color: rgba(43, 254, 245, 0.35);
-	background: rgba(43, 254, 245, 0.04);
-	color: var(--accent);
+	&:hover {
+		border-color: rgba(43, 254, 245, 0.35);
+		background: rgba(43, 254, 245, 0.04);
+		color: var(--accent);
+	}
 }
 
 .empty {
@@ -190,7 +184,6 @@
 	text-align: center;
 }
 
-/* Responsive */
 @media (max-width: 600px) {
 	.heroInner {
 		padding: 32px 16px 24px;

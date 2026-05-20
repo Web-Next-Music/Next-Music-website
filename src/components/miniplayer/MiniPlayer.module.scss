@@ -14,14 +14,8 @@
 }
 
 @keyframes slideDown {
-	from {
-		opacity: 0;
-		transform: translateY(-6px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
+	from { opacity: 0; transform: translateY(-6px); }
+	to { opacity: 1; transform: translateY(0); }
 }
 
 #mini-player-slot:empty {
@@ -52,10 +46,10 @@
 	cursor: pointer;
 	opacity: 1;
 	transition: opacity 0.15s;
-}
 
-.leftClickable:hover {
-	opacity: 0.7;
+	&:hover {
+		opacity: 0.7;
+	}
 }
 
 .cover {
@@ -119,21 +113,27 @@
 	align-items: center;
 	cursor: pointer;
 	position: relative;
-}
 
-.progressWrap::before {
-	content: "";
-	position: absolute;
-	left: 0;
-	right: 0;
-	height: 3px;
-	background: var(--surface2);
-	border-radius: 99px;
-	transition: height 0.15s;
-}
+	&::before {
+		content: "";
+		position: absolute;
+		left: 0;
+		right: 0;
+		height: 3px;
+		background: var(--surface2);
+		border-radius: 99px;
+		transition: height 0.15s;
+	}
 
-.progressWrap:hover::before {
-	height: 5px;
+	&:hover {
+		&::before {
+			height: 5px;
+		}
+
+		.progressFill {
+			height: 5px;
+		}
+	}
 }
 
 .progressFill {
@@ -143,13 +143,7 @@
 	background: linear-gradient(90deg, var(--accent2) 50%, var(--accent) 100%);
 	border-radius: 99px;
 	pointer-events: none;
-	transition:
-		width 0.1s linear,
-		height 0.15s;
-}
-
-.progressWrap:hover .progressFill {
-	height: 5px;
+	transition: width 0.1s linear, height 0.15s;
 }
 
 .btn {
@@ -164,16 +158,13 @@
 	color: var(--text);
 	cursor: pointer;
 	flex-shrink: 0;
-	transition:
-		background 0.15s,
-		border-color 0.15s,
-		color 0.15s;
-}
+	transition: background 0.15s, border-color 0.15s, color 0.15s;
 
-.btn:hover {
-	background: var(--surface2);
-	border-color: var(--accent);
-	color: var(--accent);
+	&:hover {
+		background: var(--surface2);
+		border-color: var(--accent);
+		color: var(--accent);
+	}
 }
 
 .likeBtn {
@@ -193,11 +184,16 @@
 	display: flex;
 	align-items: center;
 	flex-shrink: 0;
-}
 
-.volumeWrap:hover,
-.volumeWrap:focus-within {
-	gap: 5px;
+	&:hover,
+	&:focus-within {
+		gap: 5px;
+
+		.volumeSliderWrap {
+			width: 72px;
+			opacity: 1;
+		}
+	}
 }
 
 .volumeSliderWrap {
@@ -205,15 +201,7 @@
 	overflow: hidden;
 	opacity: 0;
 	margin-top: -10px;
-	transition:
-		width 0.2s ease,
-		opacity 0.2s ease;
-}
-
-.volumeWrap:hover .volumeSliderWrap,
-.volumeWrap:focus-within .volumeSliderWrap {
-	width: 72px;
-	opacity: 1;
+	transition: width 0.2s ease, opacity 0.2s ease;
 }
 
 .volumeSlider {
@@ -231,36 +219,37 @@
 		var(--surface2) var(--vol, 100%),
 		var(--surface2) 100%
 	);
-}
 
-.volumeSlider::-webkit-slider-thumb {
-	-webkit-appearance: none;
-	width: 12px;
-	height: 12px;
-	border-radius: 50%;
-	background: var(--accent);
-	cursor: pointer;
-	border: none;
-	transition: transform 0.1s;
-}
+	&::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: var(--accent);
+		cursor: pointer;
+		border: none;
+		transition: transform 0.1s;
 
-.volumeSlider::-webkit-slider-thumb:hover {
-	transform: scale(1.25);
-}
+		&:hover {
+			transform: scale(1.25);
+		}
+	}
 
-.volumeSlider::-moz-range-thumb {
-	width: 12px;
-	height: 12px;
-	border-radius: 50%;
-	background: var(--accent);
-	cursor: pointer;
-	border: none;
+	&::-moz-range-thumb {
+		width: 12px;
+		height: 12px;
+		border-radius: 50%;
+		background: var(--accent);
+		cursor: pointer;
+		border: none;
+	}
 }
 
 @media (max-width: 900px) {
 	.inner {
 		padding: 0 10px;
 	}
+
 	.info {
 		display: none;
 	}

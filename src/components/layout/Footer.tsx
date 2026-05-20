@@ -1,7 +1,7 @@
 "use client";
 
 import { useTheme } from "@/lib/theme";
-import styles from "./Footer.module.css";
+import styles from "./Footer.module.scss";
 import Link from "next/link";
 
 function SunIcon() {

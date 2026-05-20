@@ -15,18 +15,14 @@
 	margin-bottom: 10px;
 	position: relative;
 	overflow: hidden;
-}
 
-.addonHero::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(
-		135deg,
-		rgba(43, 254, 245, 0.04) 0%,
-		transparent 60%
-	);
-	pointer-events: none;
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, rgba(43, 254, 245, 0.04) 0%, transparent 60%);
+		pointer-events: none;
+	}
 }
 
 .addonIcon {
@@ -71,27 +67,11 @@
 	color: var(--text);
 	transition: all 0.2s;
 	white-space: nowrap;
-}
 
-.addonBtn:hover {
-	background: rgba(43, 254, 245, 0.08);
-	border-color: rgba(43, 254, 245, 0.25);
-	color: var(--accent);
-}
-
-@media (max-width: 640px) {
-	.main {
-		padding: 32px 20px 60px;
-	}
-	.addonHero {
-		flex-direction: column;
-		padding: 20px;
-	}
-	.addonBtn {
-		align-self: flex-start;
-	}
-	.addonTitle {
-		font-size: 22px;
+	&:hover {
+		background: rgba(43, 254, 245, 0.08);
+		border-color: rgba(43, 254, 245, 0.25);
+		color: var(--accent);
 	}
 }
 
@@ -106,18 +86,14 @@
 	margin-bottom: 40px;
 	position: relative;
 	overflow: hidden;
-}
 
-.creditsBlock::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(
-		135deg,
-		rgba(160, 90, 220, 0.06) 0%,
-		transparent 60%
-	);
-	pointer-events: none;
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, rgba(160, 90, 220, 0.06) 0%, transparent 60%);
+		pointer-events: none;
+	}
 }
 
 .creditsAvatar {
@@ -155,10 +131,29 @@
 	text-decoration: none;
 	font-weight: 500;
 	transition: color 0.15s;
+
+	&:hover {
+		color: #dbbeff;
+	}
 }
 
-.creditsLink:hover {
-	color: #dbbeff;
+@media (max-width: 640px) {
+	.main {
+		padding: 32px 20px 60px;
+	}
+
+	.addonHero {
+		flex-direction: column;
+		padding: 20px;
+	}
+
+	.addonBtn {
+		align-self: flex-start;
+	}
+
+	.addonTitle {
+		font-size: 22px;
+	}
 }
 
 @media (max-width: 640px) {

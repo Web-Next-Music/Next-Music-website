@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
-import styles from "./StoreFeed.module.css";
+import styles from "./StoreFeed.module.scss";
 import {
 	Extension,
 	ReleaseAsset,

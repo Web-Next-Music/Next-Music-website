@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "@/lib/auth";
 import { useLikes, type TrackLikeMeta } from "@/lib/likesContext";
 import { getLikeCount, getUserLiked, addLike, removeLike } from "@/lib/likes";
-import styles from "./LikeButton.module.css";
+import styles from "./LikeButton.module.scss";
 
 type LikeTarget =
 	| { type: "track"; trackId: string; meta?: TrackLikeMeta }

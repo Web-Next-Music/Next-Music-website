@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import styles from "./StarsSection.module.css";
+import styles from "./StarsSection.module.scss";
 import Image from "next/image";
 import type { Stargazer } from "@/types/github";
 

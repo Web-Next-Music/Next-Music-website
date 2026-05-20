@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import styles from "../store/StoreFeed.module.css";
+import styles from "../store/StoreFeed.module.scss";
 import {
 	Extension,
 	ReleaseAsset,

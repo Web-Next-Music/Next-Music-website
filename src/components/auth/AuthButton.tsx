@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/lib/auth";
-import styles from "./AuthButton.module.css";
+import styles from "./AuthButton.module.scss";
 
 export default function AuthButton() {
 	const { user, loading, signOut, openAuthModal } = useAuth();

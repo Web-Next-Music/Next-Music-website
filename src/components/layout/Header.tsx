@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import styles from "./Header.module.css";
+import styles from "./Header.module.scss";
 import { useRouter } from "next/navigation";
 import AuthButton from "@/components/auth/AuthButton";
 

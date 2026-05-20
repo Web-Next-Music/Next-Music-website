@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import styles from "./not-found.module.css";
+import styles from "./not-found.module.scss";
 
 export default function NotFound() {
 	return (

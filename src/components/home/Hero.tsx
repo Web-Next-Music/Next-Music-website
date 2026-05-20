@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import styles from "./Hero.module.css";
+import styles from "./Hero.module.scss";
 import AppPreview from "@/components/home/AppPreview";
 import { findAsset, formatSize } from "@/lib/github";
 import type { GithubAsset, GithubRelease } from "@/types/ui";

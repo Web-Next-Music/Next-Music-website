@@ -14,7 +14,7 @@ import {
 } from "@/lib/playlists";
 import type { TrackLikeMeta } from "@/lib/likesContext";
 import LikeButton from "./LikeButton";
-import styles from "./TrackRow.module.css";
+import styles from "./TrackRow.module.scss";
 
 function buildHref(trackId: string, dbMeta?: TrackLikeMeta): string {
 	const mp3_url = dbMeta?.mp3_url;

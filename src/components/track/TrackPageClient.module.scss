@@ -36,42 +36,37 @@
 	font-size: 14px;
 	color: var(--muted);
 	margin: 0;
-}
 
-.centeredDesc code {
-	background: var(--surface2);
-	border: 1px solid var(--border);
-	border-radius: 4px;
-	padding: 1px 6px;
-	font-size: 13px;
-	color: var(--accent);
+	code {
+		background: var(--surface2);
+		border: 1px solid var(--border);
+		border-radius: 4px;
+		padding: 1px 6px;
+		font-size: 13px;
+		color: var(--accent);
+	}
 }
 
 .loadingDots {
 	display: flex;
 	gap: 6px;
 	align-items: center;
-}
 
-.loadingDots span {
-	width: 7px;
-	height: 7px;
-	border-radius: 50%;
-	background: var(--accent);
-	opacity: 0.4;
-	animation: pulse 1.2s ease-in-out infinite;
-}
+	span {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: var(--accent);
+		opacity: 0.4;
+		animation: pulse 1.2s ease-in-out infinite;
 
-.loadingDots span:nth-child(2) {
-	animation-delay: 0.2s;
-}
-.loadingDots span:nth-child(3) {
-	animation-delay: 0.4s;
+		&:nth-child(2) { animation-delay: 0.2s; }
+		&:nth-child(3) { animation-delay: 0.4s; }
+	}
 }
 
 @keyframes pulse {
-	0%,
-	100% {
+	0%, 100% {
 		opacity: 0.2;
 		transform: scale(0.85);
 	}
@@ -95,16 +90,13 @@
 	cursor: pointer;
 	align-self: start;
 	margin-top: 0;
-	transition:
-		color 0.15s,
-		border-color 0.15s,
-		background 0.15s;
-}
+	transition: color 0.15s, border-color 0.15s, background 0.15s;
 
-.backLink:hover {
-	color: var(--text);
-	border-color: var(--accent);
-	background: var(--surface2);
+	&:hover {
+		color: var(--text);
+		border-color: var(--accent);
+		background: var(--surface2);
+	}
 }
 
 .backBtn {
@@ -117,11 +109,11 @@
 	color: var(--text);
 	cursor: pointer;
 	transition: all 0.15s;
-}
 
-.backBtn:hover {
-	border-color: var(--accent);
-	color: var(--accent);
+	&:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
 }
 
 .layoutOuter {
@@ -159,18 +151,14 @@
 	gap: 14px;
 	position: relative;
 	overflow: hidden;
-}
 
-.heroCard::before {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: linear-gradient(
-		135deg,
-		rgba(43, 254, 245, 0.04) 0%,
-		transparent 55%
-	);
-	pointer-events: none;
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(135deg, rgba(43, 254, 245, 0.04) 0%, transparent 55%);
+		pointer-events: none;
+	}
 }
 
 .coverWrap {
@@ -180,19 +168,25 @@
 	border-radius: 10px;
 	overflow: hidden;
 	flex-shrink: 0;
-}
 
-.coverWrap::after {
-	content: "";
-	position: absolute;
-	inset: 0;
-	background: rgba(0, 0, 0, 0);
-	transition: background 0.2s ease;
-	pointer-events: none;
-}
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 0, 0, 0);
+		transition: background 0.2s ease;
+		pointer-events: none;
+	}
 
-.coverWrap:hover::after {
-	background: rgba(0, 0, 0, 0.45);
+	&:hover {
+		&::after {
+			background: rgba(0, 0, 0, 0.45);
+		}
+
+		.coverPlayBtn {
+			opacity: 1;
+		}
+	}
 }
 
 .heroCover {
@@ -228,19 +222,15 @@
 	opacity: 0;
 	z-index: 2;
 	transition: opacity 0.2s ease;
-}
 
-.coverWrap:hover .coverPlayBtn {
-	opacity: 1;
-}
+	svg {
+		filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
+		transition: transform 0.15s ease;
+	}
 
-.coverPlayBtn svg {
-	filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.6));
-	transition: transform 0.15s ease;
-}
-
-.coverPlayBtn:hover svg {
-	transform: scale(1.12);
+	&:hover svg {
+		transform: scale(1.12);
+	}
 }
 
 .playingBadge {
@@ -251,37 +241,23 @@
 	gap: 3px;
 	align-items: flex-end;
 	z-index: 3;
-}
 
-.playingBadge span {
-	width: 3px;
-	background: var(--accent);
-	border-radius: 2px;
-	transform-origin: bottom;
-	animation: waveBar 1s ease-in-out infinite;
-}
+	span {
+		width: 3px;
+		background: var(--accent);
+		border-radius: 2px;
+		transform-origin: bottom;
+		animation: waveBar 1s ease-in-out infinite;
 
-.playingBadge span:nth-child(1) {
-	height: 8px;
-	animation-delay: 0s;
-}
-.playingBadge span:nth-child(2) {
-	height: 14px;
-	animation-delay: 0.15s;
-}
-.playingBadge span:nth-child(3) {
-	height: 6px;
-	animation-delay: 0.3s;
+		&:nth-child(1) { height: 8px; animation-delay: 0s; }
+		&:nth-child(2) { height: 14px; animation-delay: 0.15s; }
+		&:nth-child(3) { height: 6px; animation-delay: 0.3s; }
+	}
 }
 
 @keyframes waveBar {
-	0%,
-	100% {
-		transform: scaleY(0.35);
-	}
-	50% {
-		transform: scaleY(1);
-	}
+	0%, 100% { transform: scaleY(0.35); }
+	50% { transform: scaleY(1); }
 }
 
 .heroInfoRow {
@@ -304,11 +280,11 @@
 	border-radius: 50% !important;
 	opacity: 1 !important;
 	flex-shrink: 0;
-}
 
-.trackLikeBtn svg {
-	width: 18px !important;
-	height: 18px !important;
+	svg {
+		width: 18px !important;
+		height: 18px !important;
+	}
 }
 
 .heroMeta {
@@ -363,11 +339,11 @@
 	transition: all 0.15s;
 	width: 100%;
 	box-sizing: border-box;
-}
 
-.outlineBtn:hover {
-	border-color: var(--accent);
-	color: var(--accent);
+	&:hover {
+		border-color: var(--accent);
+		color: var(--accent);
+	}
 }
 
 .outlineBtnActive {
@@ -388,22 +364,18 @@
 	display: inline-flex;
 	gap: 3px;
 	align-items: center;
-}
 
-.miniDots span {
-	width: 4px;
-	height: 4px;
-	border-radius: 50%;
-	background: var(--accent);
-	opacity: 0.5;
-	animation: pulse 1.2s ease-in-out infinite;
-}
+	span {
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: var(--accent);
+		opacity: 0.5;
+		animation: pulse 1.2s ease-in-out infinite;
 
-.miniDots span:nth-child(2) {
-	animation-delay: 0.2s;
-}
-.miniDots span:nth-child(3) {
-	animation-delay: 0.4s;
+		&:nth-child(2) { animation-delay: 0.2s; }
+		&:nth-child(3) { animation-delay: 0.4s; }
+	}
 }
 
 .lyricsPanel {
@@ -422,14 +394,8 @@
 }
 
 @keyframes panelIn {
-	from {
-		opacity: 0;
-		transform: translateY(6px);
-	}
-	to {
-		opacity: 1;
-		transform: translateY(0);
-	}
+	from { opacity: 0; transform: translateY(6px); }
+	to { opacity: 1; transform: translateY(0); }
 }
 
 .lyricsMeta {
@@ -457,14 +423,12 @@
 	color: var(--muted);
 	text-decoration: none;
 	opacity: 0.6;
-	transition:
-		opacity 0.15s,
-		color 0.15s;
-}
+	transition: opacity 0.15s, color 0.15s;
 
-.lyricsSource:hover {
-	opacity: 1;
-	color: var(--accent);
+	&:hover {
+		opacity: 1;
+		color: var(--accent);
+	}
 }
 
 .lyricsSkeleton {
@@ -483,13 +447,8 @@
 }
 
 @keyframes shimmer {
-	0%,
-	100% {
-		opacity: 0.35;
-	}
-	50% {
-		opacity: 0.7;
-	}
+	0%, 100% { opacity: 0.35; }
+	50% { opacity: 0.7; }
 }
 
 .syncedLyrics {
@@ -499,14 +458,15 @@
 	scrollbar-width: thin;
 	scrollbar-color: var(--border) transparent;
 	overscroll-behavior: contain;
-}
 
-.syncedLyrics::-webkit-scrollbar {
-	width: 3px;
-}
-.syncedLyrics::-webkit-scrollbar-thumb {
-	background: var(--border);
-	border-radius: 99px;
+	&::-webkit-scrollbar {
+		width: 3px;
+	}
+
+	&::-webkit-scrollbar-thumb {
+		background: var(--border);
+		border-radius: 99px;
+	}
 }
 
 .lyricsBottomPad {
@@ -523,13 +483,15 @@
 	cursor: pointer;
 	color: var(--muted);
 	opacity: 0.5;
-	transition:
-		color 0.3s ease,
-		opacity 0.3s ease,
-		transform 0.25s ease,
-		background 0.15s ease;
+	transition: color 0.3s ease, opacity 0.3s ease, transform 0.25s ease, background 0.15s ease;
 	font-family: "Montserrat", sans-serif;
 	animation: lineIn 0.35s ease both;
+
+	&:hover {
+		background: var(--surface2);
+		opacity: 0.85;
+		color: var(--text);
+	}
 }
 
 .lyricText {
@@ -540,20 +502,8 @@
 }
 
 @keyframes lineIn {
-	from {
-		opacity: 0;
-		transform: translateY(5px);
-	}
-	to {
-		opacity: 0.5;
-		transform: translateY(0);
-	}
-}
-
-.lyricLine:hover {
-	background: var(--surface2);
-	opacity: 0.85;
-	color: var(--text);
+	from { opacity: 0; transform: translateY(5px); }
+	to { opacity: 0.5; transform: translateY(0); }
 }
 
 .lyricLinePast {
@@ -565,14 +515,14 @@
 	opacity: 1 !important;
 	transform: translateX(4px);
 	background: var(--active-lyrics-line-background-color);
-}
 
-.lyricLineActive:hover {
-	background: var(--badge-border-color);
-}
+	&:hover {
+		background: var(--badge-border-color);
+	}
 
-.lyricLineActive .lyricText {
-	transform: scale(1.06);
+	.lyricText {
+		transform: scale(1.06);
+	}
 }
 
 .plainLyrics {
@@ -643,6 +593,7 @@
 		flex: 1;
 		min-width: 0;
 	}
+
 	.heroTitle {
 		font-size: 16px;
 	}

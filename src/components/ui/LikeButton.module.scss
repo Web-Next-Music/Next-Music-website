@@ -11,21 +11,21 @@
 	font-size: 12px;
 	cursor: pointer;
 	transition: color 0.15s;
-}
 
-.btn:hover:not(:disabled) {
-	color: var(--accent);
-	background: none;
-}
+	&:hover:not(:disabled) {
+		color: var(--accent);
+		background: none;
+	}
 
-.btn.liked {
-	color: var(--accent);
-	background: none;
-}
+	&.liked {
+		color: var(--accent);
+		background: none;
+	}
 
-.btn:disabled {
-	opacity: 0.5;
-	cursor: default;
+	&:disabled {
+		opacity: 0.5;
+		cursor: default;
+	}
 }
 
 .heart {

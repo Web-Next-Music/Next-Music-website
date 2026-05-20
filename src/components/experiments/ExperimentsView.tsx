@@ -1,9 +1,9 @@
 "use client";
 
 import { useState, useMemo, useEffect, useRef } from "react";
-import styles from "./ExperimentsView.module.css";
+import styles from "./ExperimentsView.module.scss";
 
-// Row height (item height + gap) must match the CSS values in experiments.module.css
+// Row height (item height + gap) must match the CSS values in experiments.module.scss
 const ROW_H = 36;
 const ITEM_MIN_W = 280;
 const GAP = 6;

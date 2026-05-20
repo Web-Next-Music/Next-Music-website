@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import styles from "./AppPreview.module.css";
+import styles from "./AppPreview.module.scss";
 import type { WsPayload } from "@/types/player";
 import type { CardShellProps } from "@/types/ui";
 
