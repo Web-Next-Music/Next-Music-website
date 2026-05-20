@@ -5,7 +5,6 @@ import Footer from "@/components/layout/Footer";
 import ProfileRouter from "@/components/profile/ProfileRouter";
 
 export const metadata: Metadata = {
-	title: "User Profile - Next Music",
 	openGraph: {
 		title: "User Profile - Next Music",
 		description:

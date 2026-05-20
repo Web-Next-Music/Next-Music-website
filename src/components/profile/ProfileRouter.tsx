@@ -21,6 +21,20 @@ export default function ProfileRouter() {
 		}
 	}, [githubId, user, loading, router]);
 
+	useEffect(() => {
+		if (loading || !user) return;
+		const ownGithubId = (user?.user_metadata?.provider_id ??
+			user?.user_metadata?.sub) as string | undefined;
+		if (!githubId || githubId !== ownGithubId) return;
+		const name =
+			(user.user_metadata?.full_name as string | undefined) ??
+			(user.user_metadata?.user_name as string | undefined);
+		if (name) document.title = `${name} - Next Music`;
+		return () => {
+			document.title = "Next Music";
+		};
+	}, [user, loading, githubId]);
+
 	if (githubId) {
 		const ownGithubId = (user?.user_metadata?.provider_id ??
 			user?.user_metadata?.sub) as string | undefined;
