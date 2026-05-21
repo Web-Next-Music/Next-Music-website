@@ -215,6 +215,7 @@ function TrackItem({
 	const [loadingPlaylists, setLoadingPlaylists] = useState(false);
 	const menuWrapRef = useRef<HTMLDivElement>(null);
 	const menuPortalRef = useRef<HTMLDivElement>(null);
+	const { isBanned } = useAuth();
 	const player = usePlayer();
 	const isThis = player?.nowPlaying?.id === trackId;
 
@@ -233,6 +234,7 @@ function TrackItem({
 
 	const handleOpenMenu = async (e: React.MouseEvent) => {
 		e.preventDefault();
+		if (isBanned) return;
 		if (menuOpen) {
 			setMenuOpen(false);
 			setMenuPos(null);
@@ -304,7 +306,7 @@ function TrackItem({
 					e.stopPropagation();
 				}}
 			>
-				{playlists.length > 0 && (
+				{playlists.length > 0 && !isBanned && (
 					<div className={styles.menuWrap} ref={menuWrapRef}>
 						<button
 							className={styles.iconBtn}
@@ -616,7 +618,7 @@ function PlaylistSection({
 }
 
 export default function ProfileClient() {
-	const { user, loading, openAuthModal } = useAuth();
+	const { user, loading, banChecking, openAuthModal, isBanned } = useAuth();
 	const { likedTrackIds, likedMeta, toggle: toggleLike } = useLikes();
 	const player = usePlayer();
 	const [playlists, setPlaylists] = useState<Playlist[]>([]);
@@ -659,11 +661,13 @@ export default function ProfileClient() {
 	// Sync GitHub metadata and load own bio on login
 	useEffect(() => {
 		if (!user) return;
-		const githubId = (user.user_metadata?.provider_id ?? user.user_metadata?.sub) as string | undefined;
+		const githubId = (user.user_metadata?.provider_id ??
+			user.user_metadata?.sub) as string | undefined;
 		const login = user.user_metadata?.user_name as string | undefined;
 		const name = user.user_metadata?.full_name as string | undefined;
 		const avatar = user.user_metadata?.avatar_url as string | undefined;
-		if (githubId && login) syncGitHubMeta(user.id, githubId, login, name ?? null, avatar ?? null);
+		if (githubId && login)
+			syncGitHubMeta(user.id, githubId, login, name ?? null, avatar ?? null);
 		getOwnProfile(user.id).then((p) => {
 			if (p?.bio) setBio(p.bio);
 		});
@@ -788,7 +792,7 @@ export default function ProfileClient() {
 		}
 	};
 
-	if (loading) {
+	if (loading || banChecking) {
 		return (
 			<div className={styles.centered}>
 				<div className={styles.loadingDots}>
@@ -814,6 +818,45 @@ export default function ProfileClient() {
 	const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
 	const username = user.user_metadata?.user_name as string | undefined;
 	const displayName = user.user_metadata?.full_name as string | undefined;
+	const githubId = (user.user_metadata?.provider_id ??
+		user.user_metadata?.sub) as string | undefined;
+
+	if (isBanned) {
+		return (
+			<div className={`${styles.page} ${styles.publicPage}`}>
+				<div className={styles.layout}>
+					<aside className={styles.sidebar}>
+						<div className={styles.userCard}>
+							<img
+								src="/avatars/avatar-fallback.png"
+								alt="Banned"
+								className={styles.avatar}
+							/>
+							<h1 className={styles.username}>{githubId ?? "?"}</h1>
+						</div>
+					</aside>
+					<div className={styles.content}>
+						<div className={styles.banNotice}>
+							<svg
+								width="15"
+								height="15"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<circle cx="12" cy="12" r="10" />
+								<line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+							</svg>
+							Your account has been banned
+						</div>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className={`${styles.page} ${styles.profilePage}`}>
@@ -906,7 +949,7 @@ export default function ProfileClient() {
 									<section className={styles.section}>
 										<div className={styles.sectionHeader}>
 											<h2 className={styles.sectionTitle}>Bio</h2>
-											{!editingBio && (
+											{!editingBio && !isBanned && (
 												<button
 													className={styles.newPlaylistBtn}
 													onClick={() => {
@@ -1068,7 +1111,14 @@ export default function ProfileClient() {
 								)}
 								<button
 									className={styles.newPlaylistBtn}
-									onClick={() => setCreating(true)}
+									onClick={() => !isBanned && setCreating(true)}
+									disabled={isBanned}
+									title={isBanned ? "Your account is banned" : undefined}
+									style={
+										isBanned
+											? { opacity: 0.4, cursor: "not-allowed" }
+											: undefined
+									}
 								>
 									<svg
 										width="13"

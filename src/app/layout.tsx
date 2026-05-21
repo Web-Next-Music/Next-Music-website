@@ -5,6 +5,7 @@ import { PlayerProvider } from "@/lib/miniplayer";
 import { AuthProvider } from "@/lib/auth";
 import { LikesProvider } from "@/lib/likesContext";
 import AuthModal from "@/components/auth/AuthModal";
+import BanBanner from "@/components/layout/BanBanner";
 import "./globals.scss";
 
 export const metadata: Metadata = {
@@ -33,7 +34,8 @@ export default function RootLayout({
 				<AuthProvider>
 					<LikesProvider>
 						<ThemeProvider>
-							<Suspense fallback={<>{children}</>}>
+							<BanBanner />
+				<Suspense fallback={<>{children}</>}>
 								<PlayerProvider>{children}</PlayerProvider>
 							</Suspense>
 						</ThemeProvider>

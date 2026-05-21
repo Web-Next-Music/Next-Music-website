@@ -143,36 +143,45 @@ export async function getUserStats(
 	);
 }
 
-export async function getPublicProfile(githubId: string): Promise<{
+export interface PublicProfileResult {
 	profile: UserProfile;
-	stats: { likes: number; playlists: number };
-} | null> {
+	banned: boolean;
+}
+
+export async function getPublicProfile(
+	githubId: string,
+): Promise<PublicProfileResult | null> {
 	const sb = getSupabase();
 	if (!sb) return null;
-	const { data, error } = await sb
+
+	const { data: profileData } = await sb
 		.from("user_profiles")
-		.select(
-			"user_id, github_id, github_login, display_name, avatar_url, bio, track_likes(count), playlists(count)",
-		)
+		.select("user_id, github_id, github_login, display_name, avatar_url, bio")
 		.eq("github_id", githubId)
 		.single();
-	if (error || !data) return null;
-	const d = data as unknown as UserProfile & {
-		track_likes: [{ count: number }];
-		playlists: [{ count: number }];
-	};
+
+	if (profileData) {
+		return { banned: false, profile: profileData as UserProfile };
+	}
+
+	// Profile hidden by RLS — check if user is banned by github_id
+	const { data: banData } = await sb
+		.from("bans")
+		.select("user_id")
+		.eq("github_id", githubId)
+		.maybeSingle();
+
+	if (!banData) return null;
+
 	return {
+		banned: true,
 		profile: {
-			user_id: d.user_id,
-			github_id: d.github_id,
-			github_login: d.github_login,
-			display_name: d.display_name,
-			avatar_url: d.avatar_url,
-			bio: d.bio,
-		},
-		stats: {
-			likes: d.track_likes?.[0]?.count ?? 0,
-			playlists: d.playlists?.[0]?.count ?? 0,
+			user_id: banData.user_id as string,
+			github_id: githubId,
+			github_login: null,
+			display_name: null,
+			avatar_url: null,
+			bio: null,
 		},
 	};
 }

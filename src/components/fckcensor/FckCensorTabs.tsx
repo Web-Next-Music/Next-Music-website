@@ -57,7 +57,7 @@ function AddToPlaylistBtn({
 	trackId: string;
 	playlists: Playlist[];
 }) {
-	const { user } = useAuth();
+	const { user, isBanned } = useAuth();
 	const [open, setOpen] = useState(false);
 	const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
 	const [inPlaylists, setInPlaylists] = useState<Set<string>>(new Set());
@@ -77,7 +77,7 @@ function AddToPlaylistBtn({
 		return () => document.removeEventListener("mousedown", handler);
 	}, [open]);
 
-	if (!user) return null;
+	if (!user || isBanned) return null;
 
 	const handleOpen = async (e: React.MouseEvent) => {
 		e.preventDefault();

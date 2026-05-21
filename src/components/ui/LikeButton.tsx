@@ -17,7 +17,7 @@ interface Props {
 }
 
 export default function LikeButton({ target, className, compact }: Props) {
-	const { user, openAuthModal } = useAuth();
+	const { user, openAuthModal, isBanned } = useAuth();
 	const likes = useLikes();
 
 	const [count, setCount] = useState(0);
@@ -67,6 +67,7 @@ export default function LikeButton({ target, className, compact }: Props) {
 			openAuthModal();
 			return;
 		}
+		if (isBanned) return;
 
 		if (isTrack) {
 			const storedId = metaLikedId ?? target.trackId;
@@ -99,7 +100,7 @@ export default function LikeButton({ target, className, compact }: Props) {
 		openAuthModal,
 	]);
 
-	if (!user) return null;
+	if (!user || isBanned) return null;
 
 	return (
 		<button
@@ -107,12 +108,13 @@ export default function LikeButton({ target, className, compact }: Props) {
 				styles.btn,
 				compact ? styles.compact : "",
 				liked ? styles.liked : "",
+				isBanned ? styles.banned : "",
 				className ?? "",
 			].join(" ")}
 			onClick={toggle}
-			disabled={!compact && loading}
+			disabled={(!compact && loading) || isBanned}
 			aria-label={liked ? "Unlike" : "Like"}
-			title={liked ? "Unlike" : "Like"}
+			title={isBanned ? "Your account is banned" : liked ? "Unlike" : "Like"}
 		>
 			<svg
 				className={styles.heart}

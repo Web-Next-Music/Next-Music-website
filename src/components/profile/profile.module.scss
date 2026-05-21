@@ -1009,3 +1009,17 @@
 		}
 	}
 }
+
+.banNotice {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: #ca2a30;
+	color: #fff;
+	border-radius: 16px;
+	padding: 12px 16px;
+	font-size: 13px;
+	font-weight: 500;
+	line-height: 1.5;
+	margin-bottom: 16px;
+}

@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth";
 import styles from "./AuthButton.module.scss";
 
 export default function AuthButton() {
-	const { user, loading, signOut, openAuthModal } = useAuth();
+	const { user, loading, signOut, openAuthModal, isBanned } = useAuth();
 	const [dropdownOpen, setDropdownOpen] = useState(false);
 	const ref = useRef<HTMLDivElement>(null);
 
@@ -29,7 +29,9 @@ export default function AuthButton() {
 		);
 	}
 
-	const avatarUrl = user.user_metadata?.avatar_url as string | undefined;
+	const avatarUrl = isBanned
+		? "/avatars/avatar-fallback.png"
+		: (user.user_metadata?.avatar_url as string | undefined);
 	const initial = (user.user_metadata?.user_name ??
 		user.email ??
 		"?")[0].toUpperCase();

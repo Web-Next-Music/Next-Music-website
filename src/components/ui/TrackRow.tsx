@@ -131,7 +131,7 @@ function AddToPlaylistMenu({
 	trackId: string;
 	playlists: Playlist[];
 }) {
-	const { user } = useAuth();
+	const { user, isBanned } = useAuth();
 	const [open, setOpen] = useState(false);
 	const [pos, setPos] = useState<{ top: number; right: number } | null>(null);
 	const [inPlaylists, setInPlaylists] = useState<Set<string>>(new Set());
@@ -151,11 +151,12 @@ function AddToPlaylistMenu({
 		return () => document.removeEventListener("mousedown", handler);
 	}, [open]);
 
-	if (!user || playlists.length === 0) return null;
+	if (!user || isBanned || playlists.length === 0) return null;
 
 	const handleOpen = async (e: React.MouseEvent) => {
 		e.preventDefault();
 		e.stopPropagation();
+		if (isBanned) return;
 		if (open) {
 			setOpen(false);
 			return;
@@ -198,7 +199,10 @@ function AddToPlaylistMenu({
 				ref={btnRef}
 				className={styles.actionBtn}
 				onClick={handleOpen}
+				disabled={isBanned}
 				aria-label="Add to playlist"
+				title={isBanned ? "Your account is banned" : "Add to playlist"}
+				style={isBanned ? { opacity: 0.4, cursor: "not-allowed" } : undefined}
 			>
 				<svg
 					width="13"

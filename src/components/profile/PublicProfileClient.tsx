@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import {
 	getPublicProfile,
 	getUserPinnedPlaylists,
+	getUserStats,
 	type UserProfile,
 } from "@/lib/publicProfile";
 import {
@@ -128,6 +129,7 @@ export default function PublicProfileClient({
 		likes: number;
 		playlists: number;
 	} | null>(null);
+	const [banned, setBanned] = useState(false);
 
 	useEffect(() => {
 		getPublicProfile(githubId).then((result) => {
@@ -135,12 +137,26 @@ export default function PublicProfileClient({
 				setProfile(null);
 				return;
 			}
-			const { profile, stats } = result;
-			setProfile(profile);
-			setStats(stats);
-			const name = profile.display_name ?? profile.github_login ?? githubId;
+
+			setProfile(result.profile);
+			setBanned(result.banned);
+
+			const name = result.banned
+				? githubId
+				: (result.profile.display_name ??
+					result.profile.github_login ??
+					githubId);
 			document.title = `${name} - Next Music`;
-			getUserPinnedPlaylists(profile.user_id).then(setPlaylists);
+
+			if (!result.banned) {
+				Promise.all([
+					getUserStats(result.profile.user_id),
+					getUserPinnedPlaylists(result.profile.user_id),
+				]).then(([stats, playlists]) => {
+					setStats(stats);
+					setPlaylists(playlists);
+				});
+			}
 		});
 		return () => {
 			document.title = "Next Music";
@@ -167,14 +183,22 @@ export default function PublicProfileClient({
 		);
 	}
 
-	const displayName = profile.display_name ?? profile.github_login ?? githubId;
+	const displayName = banned
+		? githubId
+		: (profile.display_name ?? profile.github_login ?? githubId);
 
 	return (
 		<div className={`${styles.page} ${styles.publicPage}`}>
 			<div className={styles.layout}>
 				<aside className={styles.sidebar}>
 					<div className={styles.userCard}>
-						{profile.avatar_url ? (
+						{banned ? (
+							<img
+								src="/avatars/avatar-fallback.png"
+								alt="Banned"
+								className={styles.avatar}
+							/>
+						) : profile.avatar_url ? (
 							<img
 								src={profile.avatar_url}
 								alt={displayName}
@@ -231,7 +255,25 @@ export default function PublicProfileClient({
 				</aside>
 
 				<div className={styles.content}>
-					{profile.bio && (
+					{banned && (
+						<div className={styles.banNotice}>
+							<svg
+								width="15"
+								height="15"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								strokeWidth="2"
+								strokeLinecap="round"
+								strokeLinejoin="round"
+							>
+								<circle cx="12" cy="12" r="10" />
+								<line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+							</svg>
+							This user has been banned.
+						</div>
+					)}
+					{!banned && profile.bio && (
 						<section className={styles.section}>
 							<div className={styles.sectionHeader}>
 								<h2 className={styles.sectionTitle}>Bio</h2>
@@ -240,28 +282,29 @@ export default function PublicProfileClient({
 								className={styles.bioRendered}
 								dangerouslySetInnerHTML={{ __html: renderBio(profile.bio) }}
 							/>
-
 							<div className={styles.separator}></div>
 						</section>
 					)}
 
-					<section
-						className={styles.section}
-						style={profile.bio ? { marginTop: 20 } : undefined}
-					>
-						<div className={styles.sectionHeader}>
-							<h2 className={styles.sectionTitle}>Pinned Playlists</h2>
-						</div>
-						{playlists.length === 0 ? (
-							<div className={styles.empty}>No pinned playlists</div>
-						) : (
-							<div className={styles.playlistList}>
-								{playlists.map((pl) => (
-									<PublicPlaylistSection key={pl.id} playlist={pl} />
-								))}
+					{!banned && (
+						<section
+							className={styles.section}
+							style={profile.bio ? { marginTop: 20 } : undefined}
+						>
+							<div className={styles.sectionHeader}>
+								<h2 className={styles.sectionTitle}>Pinned Playlists</h2>
 							</div>
-						)}
-					</section>
+							{playlists.length === 0 ? (
+								<div className={styles.empty}>No pinned playlists</div>
+							) : (
+								<div className={styles.playlistList}>
+									{playlists.map((pl) => (
+										<PublicPlaylistSection key={pl.id} playlist={pl} />
+									))}
+								</div>
+							)}
+						</section>
+					)}
 				</div>
 			</div>
 		</div>
